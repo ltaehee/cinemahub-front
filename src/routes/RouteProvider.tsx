@@ -2,6 +2,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Layout from "../components/Layout";
 import ErrorPage from "../pages/ErrorPage";
 import MainPage from "../pages/MainPage";
+import CinemaDetailPage from "../pages/CinemaDetailPage";
+import CinemaReviewPage from "../pages/CinemaReviewPage";
+import BoxOfficePage from "../pages/BoxOfficePage";
 
 const router = createBrowserRouter([
   {
@@ -12,6 +15,22 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <MainPage />,
+        children: [
+          {
+            path: "/cinema",
+            element: <CinemaDetailPage />,
+            children: [
+              {
+                path: "review",
+                element: <CinemaReviewPage />,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        path: "boxoffice",
+        element: <BoxOfficePage />,
       },
     ],
   },
