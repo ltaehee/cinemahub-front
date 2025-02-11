@@ -1,0 +1,4 @@
+@import "tailwindcss";
+:root {
+  --font-sans: "Pretendard", sans-serif;
+}
