@@ -1,9 +1,14 @@
 import GoogleIcon from '../icons/GoogleIcon';
+import NaverIcon from '../icons/NaverIcon';
 import bgMovies from '../images/bg-image.jpg';
 
 const Login = () => {
   const handleGoogleSignin = () => {
     window.location.href = '/api/login/google/google-oauth';
+  };
+
+  const handleNaverSignin = () => {
+    window.location.href = '/api/login/naver/naver-oauth';
   };
 
   return (
@@ -24,6 +29,13 @@ const Login = () => {
               <GoogleIcon
                 className="cursor-pointer"
                 onClick={handleGoogleSignin}
+              />
+            </div>
+
+            <div>
+              <NaverIcon
+                className="cursor-pointer"
+                onClick={handleNaverSignin}
               />
             </div>
           </div>
