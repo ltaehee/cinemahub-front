@@ -14,6 +14,7 @@ const MovieCard: React.FC<MovieProps> = ({ image, name }) => {
     <div onClick={handleCardClick}>
       <div>
         <img src={image} alt="영화 이미지" />
+        테스트용으로 추가
       </div>
       <div>
         <h3>{name}</h3>
