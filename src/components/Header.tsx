@@ -17,6 +17,11 @@ const Header = () => {
               <button className=""></button>
             </div>
             <div>로그인</div>
+            <button
+              onClick={() => (window.location.href = '/api/login/logout')}
+            >
+              로그아웃
+            </button>
           </div>
         </div>
       </div>
