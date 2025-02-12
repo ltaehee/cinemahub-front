@@ -1,9 +1,9 @@
-import axios, { HttpStatusCode, isAxiosError } from "axios";
+import axios, { HttpStatusCode, isAxiosError } from 'axios';
 
 export const baseInstance = axios.create({
-  baseURL: "/api",
+  baseURL: '/api',
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
