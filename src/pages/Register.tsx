@@ -21,7 +21,7 @@ const defaultUserInfo = {
 const Register = () => {
   const navigator = useNavigate();
   const [searchparam, _] = useSearchParams();
-  const social = searchparam.get('social');
+  const social = searchparam.get('social') || null;
 
   const [userInfo, setUserInfo] = useState<UserInfoType>(defaultUserInfo);
   const [agree, setAgree] = useState<boolean>(false);
@@ -67,6 +67,7 @@ const Register = () => {
   };
 
   const handleRegisterUser = async () => {
+    console.log(agree, userInfo);
     if (Object.values(userInfo).includes('')) {
       return;
     }
@@ -77,11 +78,13 @@ const Register = () => {
 
     try {
       const { result, data, message } = await getFetchUserData(userInfo);
+      console.log(result);
 
       if (!result) {
         throw new Error(message);
       }
       console.log(data);
+      navigator('/', { replace: true });
     } catch (e) {
       console.error(e);
     }
@@ -90,7 +93,9 @@ const Register = () => {
   useEffect(() => {
     if (social === '1') handleGetGoogleDataFetch();
     if (social === '2') handleGetNaverDataFetch();
-    // navigator('/', { replace: true });
+    if (social === null) {
+      navigator('/login', { replace: true });
+    }
   }, []);
 
   return (
