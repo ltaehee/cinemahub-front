@@ -1,0 +1,24 @@
+stages:
+  - deploy
+variables:
+  IMAGE_NAME: cinemahub:$CI_PIPELINE_ID
+
+deploy:
+  tags:
+    - ch-cicd
+  image: docker:latest
+  stage: deploy
+  only:
+    - main
+  script:
+    - docker stop cinemahub-container || true
+    - docker rm cinemahub-container || true
+    - docker build -t $IMAGE_NAME .
+    - docker run -d --name cinemahub-container -p 80:80 $IMAGE_NAME
+    - LATEST_TAG=$(docker images cinemahub --format "{{.Tag}} {{.CreatedAt}}" | sort -r -k2 | head -n 1 | awk '{print $1}')
+    - OLD_TAGS=$(docker images my-app --format "{{.Tag}}" | grep -v "$LATEST_TAG")
+    - if [ ! -z "$OLD_TAGS" ]; then
+      for TAG in $OLD_TAGS; do
+      docker rmi cinemahub:$TAG || true;
+      done
+      fi
