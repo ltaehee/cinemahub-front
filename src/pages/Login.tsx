@@ -1,14 +1,8 @@
-import { useEffect } from 'react';
 import GoogleIcon from '../icons/GoogleIcon';
 import NaverIcon from '../icons/NaverIcon';
 import bgMovies from '../images/bg-image.jpg';
-import useLoginStore from '../store/useStore';
-import { useNavigate } from 'react-router';
 
 const Login = () => {
-  const { IsLogin } = useLoginStore();
-  const navigator = useNavigate();
-
   const handleGoogleSignin = () => {
     window.location.href = '/api/login/google/google-oauth';
   };
@@ -16,12 +10,6 @@ const Login = () => {
   const handleNaverSignin = () => {
     window.location.href = '/api/login/naver/naver-oauth';
   };
-
-  useEffect(() => {
-    if (IsLogin) {
-      navigator('/', { replace: true });
-    }
-  });
 
   return (
     <>

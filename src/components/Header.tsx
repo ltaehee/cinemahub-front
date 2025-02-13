@@ -1,37 +1,21 @@
 import { useNavigate } from 'react-router';
-import { getFetchUserLogout, getFetchUserSession } from '../apis/login';
+import { getFetchUserLogout } from '../apis/login';
 import HeaderIcon from '../icons/HeaderIcon';
 import useLoginStore from '../store/useStore';
-import { useEffect } from 'react';
 
 const Header = () => {
-  const { IsLogin, login, logout } = useLoginStore();
+  const { IsLogin, logout } = useLoginStore();
   const navigator = useNavigate();
 
   const handleLogoutFetch = async () => {
     try {
-      const { result, IsLogin } = await getFetchUserLogout();
+      const { result } = await getFetchUserLogout();
       if (result) {
-        logout(IsLogin);
+        logout();
         navigator('/login', { replace: true });
       }
     } catch (e) {}
   };
-
-  const handleUserSession = async () => {
-    try {
-      const { result, IsLogin } = await getFetchUserSession();
-      if (result) {
-        login(IsLogin);
-      } else {
-        navigator('/login', { replace: true });
-      }
-    } catch (e) {}
-  };
-
-  useEffect(() => {
-    handleUserSession();
-  }, []);
 
   return (
     <header className="sticky top-0">

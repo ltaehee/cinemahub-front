@@ -5,8 +5,8 @@ type State = {
 };
 
 type Action = {
-  login: (IsLogin: State['IsLogin']) => void;
-  logout: (IsLogin: State['IsLogin']) => void;
+  login: () => void;
+  logout: () => void;
 };
 
 const useLoginStore = create<State & Action>((set) => ({
