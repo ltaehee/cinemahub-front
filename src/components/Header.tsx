@@ -1,6 +1,29 @@
+import { useNavigate } from 'react-router';
+import { getFetchUserLogout, getFetchUserSession } from '../apis/login';
 import HeaderIcon from '../icons/HeaderIcon';
+import useLoginStore from '../store/useStore';
+import { useEffect } from 'react';
 
 const Header = () => {
+  const { IsLogin, login, logout } = useLoginStore();
+  const navigator = useNavigate();
+
+  const handleLogoutFetch = async () => {
+    const response = await getFetchUserLogout();
+    console.log(response);
+    logout(false);
+  };
+
+  const handleUserSession = async () => {
+    const response = await getFetchUserSession();
+    console.log(response);
+    login(true);
+  };
+
+  useEffect(() => {
+    handleUserSession();
+  }, []);
+
   return (
     <header className="sticky top-0">
       <div className="flex justify-center items-center border-b border-slate-300">
@@ -16,12 +39,11 @@ const Header = () => {
             <div>
               <button className=""></button>
             </div>
-            <div>로그인</div>
-            <button
-              onClick={() => (window.location.href = '/api/login/logout')}
-            >
-              로그아웃
-            </button>
+            {IsLogin ? (
+              <button onClick={() => handleLogoutFetch}>로그아웃</button>
+            ) : (
+              <div onClick={() => navigator('/login')}>로그인</div>
+            )}
           </div>
         </div>
       </div>
