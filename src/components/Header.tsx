@@ -9,15 +9,24 @@ const Header = () => {
   const navigator = useNavigate();
 
   const handleLogoutFetch = async () => {
-    const response = await getFetchUserLogout();
-    console.log(response);
-    logout(false);
+    try {
+      const { result, IsLogin } = await getFetchUserLogout();
+      if (result) {
+        logout(IsLogin);
+        navigator('/login', { replace: true });
+      }
+    } catch (e) {}
   };
 
   const handleUserSession = async () => {
-    const response = await getFetchUserSession();
-    console.log(response);
-    login(true);
+    try {
+      const { result, IsLogin } = await getFetchUserSession();
+      if (result) {
+        login(IsLogin);
+      } else {
+        navigator('/login', { replace: true });
+      }
+    } catch (e) {}
   };
 
   useEffect(() => {
@@ -40,7 +49,7 @@ const Header = () => {
               <button className=""></button>
             </div>
             {IsLogin ? (
-              <button onClick={() => handleLogoutFetch}>로그아웃</button>
+              <button onClick={handleLogoutFetch}>로그아웃</button>
             ) : (
               <div onClick={() => navigator('/login')}>로그인</div>
             )}
