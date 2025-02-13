@@ -5,6 +5,7 @@ import {
   getFetchUserData,
 } from '../apis/login';
 import { useNavigate, useSearchParams } from 'react-router';
+import useLoginStore from '../store/useStore';
 
 type UserInfoType = {
   email: string;
@@ -20,6 +21,8 @@ const defaultUserInfo = {
 
 const Register = () => {
   const navigator = useNavigate();
+  const login = useLoginStore((state) => state.login);
+
   const [searchparam, _] = useSearchParams();
   const social = searchparam.get('social') || null;
 
@@ -83,6 +86,7 @@ const Register = () => {
       if (!result) {
         throw new Error(message);
       }
+      login();
       console.log(data);
       navigator('/', { replace: true });
     } catch (e) {
