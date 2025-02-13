@@ -1,5 +1,5 @@
-import { Outlet } from "react-router-dom";
-import LogoImg from "../assets/LogoImg";
+import { Outlet } from 'react-router-dom';
+import LogoImg from '../assets/LogoImg';
 
 const MainPage = () => {
   return (

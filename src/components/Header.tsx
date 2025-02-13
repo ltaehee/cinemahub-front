@@ -1,6 +1,22 @@
-import HeaderIcon from "../icons/HeaderIcon";
+import { useNavigate } from 'react-router';
+import { getFetchUserLogout } from '../apis/login';
+import HeaderIcon from '../icons/HeaderIcon';
+import useLoginStore from '../store/useStore';
 
 const Header = () => {
+  const { IsLogin, logout } = useLoginStore();
+  const navigator = useNavigate();
+
+  const handleLogoutFetch = async () => {
+    try {
+      const { result } = await getFetchUserLogout();
+      if (result) {
+        logout();
+        navigator('/login', { replace: true });
+      }
+    } catch (e) {}
+  };
+
   return (
     <header className="sticky top-0">
       <div className="flex justify-center items-center border-b border-slate-300">
@@ -16,7 +32,11 @@ const Header = () => {
             <div>
               <button className=""></button>
             </div>
-            <div>로그인</div>
+            {IsLogin ? (
+              <button onClick={handleLogoutFetch}>로그아웃</button>
+            ) : (
+              <div onClick={() => navigator('/login')}>로그인</div>
+            )}
           </div>
         </div>
       </div>
