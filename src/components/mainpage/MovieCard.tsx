@@ -35,9 +35,9 @@ const MovieCard: React.FC<MovieProps> = ({
       <div className="p-2">
         <h3 className="text-lg font-semibold w-52 ">{name}</h3>
         <p className="text-sm mt-1 text-yellow-500">
-          <div className="flex">
+          <div className="flex items-center space-x-1">
             <img src={star} alt="별" />
-            {rating}
+            <div className="p-0 flex items-center">{rating}</div>
           </div>
         </p>
         <div className="flex items-center justify-between mt-2">
