@@ -25,7 +25,7 @@ const MainPage = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-  console.log("baseRect", baseRect);
+
   return (
     <>
       <Outlet />
