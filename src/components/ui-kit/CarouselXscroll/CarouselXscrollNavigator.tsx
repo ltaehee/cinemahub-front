@@ -1,8 +1,13 @@
-import { ReactNode, useContext } from "react";
+import { CSSProperties, ReactNode, useContext } from "react";
 import { CarouselXscrollContext } from ".";
 
 interface CarouselXscrollNavigatorProps {
-  children?: (prev: () => void, next: () => void) => ReactNode;
+  children?: (
+    prev: () => void,
+    next: () => void,
+    leftStyle: React.CSSProperties,
+    rightStyle: React.CSSProperties
+  ) => ReactNode;
 }
 
 const CarouselXscrollNavigator = (props: CarouselXscrollNavigatorProps) => {
@@ -40,40 +45,34 @@ const CarouselXscrollNavigator = (props: CarouselXscrollNavigatorProps) => {
     return scrollPosition === 0;
   };
 
+  const leftButtonStyle: CSSProperties = isAtStart()
+    ? { display: "none" }
+    : {
+        position: "absolute",
+        left: "2rem",
+        top: "50%",
+        transform: "translateY(-50%)",
+      };
+
+  const rightButtonStyle: CSSProperties = isAtEnd()
+    ? { display: "none" }
+    : {
+        position: "absolute",
+        right: "2rem",
+        top: "50%",
+        transform: "translateY(-50%)",
+      };
+
   return (
     <>
       {children && typeof children === "function" ? (
-        children(handleLeft, handleRight)
+        children(handleLeft, handleRight, leftButtonStyle, rightButtonStyle)
       ) : (
         <>
-          <button
-            style={
-              isAtStart()
-                ? { display: "none" }
-                : {
-                    position: "absolute",
-                    left: "2rem",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                  }
-            }
-            onClick={handleLeft}
-          >
+          <button style={leftButtonStyle} onClick={handleLeft}>
             &lt;
           </button>
-          <button
-            style={
-              isAtEnd()
-                ? { display: "none" }
-                : {
-                    position: "absolute",
-                    right: "2rem",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                  }
-            }
-            onClick={handleRight}
-          >
+          <button style={rightButtonStyle} onClick={handleRight}>
             &gt;
           </button>
         </>

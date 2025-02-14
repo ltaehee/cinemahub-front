@@ -63,7 +63,9 @@ const CarouselXscroll: FC<CarouselXscrollProps> &
 
   return (
     <CarouselXscrollContext.Provider value={contextValue}>
-      <div className={cls}>{children}</div>
+      <div style={{ position: "relative" }} className={cls}>
+        {children}
+      </div>
     </CarouselXscrollContext.Provider>
   );
 };
