@@ -11,8 +11,7 @@ import MyPage from '../pages/MyPage';
 import useLoginStore from '../store/useStore';
 import { getFetchUserSession } from '../apis/login';
 import { useEffect } from 'react';
-import PublicRoute from './PublicRouter';
-import PrivateRoute from './ProtectedRouter';
+import PrivateRouter from './PrivateRouter';
 
 const RouteProvider = () => {
   const login = useLoginStore((state) => state.login);
@@ -21,6 +20,7 @@ const RouteProvider = () => {
   const handleUserSession = async () => {
     try {
       const response = await getFetchUserSession();
+
       if (response.result) {
         login();
       } else {
@@ -37,7 +37,7 @@ const RouteProvider = () => {
       children: [
         {
           path: '/',
-          element: <PrivateRoute element={<MainPage />} />,
+          element: <PrivateRouter element={<MainPage />} />,
           children: [
             {
               path: '/cinema',
@@ -57,11 +57,11 @@ const RouteProvider = () => {
         },
         {
           path: '/login',
-          element: <PublicRoute element={<Login />} />,
+          element: <PrivateRouter element={<Login />} />,
         },
         {
           path: '/register',
-          element: <Register />,
+          element: <PrivateRouter element={<Register />} />,
         },
         {
           path: '/mypage',
