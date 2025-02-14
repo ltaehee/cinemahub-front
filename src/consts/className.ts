@@ -23,6 +23,16 @@ export const carouselItemCls = getBaseCls("carousel-item");
 export const carouselNavigatorCls = getBaseCls("carousel-navigator");
 export const carouselIndicatorCls = getBaseCls("carousel-indicator");
 
+// CarouselXscroll Component
+export const carouselXscrollBaseCls = getBaseCls("carouselXscroll");
+export const carouselXscrollItemContainerCls = getBaseCls(
+  "carouselXscroll-item-container"
+);
+export const carouselXscrollItemsCls = getBaseCls("carouselXscroll-items");
+export const carouselXscrollNavigatorCls = getBaseCls(
+  "carouselXscroll-navigator"
+);
+
 // DatePicker Component
 export const datePickerBaseCls = getBaseCls("datePicker");
 

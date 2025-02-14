@@ -2,6 +2,7 @@ import {
   createContext,
   Dispatch,
   FC,
+  HTMLAttributes,
   ReactNode,
   SetStateAction,
   useMemo,
@@ -9,7 +10,6 @@ import {
 } from "react";
 import PaginationButtons from "./PaginationButtons";
 import PaginationNavigator from "./PaginationNavigator";
-import { paginationBaseCls } from "@consts/className";
 
 interface PaginationCompoundProps {
   Buttons: typeof PaginationButtons;
@@ -32,7 +32,7 @@ export const PaginationContext = createContext<PaginationContextProps>({
   pages: [],
 });
 
-interface PagenationProps {
+interface PagenationProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
   className?: string;
   total: number;
@@ -45,12 +45,12 @@ interface PagenationProps {
 const Pagination: FC<PagenationProps> & PaginationCompoundProps = (props) => {
   const {
     children,
-    className,
     total,
     value = 0,
     onPageChange,
     blockSize = 10,
-    pageSize = 10,
+    pageSize = 20,
+    className,
   } = props;
   const [currentPage, setCurrentPage] = useState(value);
 
@@ -60,7 +60,7 @@ const Pagination: FC<PagenationProps> & PaginationCompoundProps = (props) => {
   );
 
   const firstPageFromCurrent = useMemo(
-    () => Math.floor(currentPage / blockSize) * blockSize,
+    () => Math.floor(currentPage / blockSize) * 10,
     [currentPage, blockSize]
   );
 
@@ -92,14 +92,9 @@ const Pagination: FC<PagenationProps> & PaginationCompoundProps = (props) => {
     pages,
   };
 
-  const cls = useMemo(
-    () => (className ? `${className} ${paginationBaseCls}` : paginationBaseCls),
-    [className]
-  );
-
   return (
     <PaginationContext.Provider value={contextValue}>
-      <div className={cls}>{children}</div>
+      <div className={className}>{children}</div>
     </PaginationContext.Provider>
   );
 };
