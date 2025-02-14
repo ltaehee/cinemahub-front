@@ -1,16 +1,16 @@
-import { useContext, useMemo } from "react";
+import { HTMLAttributes, ReactNode, useContext } from "react";
 import { PaginationContext } from ".";
-import { paginationNavigatorCls } from "@consts/className";
+import NavigatorButton from "./icons/NavigatorButton";
 
-interface PaginationNavigatorProps {
-  className?: string;
+interface PaginationNavigatorProps extends HTMLAttributes<HTMLDivElement> {
+  children?: ReactNode;
 }
 
 const PaginationNavigator = (props: PaginationNavigatorProps) => {
   const { currentPage, setCurrentPage, onPageChange, totalPageLength } =
     useContext(PaginationContext);
 
-  const { className } = props;
+  const { children } = props;
 
   const handleClickPrev = () => {
     if (currentPage === 0) return;
@@ -26,24 +26,24 @@ const PaginationNavigator = (props: PaginationNavigatorProps) => {
     onPageChange(changedPageIndex);
   };
 
-  const cls = useMemo(
-    () =>
-      className
-        ? `${className} ${paginationNavigatorCls}`
-        : paginationNavigatorCls,
-    [className]
-  );
-
   return (
-    <div className={cls}>
+    <div {...props}>
       <button disabled={currentPage === 0} onClick={handleClickPrev}>
-        prev
+        <NavigatorButton
+          height="16px"
+          stroke={currentPage === 0 ? "#cbd5e1" : "#5B21B6"}
+        />
       </button>
+      {children}
       <button
         disabled={currentPage + 1 === totalPageLength}
         onClick={handleClickNext}
       >
-        next
+        <NavigatorButton
+          height="16px"
+          transform="rotate(180)"
+          stroke={currentPage + 1 === totalPageLength ? "#cbd5e1" : "#5B21B6"}
+        />
       </button>
     </div>
   );
