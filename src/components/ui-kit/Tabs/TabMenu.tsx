@@ -25,7 +25,7 @@ const TabMenu = (props: TabMenuProps) => {
       data-active={isActive}
       onClick={() => handleClick(index)}
     >
-      <button>{children}</button>
+      {children}
     </div>
   );
 };
