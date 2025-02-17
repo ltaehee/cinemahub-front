@@ -42,12 +42,12 @@ const AgreePolicy = () => {
             <div className="mt-10">
               <h1 className="mt-2 text-2xl font-bold">제 1조 목적</h1>
 
-              <ol className="mt-2 list-decimal">
+              <ol className="mt-2 px-5 list-decimal">
                 <li className="mt-1">
                   본 약관은 회원(본 약관에 동의한 자를 말하며 이하 "회원"이라고
-                  합니다)이 <span className="font-bold">시네마 허브</span>(이하
-                  "회사"라고 합니다)가 제공하는 서비스를 이용함에 있어 회사와
-                  회원의 권리 의무 및 책임사항을 규정함을 목적으로 합니다.
+                  합니다)이 <b>시네마 허브</b>(이하 "회사"라고 합니다)가
+                  제공하는 서비스를 이용함에 있어 회사와 회원의 권리 의무 및
+                  책임사항을 규정함을 목적으로 합니다.
                 </li>
               </ol>
             </div>
@@ -55,7 +55,7 @@ const AgreePolicy = () => {
             <div className="mt-10">
               <h1 className="mt-2 text-2xl font-bold">제 2조 정의</h1>
 
-              <ol className="mt-2 list-decimal">
+              <ol className="mt-2 px-5 list-decimal">
                 <li className="mt-1">
                   "회원"이라 함은 회사의 서비스에 접속하여 이 약관에 따라
                   "회사"와 이용계약을 체결하고 "회사"가 제공하는 "서비스" 를
@@ -81,7 +81,7 @@ const AgreePolicy = () => {
             <div className="mt-10">
               <h1 className="mt-2 text-2xl font-bold">제 3조 정의</h1>
 
-              <ol className="mt-2 list-decimal">
+              <ol className="mt-2 px-5 list-decimal">
                 <li className="mt-1">
                   "회사"는 "정보통신망법" 등 관계 법령이 정하는 바에 따라
                   "회원"의 "개인정보"를 보호하기 위해 노력합니다. "개인정보"의
@@ -97,7 +97,7 @@ const AgreePolicy = () => {
                 제 4조 약관의 게시와 개정
               </h1>
 
-              <ol className="mt-2 list-decimal">
+              <ol className="mt-2 px-5 list-decimal">
                 <li className="mt-1">
                   "회사"는 이 약관의 내용을 "회원"이 쉽게 알 수 있도록
                   초기화면에 게시합니다.
@@ -138,7 +138,7 @@ const AgreePolicy = () => {
                 제 5조 권리의 귀속 및 저작물의 이용
               </h1>
 
-              <ol className="mt-2 list-decimal">
+              <ol className="mt-2 px-5 list-decimal">
                 <li className="mt-1">
                   회사가 회원에게 제공하는 각종 서비스에 대한 저작권을 포함한
                   일체의 권리는 회사에 귀속되며 회원이 서비스를 이용하는
@@ -168,7 +168,7 @@ const AgreePolicy = () => {
                 제 6조 서비스의 변경, 중단, 일시 중지
               </h1>
 
-              <ol className="mt-2 list-decimal">
+              <ol className="mt-2 px-5 list-decimal">
                 <li className="mt-1">
                   회사는 서비스의 일부 또는 전부를 회사의 사업 계획 및 서비스
                   운영정책에 따라 수정·변경 및 중단할 수 있으며, 이에 대하여
@@ -194,7 +194,7 @@ const AgreePolicy = () => {
                 제 7조 "회원"에 대한 통지
               </h1>
 
-              <ol className="mt-2 list-decimal">
+              <ol className="mt-2 px-5 list-decimal">
                 <li className="mt-1">
                   "회사"가 "회원"에 대한 통지를 하는 경우 본 약관에 별도 규정이
                   없는 한 "회원"이 지정한 전자우편주소, 알림 메시지 등으로 할 수
@@ -206,7 +206,7 @@ const AgreePolicy = () => {
             <div className="mt-10">
               <h1 className="mt-2 text-2xl font-bold">제 8조 이용제한 등</h1>
 
-              <ol className="mt-2 list-decimal">
+              <ol className="mt-2 px-5 list-decimal">
                 <li className="mt-1">
                   "회사"는 "회원"이 본 약관의 의무를 위반하거나 서비스의
                   정상적인 운영을 방해한 경우, 일시정지, 계약해지로 단계적으로
@@ -250,7 +250,7 @@ const AgreePolicy = () => {
             <div className="mt-10">
               <h1 className="mt-2 text-2xl font-bold">제 9조 게시물의 관리</h1>
 
-              <ol className="mt-2 list-decimal">
+              <ol className="mt-2 px-5 list-decimal">
                 <li className="mt-1">
                   "회원"의 게시물이 "정보통신망법" 및 "저작권법"등 관련법에
                   위반되는 내용을 포함하는 경우, 권리자는 관련법이 정한 절차에
@@ -274,7 +274,7 @@ const AgreePolicy = () => {
             <div className="mt-10">
               <h1 className="mt-2 text-2xl font-bold">제 10조 권리의 귀속</h1>
 
-              <ol className="mt-2 list-decimal">
+              <ol className="mt-2 px-5 list-decimal">
                 <li className="mt-1">
                   "서비스"에 대한 저작권 및 지적재산권은 회사에 귀속됩니다. 단,
                   회원의 게시물 및 제휴계약에 따라 제공된 저작물 등은
@@ -292,7 +292,7 @@ const AgreePolicy = () => {
             <div className="mt-10">
               <h1 className="mt-2 text-2xl font-bold">제 11조 책임제한</h1>
 
-              <ol className="mt-2 list-decimal">
+              <ol className="mt-2 px-5 list-decimal">
                 <li className="mt-1">
                   "회사"는 천재지변 또는 이에 준하는 불가항력으로 인하여
                   "서비스"를 제공할 수 없는 경우에는 "서비스" 제공에 관한 책임이
@@ -323,7 +323,7 @@ const AgreePolicy = () => {
                 제 12조 준거법 및 재판관할
               </h1>
 
-              <ol className="mt-2 list-decimal">
+              <ol className="mt-2 px-5 list-decimal">
                 <li className="mt-1">
                   "회사"와 "회원" 간 제기된 소송은 대한민국법을 준거법으로
                   합니다.
@@ -368,6 +368,122 @@ const AgreePolicy = () => {
                 <li className="mt-1">회원 관리</li>
                 <li className="mt-1">서비스 제공</li>
               </ul>
+            </div>
+
+            <div className="mt-10">
+              <h1 className="mt-2 text-2xl font-bold">
+                2. 개인정보의 보유 및 이용기간
+              </h1>
+              <h2 className="mt-5 text-lg font-bold">
+                소비자의 불만 또는 분쟁처리에 관한 기록
+              </h2>
+
+              <ul className="px-5">
+                <li className="mt-1">
+                  보존 이유: 전자상거래 등에서의 소비자보호에 관한 법룔 제6조 및
+                  시행령 제6조
+                </li>
+                <li className="mt-1">보존 기간: 3년</li>
+              </ul>
+
+              <h2 className="mt-5 text-lg font-bold">본인확인에 관한 기록</h2>
+
+              <ul className="px-5">
+                <li className="mt-1">
+                  보존 이유: 정보통신망 이용촉진 및 정보보호에 관한 법률 제
+                  44조의5 및 시행령 제 29조
+                </li>
+                <li className="mt-1">보존 기간: 6개월</li>
+              </ul>
+
+              <h2 className="mt-5 text-lg font-bold">접속에 관한 기록</h2>
+
+              <ul className="px-5">
+                <li className="mt-1">
+                  보존 이유: 통신비밀보호법 제15조의2 및 시행령 제41조- 보존
+                  기간: 3개월
+                </li>
+              </ul>
+            </div>
+
+            <div className="mt-10">
+              <h1 className="mt-2 text-2xl font-bold">
+                3. 수집하는 개인정보의 항목
+              </h1>
+              <h2 className="mt-5 text-lg font-semi">
+                회사는 회원가입, 서비스 이용 등을 위해 아래와 같은 개인정보를
+                수집하고 있습니다.
+              </h2>
+
+              <ol className="mt-5 px-10 list-decimal">
+                <li>
+                  수집 항목
+                  <p className="mt-2">사용자 입력</p>
+                </li>
+
+                <ul className="mt-5 px-5 mb-5 list-disc">
+                  <li className="mt-1">소셜 미디어 서비스 ID : 사용자 구분</li>
+                  <li className="mt-1">
+                    닉네임 : 콘텐츠에서 작성자의 정보를 보여주기 위함
+                  </li>
+                  <li className="mt-1">
+                    프로필 사진 : 콘텐츠에서 작성자의 정보를 보여주기 위함
+                  </li>
+                </ul>
+
+                <li>
+                  개인정보 수집방법
+                  <p className="mt-2">홈페이지(회원가입)</p>
+                </li>
+              </ol>
+            </div>
+
+            <div className="mt-10">
+              <h1 className="mt-2 text-2xl font-bold">
+                4. 개인정보의 파기절차 및 방법
+              </h1>
+
+              <ul className="mt-5 px-5">
+                <li className="mt-1">
+                  이용자는 로그인 후 <b>프로필</b> 페이지에서 계정을 탈퇴할 수
+                  있습니다. 또는, 가입한 계정의 이메일을 사용하여 개인정보 관리
+                  책임자(7조 참고)에게 이메일을 발송하여 탈퇴 요청을 할 수
+                  있습니다.
+                </li>
+              </ul>
+
+              <div className="mt-5 px-5">
+                <p className="mt-1 text-lg font-bold">
+                  파기절차(추후에 기능 추가 deleteAt)
+                </p>
+
+                <p className="mt-1">
+                  탈퇴처리가 진행되면 DB에 있는 계정정보와, 해당 계정으로 작성된
+                  모든 게시글과 댓글이 삭제됩니다.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-10">
+              <h1 className="mt-2 text-2xl font-bold">5. 개인정보 제공</h1>
+              <h2 className="mt-5 text-lg font-semi">
+                회사는 이용자의 개인정보를 원칙적으로 외부에 제공하지 않습니다.
+                다만, 아래의 경우에는 예외로 합니다.
+              </h2>
+
+              <ul className="mt-5 px-5 list-disc">
+                <li className="mt-1">이용자들이 사전에 동의한 경우</li>
+                <li className="mt-1">
+                  법령의 규정에 의거하거나, 수사 목적으로 사회사의 요구가 있는
+                  경우
+                </li>
+              </ul>
+            </div>
+
+            <div className="mt-10">
+              <h1 className="mt-2 text-2xl font-bold">
+                이 개인정보 취급방침은 2025.XX.XX일 부터 적용됩니다.
+              </h1>
             </div>
           </div>
         </Tabs.Pannel>
