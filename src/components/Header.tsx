@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { getFetchUserLogout } from "../apis/login";
 import HeaderIcon from "../icons/HeaderIcon";
 import useLoginStore from "../store/useStore";
@@ -15,6 +15,7 @@ interface SearchForm {
 const Header = () => {
   const { IsLogin, logout } = useLoginStore();
   const navigator = useNavigate();
+  const { pathname } = useLocation();
 
   const handleLogoutFetch = async () => {
     try {
@@ -45,7 +46,7 @@ const Header = () => {
   useEffect(() => {
     if (debounceKeyword) {
       navigator(`/search?keyword=${debounceKeyword}`);
-    } else {
+    } else if (pathname !== "/" && pathname.startsWith("/search")) {
       navigator("/");
     }
   }, [debounceKeyword]);
