@@ -25,7 +25,7 @@ const Login = () => {
         <div className="relative z-1 max-w-2xl px-2 mx-auto opacity-80">
           <div className="flex flex-col items-center justify-center p-10 rounded-2xl bg-slate-200 gap-5">
             <h1 className="font-bold text-2xl">로그인</h1>
-            <div className="w-60">
+            <div>
               <GoogleIcon
                 className="cursor-pointer"
                 onClick={handleGoogleSignin}
