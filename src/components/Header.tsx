@@ -51,7 +51,7 @@ const Header = () => {
   }, [debounceKeyword]);
 
   return (
-    <header className="sticky top-0 ">
+    <header className="sticky top-0 z-5 bg-white ">
       <div className="flex justify-center items-center border-b border-slate-300">
         <div className="flex justify-between items-center gap-8 px-8 py-2 h-16 w-[1280px]">
           <div className="">
