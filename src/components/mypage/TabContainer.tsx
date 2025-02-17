@@ -3,6 +3,7 @@ import MovieCard from "../mainpage/MovieCard";
 import movie1 from "/images/movie1.png";
 import movie2 from "/images/movie2.png";
 import { useState } from "react";
+import PersonCard from "../mainpage/PersonCard";
 
 const dummyMovies = [
   {
@@ -59,7 +60,6 @@ const TabContainer = () => {
           >
             좋아하는 영화
           </Tabs.Menu>
-
           <Tabs.Menu
             index={2}
             className={`w-full flex-1 py-2 text-center border-b-2 transition cursor-pointer ${
@@ -97,7 +97,9 @@ const TabContainer = () => {
             ))}
           </div>
         </Tabs.Pannel>
-        <Tabs.Pannel index={2}>좋아하는 영화인 컴포넌트</Tabs.Pannel>
+        <Tabs.Pannel index={2}>
+          <PersonCard />
+        </Tabs.Pannel>
         <Tabs.Pannel index={3}>평점 내역 컴포넌트</Tabs.Pannel>
       </Tabs>
     </div>
