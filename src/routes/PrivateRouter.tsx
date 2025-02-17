@@ -11,10 +11,6 @@ const PrivateRouter = ({ element }: { element: ReactElement }) => {
     if (IsLogin && (pathname === '/login' || pathname === '/register')) {
       navigator('/', { replace: true });
     }
-
-    if (!IsLogin && pathname !== '/') {
-      navigator('/login', { replace: true });
-    }
   }, [IsLogin, location.pathname]);
 
   return element;
