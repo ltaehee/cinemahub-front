@@ -1,74 +1,81 @@
 import Button from "../components/Button";
-import MovieCard from "../components/mainpage/MovieCard";
-import movie1 from "/images/movie1.png";
-import movie2 from "/images/movie2.png";
-
-const dummyMovies = [
-  {
-    id: "1",
-    name: "중증외상센터",
-    image: movie2,
-    rating: 8.8,
-    genre: "드라마",
-    ageLimit: "15+",
-  },
-  {
-    id: "2",
-    name: "백두산",
-    image: movie1,
-    rating: 8.8,
-    genre: "SF, 액션",
-    ageLimit: "12세 이상",
-  },
-
-  {
-    id: "3",
-    name: "부산행",
-    image: movie1,
-    rating: 8.8,
-    genre: "SF, 액션",
-    ageLimit: "12+",
-  },
-];
+import TabContainer from "../components/mypage/TabContainer";
+import profileImg from "/images/profileImg.png";
+import profileEdit from "/images/profileEdit.png";
+import profileEdit2 from "/images/profileEdit2.png";
+import { useState } from "react";
 
 const MyPage = () => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [name, setName] = useState("이태희");
+  const [intro, setIntro] = useState("한줄소개");
+
+  const handleEditClick = () => {
+    setIsEditing(!isEditing);
+  };
+
   return (
     <>
-      <div className="w-full flex justify-center">
-        <div className="w-[1280px] flex gap-2 mt-10">
+      <div className="w-full flex flex-col items-center justify-center">
+        <div className="w-full max-w-[1280px] flex gap-2 mt-10 mb-20">
           <div className="w-full border border-[#DFDFDF] rounded-2xl">
-            프로필 박스
+            <div className="w-full relative w-full flex flex-col gap-2 items-center p-2">
+              <div className="w-full flex justify-end mb-4">
+                <img
+                  src={isEditing ? profileEdit2 : profileEdit}
+                  alt="프로필 수정 버튼"
+                  className="w-8 cursor-pointer"
+                  onClick={handleEditClick}
+                />
+              </div>
+              <img src={profileImg} alt="프로필 사진" className="w-30" />
+              {isEditing ? (
+                <div className="w-[90%]">
+                  <p>이름</p>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="border border-gray-400 w-full p-1 rounded"
+                  />
+                </div>
+              ) : (
+                <p>{name}</p>
+              )}
+              {!isEditing && <p className="text-gray-500">test@naver.com</p>}
+              {isEditing ? (
+                <div className="w-[90%]">
+                  <p>자기소개</p>
+                  <textarea
+                    value={intro}
+                    onChange={(e) => setIntro(e.target.value)}
+                    className="border border-gray-400 w-full p-1 rounded resize-none"
+                  />
+                </div>
+              ) : (
+                <p className="text-gray-500">{intro}</p>
+              )}
+            </div>
           </div>
           <div className="w-full flex flex-col gap-2">
-            <div className="flex flex-col justify-center items-center border border-[#DFDFDF] rounded-2xl p-4">
+            <div className="h-full flex flex-col justify-center items-center border border-[#DFDFDF] rounded-2xl p-4">
               <p className="">팔로워</p>
               <p>110명</p>
-              <Button className="bg-gray-500 hover:bg-gray-600 disabled:bg-gray-400">
+              <Button className="!w-[80%] bg-gray-500 hover:bg-gray-600 disabled:bg-gray-400">
                 팔로워 보기
               </Button>
             </div>
-            <div className="border border-[#DFDFDF] rounded-2xl p-4">
-              <p>팔로잉</p>
-              <p>200명</p>
-              <button>팔로워 보기</button>
+            <div className="h-full flex flex-col justify-center items-center border border-[#DFDFDF] rounded-2xl p-4">
+              <p className="">팔로워</p>
+              <p>110명</p>
+              <Button className="!w-[80%] bg-gray-500 hover:bg-gray-600 disabled:bg-gray-400">
+                팔로워 보기
+              </Button>
             </div>
           </div>
         </div>
+        <TabContainer />
       </div>
-
-      {/* <div className="grid grid-cols-1 gap-6 p-4">
-        {dummyMovies.map((movie) => (
-          <MovieCard
-            key={movie.id}
-            id={movie.id}
-            image={movie.image}
-            name={movie.name}
-            rating={movie.rating}
-            genre={movie.genre}
-            ageLimit={movie.ageLimit}
-          />
-        ))}
-      </div> */}
     </>
   );
 };

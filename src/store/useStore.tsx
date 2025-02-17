@@ -10,7 +10,7 @@ type Action = {
 };
 
 const useLoginStore = create<State & Action>((set) => ({
-  IsLogin: false,
+  IsLogin: true,
   login: () => set({ IsLogin: true }),
   logout: () => set({ IsLogin: false }),
 }));
