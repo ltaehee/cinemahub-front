@@ -1,7 +1,7 @@
 import { FC, SVGAttributes } from 'react';
 
 const NaverIcon: FC<SVGAttributes<SVGSVGElement>> = (props) => {
-  const { className, ...svgsProps } = props;
+  const { ...svgsProps } = props;
 
   return (
     <svg

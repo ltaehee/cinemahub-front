@@ -6,6 +6,7 @@ import {
 } from '../apis/login';
 import { useNavigate, useSearchParams } from 'react-router';
 import useLoginStore from '../store/useStore';
+import bgMovies from '../images/bg-image.jpg';
 
 type UserInfoType = {
   email: string;
@@ -70,7 +71,6 @@ const Register = () => {
   };
 
   const handleRegisterUser = async () => {
-    console.log(agree, userInfo);
     if (Object.values(userInfo).includes('')) {
       return;
     }
@@ -103,36 +103,62 @@ const Register = () => {
   }, []);
 
   return (
-    <div>
-      <div>
-        <h1>기본 회원 정보를 입력해주세요.</h1>
-      </div>
-
-      <div>
-        <label htmlFor="nickname">프로필 이름</label>
-        <br />
-        <input
-          type="text"
-          id="nickname"
-          name="nickname"
-          value={userInfo.nickname}
-          onChange={handleChangeNickname}
+    <div className="relative grid place-items-center w-full h-screen">
+      <div className="absolute z-0 inset-0 overflow-hidden">
+        <img
+          className="min-w-full min-h-full max-w-none"
+          src={bgMovies}
+          alt="배경 이미지"
         />
-
-        <p>이메일</p>
-        <p>{userInfo.email}</p>
       </div>
 
-      <div>
-        <input type="checkbox" checked={agree} onChange={handleAgree} />
-        <span>이용약관과 개인정보처리방침에 동의합니다.</span>
-      </div>
+      <div className="relative z-1 max-w-md px-2 mx-auto">
+        <div className="flex flex-col items-center justify-center p-10 rounded-2xl bg-slate-200 gap-5">
+          <h1 className="font-bold text-2xl">회원 정보 입력</h1>
 
-      <div>
-        <button onClick={() => navigator('/login', { replace: true })}>
-          취소
-        </button>
-        <button onClick={handleRegisterUser}>등록</button>
+          <div>
+            <label htmlFor="nickname">닉네임</label>
+            <br />
+            <input
+              className="w-[360px] bg-white p-3 border border-slate-300 rounded-[10px]"
+              type="text"
+              id="nickname"
+              name="nickname"
+              placeholder="닉네임을 입력해주세요."
+              value={userInfo.nickname}
+              onChange={handleChangeNickname}
+            />
+          </div>
+
+          <div className="flex items-center gap-5">
+            <input
+              id="agree"
+              type="checkbox"
+              className="w-[24px] h-[24px] border border-slate-300 rounded-[10px] focus:ring-blue-500"
+              checked={agree}
+              onChange={handleAgree}
+            />
+            <label
+              htmlFor="agree"
+              className="text-md font-medium text-gray-900"
+            >
+              이용약관과 개인정보처리방침에 동의합니다.
+            </label>
+          </div>
+
+          <button
+            className="w-full p-3 bg-white border border-slate-300 rounded-[10px]"
+            onClick={() => navigator('/login', { replace: true })}
+          >
+            취소
+          </button>
+          <button
+            className="w-full p-3 bg-red-400 border border-slate-300 rounded-[10px]"
+            onClick={handleRegisterUser}
+          >
+            등록
+          </button>
+        </div>
       </div>
     </div>
   );
