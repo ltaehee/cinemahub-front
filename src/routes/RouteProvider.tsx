@@ -1,18 +1,19 @@
-import Login from '../pages/Login';
-import Register from '../pages/Register';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import Layout from '../components/Layout';
-import ErrorPage from '../pages/ErrorPage';
-import MainPage from '../pages/MainPage';
-import CinemaDetailPage from '../pages/CinemaDetailPage';
-import CinemaReviewPage from '../pages/CinemaReviewPage';
-import BoxOfficePage from '../pages/BoxOfficePage';
-import MyPage from '../pages/MyPage';
-import useLoginStore from '../store/useStore';
-import { getFetchUserSession } from '../apis/login';
-import { useEffect } from 'react';
-import PublicRoute from './PublicRouter';
-import PrivateRoute from './ProtectedRouter';
+import Login from "../pages/Login";
+import Register from "../pages/Register";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Layout from "../components/Layout";
+import ErrorPage from "../pages/ErrorPage";
+import MainPage from "../pages/MainPage";
+import CinemaDetailPage from "../pages/CinemaDetailPage";
+import CinemaReviewPage from "../pages/CinemaReviewPage";
+import BoxOfficePage from "../pages/BoxOfficePage";
+import MyPage from "../pages/MyPage";
+import useLoginStore from "../store/useStore";
+import { getFetchUserSession } from "../apis/login";
+import { useEffect } from "react";
+import PublicRoute from "./PublicRouter";
+import PrivateRoute from "./ProtectedRouter";
+import SearchPage from "../pages/SearchPage";
 
 const RouteProvider = () => {
   const login = useLoginStore((state) => state.login);
@@ -31,20 +32,20 @@ const RouteProvider = () => {
 
   const router = createBrowserRouter([
     {
-      path: '/',
+      path: "/",
       element: <Layout />,
       errorElement: <ErrorPage />,
       children: [
         {
-          path: '/',
+          path: "/",
           element: <PrivateRoute element={<MainPage />} />,
           children: [
             {
-              path: '/cinema',
+              path: "/cinema",
               element: <CinemaDetailPage />,
               children: [
                 {
-                  path: 'review',
+                  path: "review",
                   element: <CinemaReviewPage />,
                 },
               ],
@@ -52,25 +53,29 @@ const RouteProvider = () => {
           ],
         },
         {
-          path: 'boxoffice',
+          path: "boxoffice",
           element: <BoxOfficePage />,
         },
         {
-          path: '/login',
+          path: "/login",
           element: <PublicRoute element={<Login />} />,
         },
         {
-          path: '/register',
+          path: "/register",
           element: <Register />,
         },
         {
-          path: '/mypage',
+          path: "/mypage",
           element: <MyPage />,
+        },
+        {
+          path: "/search",
+          element: <SearchPage />,
         },
       ],
     },
     {
-      path: '*',
+      path: "*",
       element: <ErrorPage />,
     },
   ]);
