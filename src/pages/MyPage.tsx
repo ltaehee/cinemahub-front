@@ -3,12 +3,34 @@ import TabContainer from "../components/mypage/TabContainer";
 import profileImg from "/images/profileImg.png";
 import profileEdit from "/images/profileEdit.png";
 import profileEdit2 from "/images/profileEdit2.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { baseInstance } from "../apis/axios.config";
 
 const MyPage = () => {
   const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState("이태희");
-  const [intro, setIntro] = useState("한줄소개");
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [intro, setIntro] = useState("");
+  // const [profileImg, setProfileImg] = useState("/images/profileImg.png");
+
+  const getProfileData = async () => {
+    try {
+      const response = await baseInstance.get("/mypage/profile");
+
+      if (response.status === 200) {
+        console.log("프로필 데이터", response.data);
+        setName(response.data.nickname);
+        setEmail(response.data.email);
+        setIntro(response.data.introduce);
+      }
+    } catch (err) {
+      console.error("프로필 조회 실패:", err);
+    }
+  };
+
+  useEffect(() => {
+    getProfileData();
+  }, []);
 
   const handleEditClick = () => {
     setIsEditing(!isEditing);
@@ -42,7 +64,7 @@ const MyPage = () => {
               ) : (
                 <p>{name}</p>
               )}
-              {!isEditing && <p className="text-gray-500">test@naver.com</p>}
+              {!isEditing && <p className="text-gray-500">{email}</p>}
               {isEditing ? (
                 <div className="w-[90%]">
                   <p>자기소개</p>
@@ -53,7 +75,9 @@ const MyPage = () => {
                   />
                 </div>
               ) : (
-                <p className="text-gray-500">{intro}</p>
+                <p className="text-gray-500">
+                  {intro || "자기소개를 해주세요"}
+                </p>
               )}
             </div>
           </div>
