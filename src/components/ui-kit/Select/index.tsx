@@ -43,15 +43,27 @@ interface SelectProps {
   className?: string;
   onChange: (selectedValue: string) => void;
   value: string;
+  item?: SelectedItem;
+  setItem?: Dispatch<SetStateAction<SelectedItem>>;
 }
 
 const Select: FC<SelectProps> & SelectCompoundProps = (props) => {
-  const { children, className, onChange, value } = props;
+  const {
+    children,
+    className,
+    onChange,
+    value,
+    item: propItem,
+    setItem: propSetItem,
+  } = props;
 
-  const [item, setItem] = useState<SelectedItem>({
+  const [internalItem, setInternalItem] = useState<SelectedItem>({
     label: "선택하세요",
     value: "",
   });
+
+  const item = propItem ?? internalItem;
+  const setItem = propSetItem ?? setInternalItem;
 
   const contextValue = { value, onChange, item, setItem };
 
