@@ -1,11 +1,9 @@
-import axios, { HttpStatusCode, isAxiosError } from 'axios';
+import axios, { HttpStatusCode, isAxiosError } from "axios";
 
-export const baseInstance = axios.create({
-  baseURL: '/api',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+axios.defaults.baseURL = "/api";
+axios.defaults.headers.common["Content-Type"] = "application/json";
+
+export const baseInstance = axios.create();
 
 baseInstance.interceptors.response.use(
   (response) => response,

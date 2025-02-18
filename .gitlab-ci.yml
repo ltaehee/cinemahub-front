@@ -9,7 +9,7 @@ deploy:
   image: docker:latest
   stage: deploy
   only:
-    - main
+    - develop
   script:
     - docker stop cinema-hub-container || true
     - docker rm cinema-hub-container || true

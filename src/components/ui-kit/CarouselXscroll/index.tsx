@@ -9,7 +9,7 @@ import {
 import CarouselXscrollItemContainer from "./CarouselXscrollItemContainer";
 import CarouselXscrollItems from "./CarouselXscrollItems";
 import CarouselXscrollNavigator from "./CarouselXscrollNavigator";
-import { carouselBaseCls } from "@consts/className";
+import { carouselXscrollBaseCls } from "@consts/className";
 
 interface CarouselXscrollCompoundProps {
   ItemContainer: typeof CarouselXscrollItemContainer;
@@ -57,7 +57,10 @@ const CarouselXscroll: FC<CarouselXscrollProps> &
   };
 
   const cls = useMemo(
-    () => (className ? `${className} ${carouselBaseCls}` : carouselBaseCls),
+    () =>
+      className
+        ? `${className} ${carouselXscrollBaseCls}`
+        : carouselXscrollBaseCls,
     [className]
   );
 
