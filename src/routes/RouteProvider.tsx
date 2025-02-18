@@ -65,7 +65,7 @@ const RouteProvider = () => {
           element: <PrivateRouter element={<Register />} />,
         },
         {
-          path: "/mypage",
+          path: "/mypage/:nickname",
           element: <MyPage />,
         },
         {
