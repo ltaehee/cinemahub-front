@@ -9,7 +9,7 @@ export const getFetchActorInfo = async (actorName: string) => {
     if (response.data.isError) {
       throw new Error(response.data.message);
     }
-    console.log("배우정보: ", response);
+    // console.log("배우정보: ", response.data);
     return response.data;
   } catch (err) {
     console.error("배우정보를 가져오는데 실패했습니다.", err);

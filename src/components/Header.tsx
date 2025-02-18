@@ -23,6 +23,11 @@ const Header = () => {
   const navigator = useNavigate();
   const { pathname } = useLocation();
 
+  const handleClickMain = () => {
+    navigator("/");
+    setValue("keyword", "");
+  };
+
   const handleLogoutFetch = async () => {
     try {
       const { result } = await getFetchUserLogout();
@@ -62,7 +67,7 @@ const Header = () => {
       <div className="flex justify-center items-center border-b border-slate-300">
         <div className="flex justify-between items-center gap-8 px-8 py-2 h-16 w-[1280px]">
           <div className="">
-            <button onClick={() => navigator("/")}>
+            <button onClick={handleClickMain}>
               <HeaderIcon className="w-30 h-10 hover:cursor-pointer" />
             </button>
           </div>
