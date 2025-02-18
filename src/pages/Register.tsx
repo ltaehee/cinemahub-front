@@ -142,14 +142,14 @@ const Register = () => {
             >
               <span
                 className="text-blue-500"
-                onClick={() => navigator('/policy')}
+                onClick={() => window.open('/policy', '_blank')}
               >
                 이용약관
               </span>{' '}
               과{' '}
               <span
                 className="text-blue-500"
-                onClick={() => navigator('/policy')}
+                onClick={() => window.open('/policy', '_blank')}
               >
                 개인정보처리방침
               </span>

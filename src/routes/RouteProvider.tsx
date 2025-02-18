@@ -44,17 +44,15 @@ const RouteProvider = () => {
             {
               path: '/cinema',
               element: <CinemaDetailPage />,
-              children: [
-                {
-                  path: 'review',
-                  element: <CinemaReviewPage />,
-                },
-              ],
             },
           ],
         },
         {
-          path: 'boxoffice',
+          path: '/review',
+          element: <CinemaReviewPage />,
+        },
+        {
+          path: '/boxoffice',
           element: <BoxOfficePage />,
         },
         {
