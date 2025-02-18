@@ -80,15 +80,13 @@ const Register = () => {
     }
 
     try {
-      const { result, data, message } = await getFetchUserData(userInfo);
-      console.log(result);
+      const { result, message } = await getFetchUserData(userInfo);
+      console.log(result, message);
 
       if (!result) {
         throw new Error(message);
       }
       login();
-      console.log(data);
-      navigator('/', { replace: true });
     } catch (e) {
       console.error(e);
     }
@@ -142,7 +140,20 @@ const Register = () => {
               htmlFor="agree"
               className="text-md font-medium text-gray-900"
             >
-              이용약관과 개인정보처리방침에 동의합니다.
+              <span
+                className="text-blue-500"
+                onClick={() => navigator('/policy')}
+              >
+                이용약관
+              </span>{' '}
+              과{' '}
+              <span
+                className="text-blue-500"
+                onClick={() => navigator('/policy')}
+              >
+                개인정보처리방침
+              </span>
+              에 동의합니다.
             </label>
           </div>
 

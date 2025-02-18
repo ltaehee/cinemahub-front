@@ -11,7 +11,7 @@ const AgreePolicy = () => {
 
   return (
     <div className="min-w-96 max-w-2xl mx-auto mt-10">
-      <Tabs onChangeTab={handleChangeTab} className="">
+      <Tabs onChangeTab={handleChangeTab}>
         <Tabs.MenuList className="flex w-full mb-12">
           <Tabs.Menu
             index={1}
