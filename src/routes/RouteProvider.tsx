@@ -13,6 +13,7 @@ import { useEffect } from "react";
 import PrivateRouter from "./PrivateRouter";
 import AdminPage from "../pages/AdminPage";
 import ProfilePage from "../pages/ProfilePage";
+import PersonDetailPage from "../pages/PersonDetailPage";
 
 const RouteProvider = () => {
   const login = useLoginStore((state) => state.login);
@@ -49,6 +50,10 @@ const RouteProvider = () => {
                   element: <CinemaReviewPage />,
                 },
               ],
+            },
+            {
+              path: "/person/:id",
+              element: <PersonDetailPage />,
             },
           ],
         },

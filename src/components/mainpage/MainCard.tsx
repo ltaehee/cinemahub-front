@@ -2,7 +2,7 @@ import { FC, useEffect, useState } from "react";
 import Button from "../Button";
 import { genres } from "@consts/genres";
 import UnMuteIcon from "../../icons/UnMuteIcon";
-import MuteIcon from "../../icons/muteIcon";
+import MuteIcon from "../../icons/MuteIcon";
 import { useNavigate } from "react-router-dom";
 
 interface MovieProps {
@@ -39,7 +39,7 @@ const MainCard: FC<MovieProps> = ({
     if (carouselIndex === index && trailer) {
       const timer = setTimeout(() => {
         setShowTrailer(true);
-        setTrailerKey((prev) => prev + 1); // 트레일러를 새로 마운트
+        setTrailerKey((prev) => prev + 1);
       }, 1000);
       return () => clearTimeout(timer);
     } else {
@@ -54,7 +54,7 @@ const MainCard: FC<MovieProps> = ({
       <div className="absolute inset-0 rounded-3xl transition-opacity duration-1000 ease-in-out">
         {trailer && showTrailer && (
           <iframe
-            key={trailerKey} // key를 변경하여 새로 마운트 (소리 조작 시 변경되지 않도록 key를 따로 관리)
+            key={trailerKey}
             className="absolute top-0 left-0 w-full h-full rounded-3xl transition-opacity duration-1000 ease-in-out"
             src={`https://www.youtube.com/embed/${trailer}?autoplay=1&loop=1&playlist=${trailer}&mute=${
               isMuted ? "1" : "0"

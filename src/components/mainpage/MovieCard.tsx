@@ -1,25 +1,29 @@
+import { useNavigate } from "react-router-dom";
 import StarIcon from "../../icons/StarIcon";
 import FavoritesBtn from "./FavoritesBtn";
 import { genres } from "@consts/genres";
+import { FC } from "react";
 
 interface MovieProps {
   title: string;
+  movieId: string;
   releaseDate: string;
   posterPath: string;
   genreIds: [];
 }
 
-const MovieCard: React.FC<MovieProps> = ({
+const MovieCard: FC<MovieProps> = ({
   posterPath,
+  movieId,
   title,
   releaseDate,
   genreIds,
 }) => {
-  const handleCardClick = () => {};
+  const navigate = useNavigate();
 
   return (
     <div
-      onClick={handleCardClick}
+      onClick={() => navigate(`/cinema/${movieId}`)}
       className="cursor-pointer shadow-md w-56 h-full rounded-md bg-white"
     >
       <div className="relative">
@@ -32,7 +36,7 @@ const MovieCard: React.FC<MovieProps> = ({
         <FavoritesBtn className="absolute top-2 left-2" />
       </div>
       <div className="flex flex-col gap-1 p-4">
-        <h3 className="text-lg font-semibold w-52">{title}</h3>
+        <h3 className="text-lg font-semibold w-52 truncate">{title}</h3>
         <div className="flex items-center gap-1">
           <StarIcon className="w-5" />
           <div className="text-yellow-500 text-sm">4.0</div>

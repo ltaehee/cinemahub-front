@@ -1,9 +1,9 @@
 import { AxiosError } from "axios";
 import { baseInstance } from "./axios.config";
 
-export const trendingMovies = async () => {
+export const popularActors = async () => {
   try {
-    const response = await baseInstance.get("/movie/trending");
+    const response = await baseInstance.get("/person/popular");
 
     return response.data;
   } catch (err) {
