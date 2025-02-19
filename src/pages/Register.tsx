@@ -72,6 +72,11 @@ const Register = () => {
   };
 
   const handleUniqueNickName = async (name: string) => {
+    if (!name) {
+      alert('닉네임을 입력해주세요.');
+      return;
+    }
+
     try {
       const { result, nickname, message } = await getFetchNicknameCheck(name);
       if (!result) throw new Error(message);
