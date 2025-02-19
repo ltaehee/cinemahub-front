@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Button from "../Button";
 import profileImg from "/images/profileImg.png";
+import closeImg from "/images/close.png";
 
 interface FollowUser {
   nickname: string;
@@ -24,63 +25,52 @@ const FollowSection = ({
   const [view, setView] = useState<"follower" | "following" | null>(null);
 
   return (
-    <div className="w-full flex flex-col gap-2">
+    <div className="w-full ">
       {view === null ? (
-        // 📌 기본 상태: 팔로워 & 팔로잉 정보만 표시
-        <div className="flex gap-2">
-          <div
-            className="h-full flex flex-col justify-center items-center border border-[#DFDFDF] rounded-2xl p-4 px-12 w-1/2 cursor-pointer"
-            onClick={() => setView("follower")}
-          >
-            <p>팔로워</p>
-            <p>{followerCount}명</p>
-            <Button className="bg-gray-500 hover:bg-gray-600">
+        <div className="w-full flex flex-col gap-2">
+          <div className="h-full flex flex-col justify-center items-center border border-[#DFDFDF] rounded-2xl p-4 px-12">
+            <p className="font-semibold">팔로워</p>
+            <p className="font-bold text-2xl py-4">{followerCount}명</p>
+            <Button
+              className="bg-gray-500 hover:bg-gray-600 disabled:bg-gray-400"
+              onClick={() => setView("follower")}
+            >
               팔로워 보기
             </Button>
           </div>
-
-          <div
-            className="h-full flex flex-col justify-center items-center border border-[#DFDFDF] rounded-2xl p-4 px-12 w-1/2 cursor-pointer"
-            onClick={() => setView("following")}
-          >
-            <p>팔로잉</p>
-            <p>{followingCount}명</p>
-            <Button className="bg-gray-500 hover:bg-gray-600">
+          <div className="h-full flex flex-col justify-center items-center border border-[#DFDFDF] rounded-2xl p-4 px-12">
+            <p className="font-semibold">팔로잉</p>
+            <p className="font-bold text-2xl py-4">{followingCount}명</p>
+            <Button
+              className="bg-gray-500 hover:bg-gray-600 disabled:bg-gray-400"
+              onClick={() => setView("following")}
+            >
               팔로잉 보기
             </Button>
           </div>
         </div>
       ) : (
-        // 📌 팔로워/팔로잉 리스트 표시 상태
-        <div className="border border-[#DFDFDF] rounded-2xl p-4 w-full">
-          <div className="flex justify-between items-center border-b pb-2">
+        <div className="border border-[#DFDFDF] rounded-2xl p-4 w-full h-full ">
+          <div className="flex justify-between items-center pb-2">
             <h2 className="text-xl font-bold">
               {view === "follower" ? "팔로워" : "팔로잉"}
             </h2>
             <button
-              className="text-gray-600 hover:text-black font-bold"
+              className="font-bold cursor-pointer"
               onClick={() => setView(null)}
             >
-              ✖
+              <img className="w-8" src={closeImg} alt="닫기 버튼" />
             </button>
           </div>
 
-          <div className="mt-2 bg-gray-100 p-2 rounded-md">
-            <input
-              type="text"
-              placeholder="검색"
-              className="w-full p-2 border rounded-md"
-            />
-          </div>
-
-          <ul className="mt-4 max-h-80 overflow-y-auto space-y-2">
+          <div>
             {(view === "follower" ? followerList : followingList).map(
               (user, index) => (
-                <li
+                <div
                   key={index}
-                  className="flex items-center justify-between p-2 border-b"
+                  className="flex items-center justify-between p-2"
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="w-full flex items-center gap-3">
                     <img
                       src={user.profileImg || profileImg}
                       alt="프로필"
@@ -91,13 +81,11 @@ const FollowSection = ({
                       <p className="text-sm text-gray-500">{user.email}</p>
                     </div>
                   </div>
-                  <Button className="bg-red-500 hover:bg-red-600 px-4 py-1">
-                    팔로우
-                  </Button>
-                </li>
+                  <Button>팔로우</Button>
+                </div>
               )
             )}
-          </ul>
+          </div>
         </div>
       )}
     </div>
