@@ -31,7 +31,6 @@ const CarouselXscrollItemContainer = (
     <div
       onScroll={handleScroll}
       style={{
-        position: "relative",
         overflow: "scroll",
         display: "flex",
         alignItems: "center",

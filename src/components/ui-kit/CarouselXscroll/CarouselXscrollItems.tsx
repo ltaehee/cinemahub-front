@@ -22,8 +22,7 @@ const CarouselXscrollItems: FC<CarouselXscrollItemsProps> = (props) => {
   return (
     <div
       style={{
-        left: `${baseRect.left}px`,
-        position: "absolute",
+        marginLeft: `${baseRect.left}px`,
         display: "flex",
         overflowX: "visible",
       }}

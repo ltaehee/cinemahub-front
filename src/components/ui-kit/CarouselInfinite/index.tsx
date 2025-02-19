@@ -28,6 +28,10 @@ interface CarouselInfiniteContextProps {
   transition: boolean;
   setTransition: Dispatch<SetStateAction<boolean>>;
   displayIndex: number;
+  handlePrev: () => void;
+  handleNext: () => void;
+  isTransitioning: boolean;
+  setIsTransitioning: Dispatch<SetStateAction<boolean>>;
 }
 
 interface CarouselInfiniteProps {
@@ -44,6 +48,10 @@ export const CarouselInfiniteContext =
     transition: true,
     setTransition: () => {},
     displayIndex: 1,
+    handlePrev: () => {},
+    handleNext: () => {},
+    isTransitioning: false,
+    setIsTransitioning: () => {},
   });
 
 const CarouselInfinite: FC<CarouselInfiniteProps> &
@@ -52,6 +60,7 @@ const CarouselInfinite: FC<CarouselInfiniteProps> &
   const [itemLength, setItemLength] = useState<number>(0);
   const { children, className } = props;
   const [transition, setTransition] = useState(true);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const displayIndex = useMemo(() => {
     if (carouselIndex === 0) {
@@ -63,6 +72,22 @@ const CarouselInfinite: FC<CarouselInfiniteProps> &
     }
   }, [carouselIndex, itemLength]);
 
+  const extendeditemLength = itemLength + 2;
+
+  const handlePrev = () => {
+    setCarouselIndex(
+      (prevIndex) => (prevIndex - 1 + extendeditemLength) % extendeditemLength
+    );
+    setTransition(true);
+    setIsTransitioning(true);
+  };
+
+  const handleNext = () => {
+    setCarouselIndex((prevIndex) => (prevIndex + 1) % extendeditemLength);
+    setTransition(true);
+    setIsTransitioning(true);
+  };
+
   const contextValue = {
     itemLength,
     transition,
@@ -71,6 +96,10 @@ const CarouselInfinite: FC<CarouselInfiniteProps> &
     carouselIndex,
     setCarouselIndex,
     displayIndex,
+    handlePrev,
+    handleNext,
+    isTransitioning,
+    setIsTransitioning,
   };
 
   const cls = useMemo(

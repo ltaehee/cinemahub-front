@@ -41,7 +41,7 @@ const RouteProvider = () => {
           element: <PrivateRouter element={<MainPage />} />,
           children: [
             {
-              path: "/cinema",
+              path: "/cinema/:id",
               element: <CinemaDetailPage />,
               children: [
                 {
