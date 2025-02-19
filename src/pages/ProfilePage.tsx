@@ -1,23 +1,12 @@
 import { useNavigate, useParams } from "react-router-dom";
 import Button from "../components/Button";
-import TabContainer from "../components/mypage/TabContainer";
 import profileImg from "/images/profileImg.png";
 import profileEdit from "/images/profileEdit.png";
 import profileEdit2 from "/images/profileEdit2.png";
 import { useEffect, useState } from "react";
 import { baseInstance } from "../apis/axios.config";
-import FollowSection from "../components/mypage/FollowSection";
-
-const followerList = [
-  { nickname: "닉네임1", email: "test1@naver.com", profileImg: "" },
-  { nickname: "닉네임2", email: "test2@naver.com", profileImg: "" },
-  { nickname: "닉네임3", email: "test3@naver.com", profileImg: "" },
-];
-
-const followingList = [
-  { nickname: "팔로잉1", email: "follow1@naver.com", profileImg: "" },
-  { nickname: "팔로잉2", email: "follow2@naver.com", profileImg: "" },
-];
+import Modal from "@ui/Modal";
+import FollowSection from "../components/profilepage/FollowSection";
 
 interface UserProfile {
   userId: string;
@@ -25,9 +14,12 @@ interface UserProfile {
   nickname: string;
   introduce: string;
   profileImg?: string;
+  followers: { nickname: string; email: string; profileImg?: string }[];
+  following: { nickname: string; email: string; profileImg?: string }[];
+  favorites: { favoriteType: string; favoriteId: string }[];
 }
 
-const MyPage = () => {
+const ProfilePage = () => {
   const { nickname } = useParams();
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -37,16 +29,25 @@ const MyPage = () => {
   const [isOwnProfile, setIsOwnProfile] = useState(false);
   const navigate = useNavigate();
 
+  /* 모달 */
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const handleOpenModal = () => {
+    setIsOpen(true);
+  };
+  const handleCloseModal = () => {
+    setIsOpen(false);
+  };
+
   /* 프로필 조회 */
   const getProfileData = async () => {
     try {
-      const response = await baseInstance.get(`/mypage/profile/${nickname}`);
+      const response = await baseInstance.get(`/profile/${nickname}`);
 
       if (response.status === 200) {
         setProfile(response.data); // 프로필 데이터 저장
         setOriginalProfile(response.data);
         setIsOwnProfile(response.data.isOwnProfile); // 백엔드에서 받아온 값 사용
-        console.log("Rwds", response.data);
       }
     } catch (err) {
       console.error("프로필 조회 실패:", err);
@@ -65,13 +66,13 @@ const MyPage = () => {
     }
 
     try {
-      const response = await baseInstance.patch("/mypage/profile-update", {
+      const response = await baseInstance.patch("/profile/profile-update", {
         name: profile.nickname,
         intro: profile.introduce,
       });
       setOriginalProfile({ ...profile });
       if (profile.nickname !== originalProfile.nickname) {
-        navigate(`/mypage/${profile.nickname}`);
+        navigate(`/profile/${profile.nickname}`);
       }
       console.log("프로필 업데이트 성공", response.data);
     } catch (error) {
@@ -79,24 +80,67 @@ const MyPage = () => {
     }
   };
 
-  /* useEffect(() => {
-    if (profile && !isEditing) {
-      setIsOwnProfile(loggedInUserName === nickname);
-    }
-  }, [profile, loggedInUserName, nickname, isEditing]); */
-
-  useEffect(() => {
-    getProfileData();
-    console.log("profile", profile);
-    console.log("isOwnProfile", isOwnProfile);
-  }, []);
-
+  /* 프로필 수정 버튼 */
   const handleEditClick = () => {
     if (isEditing) {
       updateProfileData();
     }
     setIsEditing(!isEditing);
   };
+
+  // 팔로우 상태 확인
+  /* const checkFollowingStatus = async () => {
+    try {
+      const response = await baseInstance.get(`/follow/${nickname}`);
+      setIsFollowing(response.data.isFollowing);
+    } catch (error) {
+      console.error("팔로우 상태 확인 오류:", error);
+    }
+  }; */
+
+  // 팔로우 & 언팔로우 요청
+  const handleFollow = async () => {
+    try {
+      if (profile) {
+        const isAlreadyFollowing = profile.following.some(
+          (user) => user.nickname === nickname
+        );
+
+        if (isAlreadyFollowing) {
+          await baseInstance.delete(`/follow/${nickname}`);
+          setProfile({
+            ...profile,
+            following: profile.following.filter(
+              (user) => user.nickname !== nickname
+            ),
+          });
+        } else {
+          await baseInstance.post(`/follow/${nickname}`);
+          setProfile({
+            ...profile,
+            following: [
+              ...profile.following,
+              { nickname: nickname ?? "", email: "", profileImg: "" },
+            ],
+          });
+        }
+      }
+    } catch (error) {
+      console.error("팔로우 요청 오류:", error);
+    }
+  };
+  // 언팔로우 버튼 클릭 시 모달 열기
+  const handleUnfollowClick = () => {
+    setIsOpen(true);
+  };
+  useEffect(() => {
+    getProfileData();
+    console.log("profile", profile);
+    console.log("isOwnProfile", isOwnProfile);
+  }, []);
+  useEffect(() => {
+    // checkFollowingStatus();
+  }, [nickname]);
 
   if (!profile) {
     return;
@@ -156,38 +200,46 @@ const MyPage = () => {
             )}
             {!isOwnProfile && (
               <div className="w-full px-12">
-                <Button className="">팔로우</Button>
+                <Button onClick={handleFollow}>팔로우</Button>
               </div>
             )}
           </div>
         </div>
-        {/* <div className="w-full flex flex-col gap-2">
-          <div className="h-full flex flex-col justify-center items-center border border-[#DFDFDF] rounded-2xl p-4 px-12">
-            <p className="font-semibold">팔로워</p>
-            <p className="font-bold text-2xl py-4">110명</p>
-            <Button className="bg-gray-500 hover:bg-gray-600 disabled:bg-gray-400">
-              팔로워 보기
-            </Button>
-          </div>
-          <div className="h-full flex flex-col justify-center items-center border border-[#DFDFDF] rounded-2xl p-4 px-12">
-            <p className="font-semibold">팔로잉</p>
-            <p className="font-bold text-2xl py-4">80명</p>
-            <Button className="bg-gray-500 hover:bg-gray-600 disabled:bg-gray-400">
-              팔로잉 보기
-            </Button>
-          </div>
-        </div> */}
+        <Modal
+          onOpenModal={handleOpenModal}
+          onCloseModal={handleCloseModal}
+          open={isOpen}
+        >
+          <Modal.Backdrop />
+          <Modal.Trigger>
+            <a href="#">열기</a>
+          </Modal.Trigger>
+          <Modal.Content>
+            <div
+              style={{
+                width: "200px",
+                height: "200px",
+                backgroundColor: "white",
+              }}
+            >
+              <Modal.Close>
+                <button>닫기</button>
+              </Modal.Close>
+              <div>Modal Content</div>
+            </div>
+          </Modal.Content>
+        </Modal>
         <FollowSection
-          followerCount={followerList.length}
-          followingCount={followingList.length}
-          followerList={followerList}
-          followingList={followingList}
+          followerCount={profile.followers.length}
+          followingCount={profile.following.length}
+          followerList={profile.followers}
+          followingList={profile.following}
         />
       </div>
 
-      <TabContainer />
+      {/* <TabContainer /> */}
     </div>
   );
 };
 
-export default MyPage;
+export default ProfilePage;

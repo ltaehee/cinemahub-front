@@ -83,7 +83,7 @@ const TabContainer = () => {
         </Tabs.MenuList>
         <Tabs.Pannel index={1}>
           <div className="max-w-[1280px] w-full mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 mt-[50px] mb-4">
-            {dummyMovies.map((movie) => (
+            {/* {dummyMovies.map((movie) => (
               <MovieCard
                 key={movie.id}
                 id={movie.id}
@@ -94,7 +94,7 @@ const TabContainer = () => {
                 ageLimit={movie.ageLimit}
                 className="w-full"
               />
-            ))}
+            ))} */}
           </div>
         </Tabs.Pannel>
         <Tabs.Pannel index={2}>

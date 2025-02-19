@@ -8,7 +8,8 @@ interface CarouselInfiniteNavigatorProps {
     prev: () => void,
     next: () => void,
     displayIndex: number,
-    itemLength: number
+    itemLength: number,
+    isTransitioning: boolean
   ) => ReactNode;
 }
 
@@ -20,21 +21,11 @@ const CarouselInfiniteNavigator = (props: CarouselInfiniteNavigatorProps) => {
     carouselIndex,
     setTransition,
     displayIndex,
+    handlePrev,
+    handleNext,
+    isTransitioning,
+    setIsTransitioning,
   } = useContext(CarouselInfiniteContext);
-
-  const extendeditemLength = itemLength + 2;
-
-  const handlePrev = () => {
-    setCarouselIndex(
-      (prevIndex) => (prevIndex - 1 + extendeditemLength) % extendeditemLength
-    );
-    setTransition(true);
-  };
-
-  const handleNext = () => {
-    setCarouselIndex((prevIndex) => (prevIndex + 1) % extendeditemLength);
-    setTransition(true);
-  };
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -51,8 +42,13 @@ const CarouselInfiniteNavigator = (props: CarouselInfiniteNavigatorProps) => {
       }, 500);
     }
 
+    const transitionTimeout = setTimeout(() => {
+      setIsTransitioning(false);
+    }, 500);
+
     return () => {
       clearTimeout(timeoutId);
+      clearTimeout(transitionTimeout);
     };
   }, [carouselIndex, itemLength]);
 
@@ -67,14 +63,24 @@ const CarouselInfiniteNavigator = (props: CarouselInfiniteNavigatorProps) => {
   return (
     <div className={cls}>
       {children && typeof children === "function" ? (
-        children(handlePrev, handleNext, displayIndex, itemLength)
+        children(
+          handlePrev,
+          handleNext,
+          displayIndex,
+          itemLength,
+          isTransitioning
+        )
       ) : (
         <>
-          <button onClick={handlePrev}> &lt;</button>
+          <button onClick={handlePrev} disabled={isTransitioning}>
+            &lt;
+          </button>
           <div>
             {displayIndex}/{itemLength}
           </div>
-          <button onClick={handleNext}> &gt;</button>
+          <button onClick={handleNext} disabled={isTransitioning}>
+            &gt;
+          </button>
         </>
       )}
     </div>

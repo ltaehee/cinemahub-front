@@ -9,6 +9,7 @@ import CarouselItemList from "@ui/CarouselInfinite/CarouselInfiniteItemList";
 import { genres } from "@consts/genres";
 import Button from "../components/Button";
 import { trendingMovies } from "../apis/movie";
+import MovieCard from "../components/mainpage/MovieCard";
 
 interface trendingDayMovie {
   movieId: string;
@@ -25,13 +26,14 @@ interface trendingWeekMovie {
   movieId: string;
   title: string;
   releaseDate: string;
-  backdropPath: string;
+  posterPath: string;
   genreIds: [];
 }
 
 const MainPage = () => {
   const baseRef = useRef<HTMLDivElement>(null);
-  const itemListRef = useRef<HTMLDivElement>(null);
+  const genreRef = useRef<HTMLDivElement>(null);
+  const weekCardRef = useRef<HTMLDivElement>(null);
   const [baseRect, setBaseRect] = useState(new DOMRect());
   const [trendingDayMovie, setTrendingDayMovie] = useState<trendingDayMovie[]>([
     {
@@ -52,7 +54,7 @@ const MainPage = () => {
       movieId: "",
       title: "",
       releaseDate: "",
-      backdropPath: "",
+      posterPath: "",
       genreIds: [],
     },
   ]);
@@ -91,6 +93,8 @@ const MainPage = () => {
     };
   }, []);
 
+  console.log(baseRect);
+
   return (
     <>
       <Outlet />
@@ -101,32 +105,42 @@ const MainPage = () => {
               {trendingDayMovie.map((movie, index) => {
                 return (
                   <CarouselItem
-                    key={movie.title}
+                    key={movie.movieId}
                     className="px-4"
                     index={index}
                   >
-                    <MainCard
-                      key={movie.movieId}
-                      movieId={movie.movieId}
-                      title={movie.title}
-                      releaseDate={movie.releaseDate}
-                      backdropPath={movie.backdropPath}
-                      genreIds={movie.genreIds}
-                      trailer={movie.trailer}
-                      logoPath={movie.logoPath}
-                      koreanRating={movie.koreanRating}
-                    />
+                    {(carouselIndex) => (
+                      <MainCard
+                        movieId={movie.movieId}
+                        title={movie.title}
+                        releaseDate={movie.releaseDate}
+                        backdropPath={movie.backdropPath}
+                        genreIds={movie.genreIds}
+                        trailer={movie.trailer}
+                        logoPath={movie.logoPath}
+                        koreanRating={movie.koreanRating}
+                        carouselIndex={carouselIndex}
+                        index={index + 1}
+                      />
+                    )}
                   </CarouselItem>
                 );
               })}
             </CarouselItemList>
           </Carousel.ItemContainer>
           <Carousel.Navigator className=" absolute right-[calc(2vw+80px)] bottom-[2vw] flex items-center">
-            {(handlePrev, handleNext, displayIndex, itemLength) => (
+            {(
+              handlePrev,
+              handleNext,
+              displayIndex,
+              itemLength,
+              isTransitioning
+            ) => (
               <>
                 <button
                   className="bg-[rgba(0,0,0,0.5)] rounded-full opacity-50 hover:opacity-100 duration-300 ease-in-out b backdrop-blur-sm"
                   onClick={handlePrev}
+                  disabled={isTransitioning}
                 >
                   <ChevronIcon height="40px" color="#fff" thickness="3" />
                 </button>
@@ -139,6 +153,7 @@ const MainPage = () => {
                 <button
                   className="bg-[rgba(0,0,0,0.5)] rounded-full opacity-50 hover:opacity-100 duration-300 ease-in-out backdrop-blur-sm"
                   onClick={handleNext}
+                  disabled={isTransitioning}
                 >
                   <ChevronIcon
                     height="40px"
@@ -160,8 +175,8 @@ const MainPage = () => {
           <CarouselXscroll
             baseRect={baseRect}
             pixelMove={200}
-            itemListRef={itemListRef}
-            className="group h-[56px]"
+            itemListRef={genreRef}
+            className="group"
           >
             <CarouselXscroll.ItemContainer className="h-full">
               <CarouselXscroll.Items className="flex gap-2">
@@ -169,10 +184,59 @@ const MainPage = () => {
                   return (
                     <Button
                       key={genre.id}
-                      className="bg-gray-500 hover:bg-gray-900 text-nowrap"
+                      className="bg-gray-500 hover:bg-gray-900 text-nowrap px-8 py-4"
                     >
                       {genre.name}
                     </Button>
+                  );
+                })}
+              </CarouselXscroll.Items>
+            </CarouselXscroll.ItemContainer>
+            <CarouselXscroll.Navigator>
+              {(prev, next, leftStyle, rightStyle) => (
+                <>
+                  <button
+                    className="bg-[rgba(255,255,255,0.5)] rounded-full opacity-0 group-hover:opacity-100 duration-300 ease-in-out b backdrop-blur-sm"
+                    style={leftStyle}
+                    onClick={prev}
+                  >
+                    <ChevronIcon height="56px" />
+                  </button>
+                  <button
+                    className="bg-[rgba(255,255,255,0.5)] rounded-full opacity-0 group-hover:opacity-100 duration-300 ease-in-out backdrop-blur-sm"
+                    style={rightStyle}
+                    onClick={next}
+                  >
+                    <ChevronIcon height="56px" className="rotate-180" />
+                  </button>
+                </>
+              )}
+            </CarouselXscroll.Navigator>
+          </CarouselXscroll>
+        </section>
+        <section className="pt-8">
+          <div className="px-8">
+            <h3 ref={baseRef} className="pb-2 font-medium text-xl">
+              이번주 트렌드
+            </h3>
+          </div>
+          <CarouselXscroll
+            baseRect={baseRect}
+            pixelMove={200}
+            itemListRef={weekCardRef}
+            className="group"
+          >
+            <CarouselXscroll.ItemContainer className="h-full">
+              <CarouselXscroll.Items className="flex gap-2">
+                {trendingWeekMovie.map((movie) => {
+                  return (
+                    <MovieCard
+                      key={movie.movieId}
+                      title={movie.title}
+                      releaseDate={movie.releaseDate}
+                      posterPath={movie.posterPath}
+                      genreIds={movie.genreIds}
+                    ></MovieCard>
                   );
                 })}
               </CarouselXscroll.Items>
