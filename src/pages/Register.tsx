@@ -88,10 +88,12 @@ const Register = () => {
 
   const handleRegisterUser = async () => {
     if (Object.values(userInfo).includes('')) {
+      alert('소셜 계정 정보를 불러올 수 없습니다. 다시 로그인을 진행해주세요.');
       return;
     }
 
     if (!agree) {
+      alert('이용약관 및 개인정보이용방침에 동의해주세요.');
       return;
     }
 
@@ -135,7 +137,7 @@ const Register = () => {
 
             <div className="relative w-[360px] bg-white p-3 border border-slate-300 rounded-[10px]">
               <input
-                className="w-60 focus:outline-none"
+                className="w-60 focus:outline-none active:bg-white"
                 type="text"
                 id="nickname"
                 name="nickname"

@@ -3,12 +3,13 @@ import StarIcon from '../../icons/StarIcon';
 
 const keyArr = Array.from({ length: 5 }, (_, i) => i + 1);
 
-interface StarContainer {
+interface StarContainerProps {
   handleRating: (index: number) => void;
+  defaultStar?: number;
 }
 
-const StarContainer = (props: StarContainer) => {
-  const { handleRating } = props;
+const StarContainer = (props: StarContainerProps) => {
+  const { handleRating, defaultStar = 0 } = props;
 
   const [painting, setPainting] = useState<number>(0);
   const [rating, setRating] = useState<number>(0);
@@ -28,18 +29,33 @@ const StarContainer = (props: StarContainer) => {
 
   return (
     <>
-      {keyArr.map((key, index) => (
-        <StarIcon
-          className="cursor-pointer"
-          key={key}
-          index={index}
-          painting={painting}
-          rating={rating}
-          onClick={() => handleClickIndex(key)}
-          onMouseOver={() => handleMouseOverIndex(key)}
-          onMouseOut={handleMouseOutIndex}
-        />
-      ))}
+      {defaultStar ? (
+        <div className="flex">
+          {keyArr.map((key, index) => (
+            <StarIcon
+              className="cursor-pointer"
+              key={key}
+              index={index}
+              rating={defaultStar}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="flex">
+          {keyArr.map((key, index) => (
+            <StarIcon
+              className="cursor-pointer"
+              key={key}
+              index={index}
+              painting={painting}
+              rating={rating}
+              onClick={() => handleClickIndex(key)}
+              onMouseOver={() => handleMouseOverIndex(key)}
+              onMouseOut={handleMouseOutIndex}
+            />
+          ))}
+        </div>
+      )}
     </>
   );
 };

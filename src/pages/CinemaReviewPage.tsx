@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import StarContainer from '../components/reviewpage/StarContainer';
 
+const defaultStar = 3;
+
 const CinemaReviewPage = () => {
   const [starRate, setStarRate] = useState(0);
 
@@ -12,7 +14,13 @@ const CinemaReviewPage = () => {
 
   return (
     <>
-      <StarContainer handleRating={handleRating} />
+      <div>
+        <StarContainer handleRating={handleRating} defaultStar={0} />
+      </div>
+
+      <div>
+        <StarContainer handleRating={handleRating} defaultStar={defaultStar} />
+      </div>
     </>
   );
 };

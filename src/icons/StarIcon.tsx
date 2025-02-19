@@ -2,7 +2,7 @@ import { FC, SVGAttributes } from 'react';
 
 interface StarIconProps extends SVGAttributes<SVGSVGElement> {
   index: number;
-  painting: number;
+  painting?: number;
   rating: number;
 }
 
