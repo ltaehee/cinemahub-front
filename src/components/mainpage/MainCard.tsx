@@ -67,7 +67,7 @@ const MainCard: FC<MovieProps> = ({
           ))}
         </div>
         <div>{koreanRating}</div>
-        <Button>자세히 보기</Button>
+        <Button className="">자세히 보기</Button>
       </div>
     </div>
   );

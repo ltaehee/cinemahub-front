@@ -167,7 +167,10 @@ const MainPage = () => {
               <CarouselXscroll.Items className="flex gap-2">
                 {genres.map((genre) => {
                   return (
-                    <Button key={genre.id} className="bg-gray-500 text-nowrap">
+                    <Button
+                      key={genre.id}
+                      className="bg-gray-500 hover:bg-gray-900 text-nowrap"
+                    >
                       {genre.name}
                     </Button>
                   );

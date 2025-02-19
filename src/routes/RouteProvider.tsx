@@ -7,7 +7,6 @@ import ErrorPage from "../pages/ErrorPage";
 import MainPage from "../pages/MainPage";
 import CinemaDetailPage from "../pages/CinemaDetailPage";
 import CinemaReviewPage from "../pages/CinemaReviewPage";
-import BoxOfficePage from "../pages/BoxOfficePage";
 import MyPage from "../pages/MyPage";
 import useLoginStore from "../store/useStore";
 import { getFetchUserSession } from "../apis/login";
@@ -51,10 +50,6 @@ const RouteProvider = () => {
               ],
             },
           ],
-        },
-        {
-          path: "boxoffice",
-          element: <BoxOfficePage />,
         },
         {
           path: "/login",
