@@ -1,12 +1,12 @@
 import { useNavigate, useParams } from "react-router-dom";
 import Button from "../components/Button";
-import TabContainer from "../components/profile/TabContainer";
 import profileImg from "/images/profileImg.png";
 import profileEdit from "/images/profileEdit.png";
 import profileEdit2 from "/images/profileEdit2.png";
 import { useEffect, useState } from "react";
 import { baseInstance } from "../apis/axios.config";
-import FollowSection from "../components/profile/FollowSection";
+import Modal from "@ui/Modal";
+import FollowSection from "../components/profilepage/FollowSection";
 
 interface UserProfile {
   userId: string;
@@ -27,8 +27,17 @@ const ProfilePage = () => {
     null
   );
   const [isOwnProfile, setIsOwnProfile] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false);
   const navigate = useNavigate();
+
+  /* 모달 */
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const handleOpenModal = () => {
+    setIsOpen(true);
+  };
+  const handleCloseModal = () => {
+    setIsOpen(false);
+  };
 
   /* 프로필 조회 */
   const getProfileData = async () => {
@@ -92,28 +101,38 @@ const ProfilePage = () => {
   // 팔로우 & 언팔로우 요청
   const handleFollow = async () => {
     try {
-      if (isFollowing) {
-        await baseInstance.delete(`/follow/${nickname}`);
-        console.log("isFollowing true 원래상태", isFollowing);
-        setIsFollowing(false);
-        console.log("isFollowing true 후 상태", isFollowing);
-      } else {
-        // ✅ 이미 팔로우한 유저인지 확인
-        if (profile?.following.some((user) => user.nickname === nickname)) {
-          console.log("이미 팔로우한 사용자입니다.");
-          return;
-        }
+      if (profile) {
+        const isAlreadyFollowing = profile.following.some(
+          (user) => user.nickname === nickname
+        );
 
-        await baseInstance.post(`/follow/${nickname}`);
-        console.log("isFollowing 원래상태", isFollowing);
-        setIsFollowing(true);
-        console.log("isFollowing 후 상태", isFollowing);
+        if (isAlreadyFollowing) {
+          await baseInstance.delete(`/follow/${nickname}`);
+          setProfile({
+            ...profile,
+            following: profile.following.filter(
+              (user) => user.nickname !== nickname
+            ),
+          });
+        } else {
+          await baseInstance.post(`/follow/${nickname}`);
+          setProfile({
+            ...profile,
+            following: [
+              ...profile.following,
+              { nickname: nickname ?? "", email: "", profileImg: "" },
+            ],
+          });
+        }
       }
     } catch (error) {
       console.error("팔로우 요청 오류:", error);
     }
   };
-
+  // 언팔로우 버튼 클릭 시 모달 열기
+  const handleUnfollowClick = () => {
+    setIsOpen(true);
+  };
   useEffect(() => {
     getProfileData();
     console.log("profile", profile);
@@ -186,6 +205,30 @@ const ProfilePage = () => {
             )}
           </div>
         </div>
+        <Modal
+          onOpenModal={handleOpenModal}
+          onCloseModal={handleCloseModal}
+          open={isOpen}
+        >
+          <Modal.Backdrop />
+          <Modal.Trigger>
+            <a href="#">열기</a>
+          </Modal.Trigger>
+          <Modal.Content>
+            <div
+              style={{
+                width: "200px",
+                height: "200px",
+                backgroundColor: "white",
+              }}
+            >
+              <Modal.Close>
+                <button>닫기</button>
+              </Modal.Close>
+              <div>Modal Content</div>
+            </div>
+          </Modal.Content>
+        </Modal>
         <FollowSection
           followerCount={profile.followers.length}
           followingCount={profile.following.length}
