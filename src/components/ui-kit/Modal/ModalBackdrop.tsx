@@ -1,7 +1,7 @@
-import { useContext, useMemo } from "react";
-import { ModalContext } from ".";
-import { createPortal } from "react-dom";
-import { modalBackdropCls } from "@consts/className";
+import { useContext, useMemo } from 'react';
+import { ModalContext } from '.';
+import { createPortal } from 'react-dom';
+import { modalBackdropCls } from '@consts/className';
 
 interface ModalBackdropProps {
   className?: string;
@@ -21,11 +21,11 @@ const ModalBackdrop = (props: ModalBackdropProps) => {
         createPortal(
           <div
             style={{
-              width: "100vw",
-              height: "100vh",
-              position: "absolute",
-              backgroundColor: "black",
-              opacity: "0.2",
+              width: '100vw',
+              height: '100vh',
+              position: 'absolute',
+              backgroundColor: 'black',
+              opacity: '0.8',
             }}
             className={cls}
           ></div>,

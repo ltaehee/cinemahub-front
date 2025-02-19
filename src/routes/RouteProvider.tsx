@@ -85,6 +85,8 @@ const RouteProvider = () => {
 
   useEffect(() => {
     handleUserSession();
+
+    window.addEventListener('reload', () => {});
   }, []);
 
   return <RouterProvider router={router} />;
