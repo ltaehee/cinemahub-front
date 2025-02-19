@@ -52,8 +52,6 @@ const Header = () => {
   const urlKeyword = searchParams.get("keyword") ?? "";
   const urlCategory = searchParams.get("category") ?? "";
   const debounceKeyword = UseDebounce(keyword, 500);
-  console.log("URLkeyword ", urlKeyword);
-  console.log("keyword ", keyword);
 
   const onValid = (data: SearchForm) => {
     navigator(`/search?category=${category}&keyword=${data.keyword}`);
