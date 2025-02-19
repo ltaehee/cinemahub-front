@@ -2,6 +2,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import {
   getFetchGoogleData,
   getFetchNaverData,
+  getFetchNicknameCheck,
   getFetchUserData,
 } from '../apis/login';
 import { useNavigate, useSearchParams } from 'react-router';
@@ -70,6 +71,16 @@ const Register = () => {
     setAgree(checked);
   };
 
+  const handleUniqueNickName = async (name: string) => {
+    try {
+      const { result, nickname, message } = await getFetchNicknameCheck(name);
+      if (!result) throw new Error(message);
+
+      setUserInfo((prev) => ({ ...prev, nickname }));
+      alert(message);
+    } catch (e) {}
+  };
+
   const handleRegisterUser = async () => {
     if (Object.values(userInfo).includes('')) {
       return;
@@ -116,16 +127,24 @@ const Register = () => {
 
           <div>
             <label htmlFor="nickname">닉네임</label>
-            <br />
-            <input
-              className="w-[360px] bg-white p-3 border border-slate-300 rounded-[10px]"
-              type="text"
-              id="nickname"
-              name="nickname"
-              placeholder="닉네임을 입력해주세요."
-              value={userInfo.nickname}
-              onChange={handleChangeNickname}
-            />
+
+            <div className="relative w-[360px] bg-white p-3 border border-slate-300 rounded-[10px]">
+              <input
+                className="w-60 focus:outline-none"
+                type="text"
+                id="nickname"
+                name="nickname"
+                placeholder="닉네임을 입력해주세요."
+                value={userInfo.nickname}
+                onChange={handleChangeNickname}
+              />
+              <button
+                onClick={() => handleUniqueNickName(userInfo.nickname)}
+                className="absolute cursor-pointer top-2 right-4 p-1 text-white text-sm bg-blue-300 border border-slate-300 rounded-[10px]"
+              >
+                중복확인
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center gap-5">
@@ -136,6 +155,7 @@ const Register = () => {
               checked={agree}
               onChange={handleAgree}
             />
+
             <label
               htmlFor="agree"
               className="text-md font-medium text-gray-900"

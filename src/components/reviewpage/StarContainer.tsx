@@ -24,7 +24,6 @@ const StarContainer = (props: StarContainer) => {
 
   const handleClickIndex = (index: number) => {
     setRating(index);
-    handleRating(index);
   };
 
   return (
