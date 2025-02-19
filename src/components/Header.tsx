@@ -2,7 +2,7 @@ import { useLocation, useNavigate, useSearchParams } from "react-router";
 import { getFetchUserLogout } from "../apis/login";
 import HeaderIcon from "../icons/HeaderIcon";
 import useLoginStore from "../store/useStore";
-import { ChangeEvent, ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import SearchIcon from "../icons/SearchIcon";
 import DefaultUserIcon from "../icons/DefaultUserIcon";
 import { useForm } from "react-hook-form";
@@ -25,7 +25,7 @@ const Header = () => {
 
   const handleClickMain = () => {
     navigator("/");
-    setKeyword("");
+    setValue("keyword", "");
   };
 
   const handleLogoutFetch = async () => {
@@ -46,39 +46,39 @@ const Header = () => {
   });
 
   // 검색
-  const [searchParams, setSearchParams] = useSearchParams();
-  // const { register, handleSubmit, watch, setValue } = useForm<SearchForm>();
-  // const keyword = watch("keyword");
-  const [keyword, setKeyword] = useState<string>("");
-  const URLkeyword = searchParams.get("keyword") ?? "";
-  const hasSearchParams = searchParams.toString().length === 0;
+  const [searchParams, _] = useSearchParams();
+  const { register, handleSubmit, watch, setValue } = useForm<SearchForm>();
+  const keyword = watch("keyword");
+  const urlKeyword = searchParams.get("keyword") ?? "";
+  const urlCategory = searchParams.get("category") ?? "";
   const debounceKeyword = UseDebounce(keyword, 500);
-  console.log("URLkeyword ", URLkeyword);
+  console.log("URLkeyword ", urlKeyword);
   console.log("keyword ", keyword);
 
-  // const onValid = (data: SearchForm) => {
-  //   navigator(`/search?category=${category}&keyword=${data.keyword}`);
-  // };
-
-  const onSubmitSearch = () => {
-    if (keyword) {
-      navigator(`/search?category=${category}&keyword=${keyword}`);
-    }
+  const onValid = (data: SearchForm) => {
+    navigator(`/search?category=${category}&keyword=${data.keyword}`);
   };
-
-  /* 조건 
-  1. 검색어 지우면 메인으로 네비
-  2. 검색결과 말고 다른페이지 들어갔을 때 메인으로 네비되면 안됨
-  3. 검색어 다 지웠을 때 url에 검색어도 다 지워져야 함
-  4. 검색결과 url 다른 탭에서 들어갔을 때 결과 그대로 나와야함 */
 
   useEffect(() => {
     if (debounceKeyword) {
       navigator(`/search?category=${category}&keyword=${debounceKeyword}`);
-    } /* else {
-      setSearchParams({});
-    } */
+    } else if (pathname === "/search") {
+      navigator("/");
+    }
   }, [debounceKeyword]);
+
+  useEffect(() => {
+    if (urlKeyword) {
+      setValue("keyword", urlKeyword);
+    }
+  }, [urlKeyword]);
+
+  useEffect(() => {
+    if (urlCategory === "actor") {
+      setCategory("actor");
+      setSelectedItem({ label: "배우", value: "actor" });
+    }
+  }, [urlCategory]);
 
   return (
     <header className="top-0 z-5 bg-white ">
@@ -90,7 +90,7 @@ const Header = () => {
             </button>
           </div>
           <form
-            onSubmit={onSubmitSearch}
+            onSubmit={handleSubmit(onValid)}
             className="relative flex items-center w-96 border border-gray-300 rounded-lg overflow-hidden"
           >
             <Select
@@ -110,28 +110,14 @@ const Header = () => {
                 </Select.Item>
               </Select.Content>
             </Select>
-            {/* <input
+            <input
               {...register("keyword", { required: true, minLength: 2 })}
               className="flex-1 p-1 outline-none"
               placeholder="검색어를 입력하세요"
-            /> */}
-            <input
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
-              className="flex-1 p-1 outline-none"
-              placeholder="검색어를 입력하세요"
             />
-            {/* {keyword && (
-              <button
-                onClick={() => setValue("keyword", "")}
-                className="hover:cursor-pointer"
-              >
-                x
-              </button>
-            )} */}
             {keyword && (
               <button
-                onClick={() => setKeyword("")}
+                onClick={() => setValue("keyword", "")}
                 className="hover:cursor-pointer"
               >
                 x

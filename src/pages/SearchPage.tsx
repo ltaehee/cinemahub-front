@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { getFetchActorInfo, getFetchMovieInfo } from "../apis/search";
 
 interface Actor {
@@ -26,7 +26,6 @@ interface Movie {
 }
 
 const SearchPage = () => {
-  const navigator = useNavigate();
   const [searchParams] = useSearchParams();
   const keyword = searchParams.get("keyword") ?? "";
   const [actor, setActor] = useState<Actor[]>([]);
@@ -59,9 +58,7 @@ const SearchPage = () => {
   useEffect(() => {
     if (keyword) {
       getFetchData(keyword);
-    } /* else {
-      navigator("/");
-    } */
+    }
   }, [keyword]);
 
   return (
