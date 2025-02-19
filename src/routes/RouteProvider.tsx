@@ -7,12 +7,12 @@ import ErrorPage from "../pages/ErrorPage";
 import MainPage from "../pages/MainPage";
 import CinemaDetailPage from "../pages/CinemaDetailPage";
 import CinemaReviewPage from "../pages/CinemaReviewPage";
-import MyPage from "../pages/MyPage";
 import useLoginStore from "../store/useStore";
 import { getFetchUserSession } from "../apis/login";
 import { useEffect } from "react";
 import PrivateRouter from "./PrivateRouter";
 import AdminPage from "../pages/AdminPage";
+import ProfilePage from "../pages/ProfilePage";
 
 const RouteProvider = () => {
   const login = useLoginStore((state) => state.login);
@@ -61,8 +61,8 @@ const RouteProvider = () => {
           element: <PrivateRouter element={<Register />} />,
         },
         {
-          path: "/mypage/:nickname",
-          element: <MyPage />,
+          path: "/profile/:nickname",
+          element: <ProfilePage />,
         },
         {
           path: "/search",
