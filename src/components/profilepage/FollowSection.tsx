@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../Button";
 import profileImg from "/images/profileImg.png";
 import closeImg from "/images/close.png";
@@ -23,6 +23,11 @@ const FollowSection = ({
   followingList,
 }: FollowSectionProps) => {
   const [view, setView] = useState<"follower" | "following" | null>(null);
+
+  useEffect(() => {
+    console.log("팔로잉 목록:", followingList);
+    console.log("팔로워 목록:", followerList);
+  }, [followingList, followerList]);
 
   return (
     <div className="w-full ">
