@@ -13,6 +13,7 @@ import useLoginStore from "../store/useStore";
 import { getFetchUserSession } from "../apis/login";
 import { useEffect } from "react";
 import PrivateRouter from "./PrivateRouter";
+import AdminPage from "../pages/AdminPage";
 
 const RouteProvider = () => {
   const login = useLoginStore((state) => state.login);
@@ -71,6 +72,10 @@ const RouteProvider = () => {
         {
           path: "/search",
           element: <SearchPage />,
+        },
+        {
+          path: "/admin",
+          element: <AdminPage />,
         },
       ],
     },

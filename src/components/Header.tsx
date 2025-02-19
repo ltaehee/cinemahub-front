@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate, useSearchParams } from "react-router";
 import { getFetchUserLogout } from "../apis/login";
 import HeaderIcon from "../icons/HeaderIcon";
 import useLoginStore from "../store/useStore";
@@ -25,7 +25,7 @@ const Header = () => {
 
   const handleClickMain = () => {
     navigator("/");
-    setValue("keyword", "");
+    setKeyword("");
   };
 
   const handleLogoutFetch = async () => {
@@ -46,20 +46,38 @@ const Header = () => {
   });
 
   // 검색
-  const { register, handleSubmit, watch, setValue } = useForm<SearchForm>();
-  const keyword = watch("keyword");
+  const [searchParams, setSearchParams] = useSearchParams();
+  // const { register, handleSubmit, watch, setValue } = useForm<SearchForm>();
+  // const keyword = watch("keyword");
+  const [keyword, setKeyword] = useState<string>("");
+  const URLkeyword = searchParams.get("keyword") ?? "";
+  const hasSearchParams = searchParams.toString().length === 0;
   const debounceKeyword = UseDebounce(keyword, 500);
+  console.log("URLkeyword ", URLkeyword);
+  console.log("keyword ", keyword);
 
-  const onValid = (data: SearchForm) => {
-    navigator(`/search?category=${category}&keyword=${data.keyword}`);
+  // const onValid = (data: SearchForm) => {
+  //   navigator(`/search?category=${category}&keyword=${data.keyword}`);
+  // };
+
+  const onSubmitSearch = () => {
+    if (keyword) {
+      navigator(`/search?category=${category}&keyword=${keyword}`);
+    }
   };
+
+  /* 조건 
+  1. 검색어 지우면 메인으로 네비
+  2. 검색결과 말고 다른페이지 들어갔을 때 메인으로 네비되면 안됨
+  3. 검색어 다 지웠을 때 url에 검색어도 다 지워져야 함
+  4. 검색결과 url 다른 탭에서 들어갔을 때 결과 그대로 나와야함 */
 
   useEffect(() => {
     if (debounceKeyword) {
       navigator(`/search?category=${category}&keyword=${debounceKeyword}`);
-    } else if (pathname !== "/" && pathname.startsWith("/search")) {
-      navigator("/");
-    }
+    } /* else {
+      setSearchParams({});
+    } */
   }, [debounceKeyword]);
 
   return (
@@ -72,7 +90,7 @@ const Header = () => {
             </button>
           </div>
           <form
-            onSubmit={handleSubmit(onValid)}
+            onSubmit={onSubmitSearch}
             className="relative flex items-center w-96 border border-gray-300 rounded-lg overflow-hidden"
           >
             <Select
@@ -92,14 +110,28 @@ const Header = () => {
                 </Select.Item>
               </Select.Content>
             </Select>
-            <input
+            {/* <input
               {...register("keyword", { required: true, minLength: 2 })}
               className="flex-1 p-1 outline-none"
               placeholder="검색어를 입력하세요"
+            /> */}
+            <input
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              className="flex-1 p-1 outline-none"
+              placeholder="검색어를 입력하세요"
             />
-            {keyword && (
+            {/* {keyword && (
               <button
                 onClick={() => setValue("keyword", "")}
+                className="hover:cursor-pointer"
+              >
+                x
+              </button>
+            )} */}
+            {keyword && (
+              <button
+                onClick={() => setKeyword("")}
                 className="hover:cursor-pointer"
               >
                 x
