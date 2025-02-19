@@ -156,35 +156,33 @@ const MyPage = () => {
             )}
             {!isOwnProfile && (
               <div className="w-full px-12">
-                <Button className=" mt-6">팔로우</Button>
+                <Button className="">팔로우</Button>
               </div>
             )}
           </div>
         </div>
-        <div className="w-full flex flex-col gap-2">
+        {/* <div className="w-full flex flex-col gap-2">
           <div className="h-full flex flex-col justify-center items-center border border-[#DFDFDF] rounded-2xl p-4 px-12">
-            <p className="">팔로워</p>
-            <p>110명</p>
+            <p className="font-semibold">팔로워</p>
+            <p className="font-bold text-2xl py-4">110명</p>
             <Button className="bg-gray-500 hover:bg-gray-600 disabled:bg-gray-400">
               팔로워 보기
             </Button>
           </div>
           <div className="h-full flex flex-col justify-center items-center border border-[#DFDFDF] rounded-2xl p-4 px-12">
-            <p className="">팔로잉</p>
-            <p>80명</p>
+            <p className="font-semibold">팔로잉</p>
+            <p className="font-bold text-2xl py-4">80명</p>
             <Button className="bg-gray-500 hover:bg-gray-600 disabled:bg-gray-400">
               팔로잉 보기
             </Button>
           </div>
-        </div>
-        {/* <div className="w-full flex flex-col gap-2">
-          <FollowSection
-            followerCount={followerList.length}
-            followingCount={followingList.length}
-            followerList={followerList}
-            followingList={followingList}
-          />
         </div> */}
+        <FollowSection
+          followerCount={followerList.length}
+          followingCount={followingList.length}
+          followerList={followerList}
+          followingList={followingList}
+        />
       </div>
 
       <TabContainer />
