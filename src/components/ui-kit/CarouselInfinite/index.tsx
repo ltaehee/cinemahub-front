@@ -83,7 +83,9 @@ const CarouselInfinite: FC<CarouselInfiniteProps> &
 
   return (
     <CarouselInfiniteContext.Provider value={contextValue}>
-      <div className={cls}>{children}</div>
+      <div className={cls} style={{ overflow: "hidden" }}>
+        {children}
+      </div>
     </CarouselInfiniteContext.Provider>
   );
 };

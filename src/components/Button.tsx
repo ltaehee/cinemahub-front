@@ -11,7 +11,7 @@ const Button = ({
   return (
     <button
       onClick={onClick}
-      className={`${className} w-[100%] bg-[#E00000] hover:bg-[#9A0000] disabled:bg-[#FF6A6A] text-white font-semibold px-6 py-2 text-sm rounded-lg  duration-200 cursor-pointer `}
+      className={`${className} w-full bg-red-500 hover:bg-red-700 disabled:bg-red-300 text-white font-semibold px-6 py-2 text-sm rounded-lg  duration-200 cursor-pointer `}
       {...rest}
     >
       {children}

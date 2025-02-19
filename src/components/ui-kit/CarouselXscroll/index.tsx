@@ -22,7 +22,7 @@ interface CarouselXscrollContextProps {
   baseRect: DOMRect;
   scrollPosition: number;
   setScrollPosition: (position: number) => void;
-  itemWidth: number;
+  pixelMove: number;
 }
 
 interface CarouselXscrollProps {
@@ -30,7 +30,7 @@ interface CarouselXscrollProps {
   className?: string;
   itemListRef: RefObject<HTMLDivElement | null>;
   baseRect: DOMRect;
-  itemWidth: number;
+  pixelMove: number;
 }
 
 export const CarouselXscrollContext =
@@ -39,12 +39,12 @@ export const CarouselXscrollContext =
     baseRect: new DOMRect(),
     scrollPosition: 0,
     setScrollPosition: () => {},
-    itemWidth: 0,
+    pixelMove: 0,
   });
 
 const CarouselXscroll: FC<CarouselXscrollProps> &
   CarouselXscrollCompoundProps = (props) => {
-  const { children, className, itemListRef, baseRect, itemWidth } = props;
+  const { children, className, itemListRef, baseRect, pixelMove } = props;
 
   const [scrollPosition, setScrollPosition] = useState(0);
 
@@ -53,7 +53,7 @@ const CarouselXscroll: FC<CarouselXscrollProps> &
     baseRect,
     scrollPosition,
     setScrollPosition,
-    itemWidth,
+    pixelMove,
   };
 
   const cls = useMemo(

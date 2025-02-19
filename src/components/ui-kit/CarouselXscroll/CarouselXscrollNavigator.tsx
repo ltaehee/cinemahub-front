@@ -12,14 +12,14 @@ interface CarouselXscrollNavigatorProps {
 
 const CarouselXscrollNavigator = (props: CarouselXscrollNavigatorProps) => {
   const { children } = props;
-  const { itemListRef, scrollPosition, itemWidth } = useContext(
+  const { itemListRef, scrollPosition, pixelMove } = useContext(
     CarouselXscrollContext
   );
 
   const handleLeft = () => {
     if (itemListRef.current) {
       itemListRef.current.scrollTo({
-        left: itemListRef.current.scrollLeft - itemWidth,
+        left: itemListRef.current.scrollLeft - pixelMove,
         behavior: "smooth",
       });
     }
@@ -28,7 +28,7 @@ const CarouselXscrollNavigator = (props: CarouselXscrollNavigatorProps) => {
   const handleRight = () => {
     if (itemListRef.current) {
       itemListRef.current.scrollTo({
-        left: itemListRef.current.scrollLeft + itemWidth,
+        left: itemListRef.current.scrollLeft + pixelMove,
         behavior: "smooth",
       });
     }
@@ -38,7 +38,8 @@ const CarouselXscrollNavigator = (props: CarouselXscrollNavigatorProps) => {
     if (!itemListRef.current) return false;
     const scrollEnd =
       itemListRef.current.scrollWidth - itemListRef.current.clientWidth;
-    return Math.floor(scrollPosition) === scrollEnd;
+
+    return Math.abs(scrollPosition - scrollEnd) < 1;
   };
 
   const isAtStart = () => {

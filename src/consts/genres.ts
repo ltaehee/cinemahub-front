@@ -1,78 +1,78 @@
 export const genres = [
   {
     id: 28,
-    name: "Action",
+    name: "액션",
   },
   {
     id: 12,
-    name: "Adventure",
+    name: "어드벤처",
   },
   {
     id: 16,
-    name: "Animation",
+    name: "애니메이션",
   },
   {
     id: 35,
-    name: "Comedy",
+    name: "코미디",
   },
   {
     id: 80,
-    name: "Crime",
+    name: "범죄",
   },
   {
     id: 99,
-    name: "Documentary",
+    name: "다큐멘터리",
   },
   {
     id: 18,
-    name: "Drama",
+    name: "드라마",
   },
   {
     id: 10751,
-    name: "Family",
+    name: "가족",
   },
   {
     id: 14,
-    name: "Fantasy",
+    name: "판타지",
   },
   {
     id: 36,
-    name: "History",
+    name: "역사",
   },
   {
     id: 27,
-    name: "Horror",
+    name: "공포",
   },
   {
     id: 10402,
-    name: "Music",
+    name: "음악",
   },
   {
     id: 9648,
-    name: "Mystery",
+    name: "미스터리",
   },
   {
     id: 10749,
-    name: "Romance",
+    name: "로맨스",
   },
   {
     id: 878,
-    name: "Science Fiction",
+    name: "SF",
   },
   {
     id: 10770,
-    name: "TV Movie",
+    name: "TV 영화",
   },
   {
     id: 53,
-    name: "Thriller",
+    name: "스릴러",
   },
   {
     id: 10752,
-    name: "War",
+    name: "전쟁",
   },
   {
     id: 37,
-    name: "Western",
+    name: "서부",
   },
 ];
