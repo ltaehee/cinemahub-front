@@ -27,6 +27,7 @@ const ProfilePage = () => {
     null
   );
   const [isOwnProfile, setIsOwnProfile] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
   const navigate = useNavigate();
 
   /* 모달 */
@@ -45,7 +46,7 @@ const ProfilePage = () => {
       const response = await baseInstance.get(`/profile/${nickname}`);
 
       if (response.status === 200) {
-        setProfile(response.data); // 프로필 데이터 저장
+        setProfile(response.data);
         setOriginalProfile(response.data);
         setIsOwnProfile(response.data.isOwnProfile); // 백엔드에서 받아온 값 사용
       }
@@ -88,58 +89,46 @@ const ProfilePage = () => {
     setIsEditing(!isEditing);
   };
 
-  // 팔로우 상태 확인
-  /* const checkFollowingStatus = async () => {
+  /* 팔로우 상태 확인 */
+  const checkFollowingStatus = async () => {
     try {
       const response = await baseInstance.get(`/follow/${nickname}`);
       setIsFollowing(response.data.isFollowing);
     } catch (error) {
       console.error("팔로우 상태 확인 오류:", error);
     }
-  }; */
+  };
 
-  // 팔로우 & 언팔로우 요청
+  /* 팔로우 요청 */
   const handleFollow = async () => {
     try {
-      if (profile) {
-        const isAlreadyFollowing = profile.following.some(
-          (user) => user.nickname === nickname
-        );
-
-        if (isAlreadyFollowing) {
-          await baseInstance.delete(`/follow/${nickname}`);
-          setProfile({
-            ...profile,
-            following: profile.following.filter(
-              (user) => user.nickname !== nickname
-            ),
-          });
-        } else {
-          await baseInstance.post(`/follow/${nickname}`);
-          setProfile({
-            ...profile,
-            following: [
-              ...profile.following,
-              { nickname: nickname ?? "", email: "", profileImg: "" },
-            ],
-          });
-        }
-      }
+      await baseInstance.post(`/follow/${nickname}`);
+      setIsFollowing(true);
+      getProfileData();
+      console.log("팔로우 성공", isFollowing);
     } catch (error) {
       console.error("팔로우 요청 오류:", error);
     }
   };
-  // 언팔로우 버튼 클릭 시 모달 열기
-  const handleUnfollowClick = () => {
-    setIsOpen(true);
+  /* 언팔로우 요청 */
+  const handleUnfollow = async () => {
+    try {
+      await baseInstance.delete(`/follow/${nickname}`);
+      setIsFollowing(false);
+      getProfileData();
+      handleCloseModal();
+    } catch (error) {
+      console.error("언팔로우 요청 오류:", error);
+    }
   };
   useEffect(() => {
     getProfileData();
     console.log("profile", profile);
     console.log("isOwnProfile", isOwnProfile);
   }, []);
+
   useEffect(() => {
-    // checkFollowingStatus();
+    checkFollowingStatus();
   }, [nickname]);
 
   if (!profile) {
@@ -198,37 +187,24 @@ const ProfilePage = () => {
                 {profile.introduce || "자기소개를 해주세요"}
               </p>
             )}
-            {!isOwnProfile && (
+            {!isOwnProfile && !isFollowing && (
               <div className="w-full px-12">
                 <Button onClick={handleFollow}>팔로우</Button>
               </div>
             )}
+            {!isOwnProfile && isFollowing && (
+              <div className="w-full px-12">
+                <Button
+                  onClick={handleUnfollow}
+                  className="bg-gray-500 hover:bg-gray-400"
+                >
+                  언팔로우
+                </Button>
+              </div>
+            )}
           </div>
         </div>
-        <Modal
-          onOpenModal={handleOpenModal}
-          onCloseModal={handleCloseModal}
-          open={isOpen}
-        >
-          <Modal.Backdrop />
-          <Modal.Trigger>
-            <a href="#">열기</a>
-          </Modal.Trigger>
-          <Modal.Content>
-            <div
-              style={{
-                width: "200px",
-                height: "200px",
-                backgroundColor: "white",
-              }}
-            >
-              <Modal.Close>
-                <button>닫기</button>
-              </Modal.Close>
-              <div>Modal Content</div>
-            </div>
-          </Modal.Content>
-        </Modal>
+
         <FollowSection
           followerCount={profile.followers.length}
           followingCount={profile.following.length}
