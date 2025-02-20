@@ -1,19 +1,22 @@
-import SearchPage from "../pages/SearchPage";
-import Login from "../pages/Login";
-import Register from "../pages/Register";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Layout from "../components/Layout";
-import ErrorPage from "../pages/ErrorPage";
-import MainPage from "../pages/MainPage";
-import CinemaDetailPage from "../pages/CinemaDetailPage";
-import CinemaReviewPage from "../pages/CinemaReviewPage";
-import useLoginStore from "../store/useStore";
-import { getFetchUserSession } from "../apis/login";
-import { useEffect } from "react";
-import PrivateRouter from "./PrivateRouter";
-import AdminPage from "../pages/AdminPage";
-import ProfilePage from "../pages/ProfilePage";
-import PersonDetailPage from "../pages/PersonDetailPage";
+import SearchPage from '../pages/SearchPage';
+import Login from '../pages/Login';
+import Register from '../pages/Register';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import Layout from '../components/Layout';
+import ErrorPage from '../pages/ErrorPage';
+import MainPage from '../pages/MainPage';
+import CinemaDetailPage from '../pages/CinemaDetailPage';
+import CinemaReviewPage from '../pages/CinemaReviewPage';
+import BoxOfficePage from '../pages/BoxOfficePage';
+import MyPage from '../pages/MyPage';
+import useLoginStore from '../store/useStore';
+import { getFetchUserSession } from '../apis/login';
+import { useEffect } from 'react';
+import PrivateRouter from './PrivateRouter';
+import AgreePolicy from '../pages/AgreePolicy';
+import AdminPage from '../pages/AdminPage';
+import ProfilePage from '../pages/ProfilePage';
+import PersonDetailPage from '../pages/PersonDetailPage';
 
 const RouteProvider = () => {
   const login = useLoginStore((state) => state.login);
@@ -33,60 +36,72 @@ const RouteProvider = () => {
 
   const router = createBrowserRouter([
     {
-      path: "/",
+      path: '/',
       element: <Layout />,
       errorElement: <ErrorPage />,
       children: [
         {
-          path: "/",
+          path: '/',
           element: <PrivateRouter element={<MainPage />} />,
           children: [
             {
-              path: "/cinema/:id",
+              path: '/cinema/:id',
               element: <CinemaDetailPage />,
-              children: [
-                {
-                  path: "review",
-                  element: <CinemaReviewPage />,
-                },
-              ],
             },
             {
-              path: "/person/:id",
+              path: '/person/:id',
               element: <PersonDetailPage />,
             },
           ],
         },
         {
-          path: "/login",
+          path: '/review',
+          element: <CinemaReviewPage />,
+        },
+        {
+          path: '/boxoffice',
+          element: <BoxOfficePage />,
+        },
+        {
+          path: '/login',
           element: <PrivateRouter element={<Login />} />,
         },
         {
-          path: "/register",
+          path: '/register',
           element: <PrivateRouter element={<Register />} />,
         },
         {
-          path: "/profile/:nickname",
-          element: <ProfilePage />,
+          path: '/policy',
+          element: <AgreePolicy />,
         },
         {
-          path: "/search",
+          path: '/mypage',
+          element: <MyPage />,
+        },
+        {
+          path: '/profile/:nickname',
+          element: <ProfilePage />,
+        }
+        {
+          path: '/search',
           element: <SearchPage />,
         },
         {
-          path: "/admin",
+          path: '/admin',
           element: <AdminPage />,
         },
       ],
     },
     {
-      path: "*",
+      path: '*',
       element: <ErrorPage />,
     },
   ]);
 
   useEffect(() => {
     handleUserSession();
+
+    window.addEventListener('reload', () => {});
   }, []);
 
   return <RouterProvider router={router} />;

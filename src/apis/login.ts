@@ -75,6 +75,24 @@ export const getFetchUserData = async (userInfo: UserInfoType) => {
   }
 };
 
+export const getFetchNicknameCheck = async (nickname: string) => {
+  try {
+    const response = await baseInstance.post('/login/check-name', {
+      nickname,
+    });
+
+    if (response.data.isError) {
+      throw new Error(response.data.message);
+    }
+    return response.data;
+  } catch (err) {
+    if (err instanceof AxiosError && err.response) {
+      console.log(err.response.data.message);
+    }
+    throw err;
+  }
+};
+
 export const getFetchUserSession = async () => {
   try {
     const response = await baseInstance.get('/login/check-login');
