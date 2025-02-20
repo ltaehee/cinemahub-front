@@ -48,7 +48,8 @@ const ProfilePage = () => {
       if (response.status === 200) {
         setProfile(response.data);
         setOriginalProfile(response.data);
-        setIsOwnProfile(response.data.isOwnProfile); // 백엔드에서 받아온 값 사용
+        setIsOwnProfile(response.data.isOwnProfile);
+        setIsFollowing(response.data.isFollowing);
       }
     } catch (err) {
       console.error("프로필 조회 실패:", err);
@@ -89,21 +90,10 @@ const ProfilePage = () => {
     setIsEditing(!isEditing);
   };
 
-  /* 팔로우 상태 확인 */
-  const checkFollowingStatus = async () => {
-    try {
-      const response = await baseInstance.get(`/follow/${nickname}`);
-      setIsFollowing(response.data.isFollowing);
-    } catch (error) {
-      console.error("팔로우 상태 확인 오류:", error);
-    }
-  };
-
   /* 팔로우 요청 */
   const handleFollow = async () => {
     try {
       await baseInstance.post(`/follow/${nickname}`);
-      setIsFollowing(true);
       getProfileData();
       console.log("팔로우 성공", isFollowing);
     } catch (error) {
@@ -114,7 +104,6 @@ const ProfilePage = () => {
   const handleUnfollow = async () => {
     try {
       await baseInstance.delete(`/follow/${nickname}`);
-      setIsFollowing(false);
       getProfileData();
       handleCloseModal();
     } catch (error) {
@@ -125,11 +114,11 @@ const ProfilePage = () => {
     getProfileData();
     console.log("profile", profile);
     console.log("isOwnProfile", isOwnProfile);
-  }, []);
-
-  useEffect(() => {
-    checkFollowingStatus();
   }, [nickname]);
+
+  /* useEffect(() => {
+    checkFollowingStatus();
+  }, [nickname]); */
 
   if (!profile) {
     return;
