@@ -7,8 +7,8 @@ import ErrorPage from '../pages/ErrorPage';
 import MainPage from '../pages/MainPage';
 import CinemaDetailPage from '../pages/CinemaDetailPage';
 import CinemaReviewPage from '../pages/CinemaReviewPage';
-import BoxOfficePage from '../pages/BoxOfficePage';
-import MyPage from '../pages/MyPage';
+// import BoxOfficePage from '../pages/BoxOfficePage';
+// import MyPage from '../pages/MyPage';
 import useLoginStore from '../store/useStore';
 import { getFetchUserSession } from '../apis/login';
 import { useEffect } from 'react';
@@ -58,10 +58,10 @@ const RouteProvider = () => {
           path: '/review',
           element: <CinemaReviewPage />,
         },
-        {
-          path: '/boxoffice',
-          element: <BoxOfficePage />,
-        },
+        // {
+        //   path: '/boxoffice',
+        //   element: <BoxOfficePage />,
+        // },
         {
           path: '/login',
           element: <PrivateRouter element={<Login />} />,
@@ -74,14 +74,14 @@ const RouteProvider = () => {
           path: '/policy',
           element: <AgreePolicy />,
         },
-        {
-          path: '/mypage',
-          element: <MyPage />,
-        },
+        // {
+        //   path: '/mypage',
+        //   element: <MyPage />,
+        // },
         {
           path: '/profile/:nickname',
           element: <ProfilePage />,
-        }
+        },
         {
           path: '/search',
           element: <SearchPage />,
