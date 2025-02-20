@@ -5,9 +5,10 @@ import profileEdit from "/images/profileEdit.png";
 import profileEdit2 from "/images/profileEdit2.png";
 import { useEffect, useState } from "react";
 import { baseInstance } from "../apis/axios.config";
-import Modal from "@ui/Modal";
 import FollowSection from "../components/profilepage/FollowSection";
 import TabContainer from "../components/profilepage/TabContainer";
+import useLoginStore from "../store/useStore";
+import { getFetchNicknameCheck } from "../apis/profile";
 
 interface UserProfile {
   userId: string;
@@ -27,26 +28,21 @@ const ProfilePage = () => {
   const [originalProfile, setOriginalProfile] = useState<UserProfile | null>(
     null
   );
+  const [loggedInUserProfile, setLoggedInUserProfile] =
+    useState<UserProfile | null>(null);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
-  const [loggedInUserNickname, setLoggedInUserNickname] = useState<string>("");
   const [isFollowing, setIsFollowing] = useState(false);
+  const [isDebouncing, setIsDebouncing] = useState(false);
   const navigate = useNavigate();
+  const { IsLogin } = useLoginStore();
 
-  /* 모달 */
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-
-  const handleOpenModal = () => {
-    setIsOpen(true);
-  };
-  const handleCloseModal = () => {
-    setIsOpen(false);
-  };
   /* 로그인한 유저 프로필 조회 */
   const getLoggedInUserInfo = async () => {
     try {
       const response = await baseInstance.get(`/profile/me`);
       if (response.status === 200) {
-        setLoggedInUserNickname(response.data.nickname);
+        setLoggedInUserProfile(response.data);
+        console.log("LoggedInUserProfile", loggedInUserProfile);
       }
     } catch (error) {
       console.error("로그인한 유저 정보 가져오기 실패:", error);
@@ -94,6 +90,16 @@ const ProfilePage = () => {
     }
   };
 
+  /* 닉네임 중복 체크 */
+  const checkNicknameCheck = async (nickname: string) => {
+    try {
+      const { result } = await getFetchNicknameCheck(nickname);
+      return result;
+    } catch (error) {
+      console.error("닉네임 중복 체크 오류:", error);
+      return false;
+    }
+  };
   /* 프로필 수정 */
   const updateProfileData = async () => {
     if (!profile || !originalProfile || !isOwnProfile) return;
@@ -121,8 +127,15 @@ const ProfilePage = () => {
   };
 
   /* 프로필 수정 버튼 */
-  const handleEditClick = () => {
+  const handleEditClick = async () => {
     if (isEditing) {
+      // 닉네임 중복 체크
+      const isUnique = await checkNicknameCheck(profile?.nickname || "");
+      console.log("중복?", isUnique);
+      if (!isUnique) {
+        alert("이미 사용 중인 닉네임입니다. 다른 닉네임을 입력하세요.");
+        return;
+      }
       updateProfileData();
     }
     setIsEditing(!isEditing);
@@ -130,22 +143,34 @@ const ProfilePage = () => {
 
   /* 팔로우 요청 */
   const handleFollow = async (targetNickname: string) => {
+    if (isDebouncing) return;
+    setIsDebouncing(true);
     try {
       await baseInstance.post(`/follow/${targetNickname}`);
       getProfileData();
       console.log("팔로우 성공", targetNickname);
     } catch (error) {
       console.error("팔로우 요청 오류:", error);
+    } finally {
+      setTimeout(() => {
+        setIsDebouncing(false);
+      }, 1000);
     }
   };
   /* 언팔로우 요청 */
   const handleUnfollow = async (targetNickname: string) => {
+    if (isDebouncing) return;
+    setIsDebouncing(true);
     try {
       await baseInstance.delete(`/follow/${targetNickname}`);
       getProfileData();
       console.log("언팔로우 성공", targetNickname);
     } catch (error) {
       console.error("언팔로우 요청 오류:", error);
+    } finally {
+      setTimeout(() => {
+        setIsDebouncing(false);
+      }, 1000);
     }
   };
   useEffect(() => {
@@ -154,7 +179,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     getLoggedInUserInfo();
-    console.log("my Nickname", loggedInUserNickname);
+    console.log("my Nickname", loggedInUserProfile);
   }, []);
 
   if (!profile) {
@@ -163,7 +188,7 @@ const ProfilePage = () => {
 
   return (
     <div className="w-full flex flex-col items-center justify-center">
-      <div className="w-full max-w-[1280px] flex gap-2 mt-10 mb-20">
+      <div className="w-full max-w-[1280px] flex gap-2 mt-10 mb-20 ">
         <div className="w-full  border border-[#DFDFDF] rounded-2xl">
           <div className="w-full relative flex flex-col gap-2 items-center p-2">
             <div className="w-full flex justify-end mb-4">
@@ -215,9 +240,24 @@ const ProfilePage = () => {
             )}
 
             <div className="w-full px-12">
-              {!isOwnProfile && !isFollowing && (
-                <Button onClick={() => handleFollow(profile.nickname)}>
+              {!IsLogin && (
+                <Button
+                  onClick={() => {
+                    navigate("/login");
+                  }}
+                >
                   팔로우
+                </Button>
+              )}
+              {!isOwnProfile && !isFollowing && IsLogin && (
+                <Button onClick={() => handleFollow(profile.nickname)}>
+                  {isDebouncing ? (
+                    <div className="flex justify-center items-center">
+                      <div className="w-4 h-4 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
+                    </div>
+                  ) : (
+                    "팔로우"
+                  )}
                 </Button>
               )}
               {!isOwnProfile && isFollowing && (
@@ -225,7 +265,13 @@ const ProfilePage = () => {
                   onClick={() => handleUnfollow(profile.nickname)}
                   className="bg-gray-500 hover:bg-gray-400"
                 >
-                  언팔로우
+                  {isDebouncing ? (
+                    <div className="flex justify-center items-center">
+                      <div className="w-4 h-4 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
+                    </div>
+                  ) : (
+                    "언팔로우"
+                  )}
                 </Button>
               )}
             </div>
@@ -234,7 +280,7 @@ const ProfilePage = () => {
 
         <FollowSection
           profile={profile}
-          loggedInUserNickname={loggedInUserNickname}
+          loggedInUserProfile={loggedInUserProfile}
           handleFollow={handleFollow}
           handleUnfollow={handleUnfollow}
         />
