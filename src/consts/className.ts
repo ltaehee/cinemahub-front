@@ -17,20 +17,24 @@ export const calendarCurrentCls = getBaseCls("calendar-current");
 export const calendarNavigatorCls = getBaseCls("calendar-navigator");
 
 // Carousel Component
-export const carouselBaseCls = getBaseCls("carousel");
-export const carouselItemListCls = getBaseCls("carousel-item-list");
-export const carouselItemCls = getBaseCls("carousel-item");
-export const carouselNavigatorCls = getBaseCls("carousel-navigator");
-export const carouselIndicatorCls = getBaseCls("carousel-indicator");
+export const carouselInfiniteBaseCls = getBaseCls("carousel-infinite");
+export const carouselInfiniteItemContainerCls = getBaseCls(
+  "carousel-infinite-item-container"
+);
+export const carouselInfiniteItemListCls = getBaseCls("carousel-infinite-list");
+export const carouselInfiniteItemCls = getBaseCls("carousel-infinite-item");
+export const carouselInfiniteNavigatorCls = getBaseCls(
+  "carousel-infinite-navigator"
+);
 
 // CarouselXscroll Component
-export const carouselXscrollBaseCls = getBaseCls("carouselXscroll");
+export const carouselXscrollBaseCls = getBaseCls("carousel-xscroll");
 export const carouselXscrollItemContainerCls = getBaseCls(
-  "carouselXscroll-item-container"
+  "carousel-xscroll-item-container"
 );
-export const carouselXscrollItemsCls = getBaseCls("carouselXscroll-items");
+export const carouselXscrollItemsCls = getBaseCls("carousel-xscroll-items");
 export const carouselXscrollNavigatorCls = getBaseCls(
-  "carouselXscroll-navigator"
+  "carousel-xscroll-navigator"
 );
 
 // DatePicker Component

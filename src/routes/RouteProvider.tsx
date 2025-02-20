@@ -14,6 +14,9 @@ import { getFetchUserSession } from '../apis/login';
 import { useEffect } from 'react';
 import PrivateRouter from './PrivateRouter';
 import AgreePolicy from '../pages/AgreePolicy';
+import AdminPage from '../pages/AdminPage';
+import ProfilePage from '../pages/ProfilePage';
+import PersonDetailPage from '../pages/PersonDetailPage';
 
 const RouteProvider = () => {
   const login = useLoginStore((state) => state.login);
@@ -42,8 +45,12 @@ const RouteProvider = () => {
           element: <PrivateRouter element={<MainPage />} />,
           children: [
             {
-              path: '/cinema',
+              path: '/cinema/:id',
               element: <CinemaDetailPage />,
+            },
+            {
+              path: '/person/:id',
+              element: <PersonDetailPage />,
             },
           ],
         },
@@ -72,8 +79,16 @@ const RouteProvider = () => {
           element: <MyPage />,
         },
         {
+          path: '/profile/:nickname',
+          element: <ProfilePage />,
+        }
+        {
           path: '/search',
           element: <SearchPage />,
+        },
+        {
+          path: '/admin',
+          element: <AdminPage />,
         },
       ],
     },

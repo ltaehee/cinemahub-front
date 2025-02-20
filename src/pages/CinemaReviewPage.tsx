@@ -4,11 +4,16 @@ import Textarea from '../components/Textarea';
 import Button from '../components/Button';
 import AspectRatio from '../components/reviewpage/AspectRatio';
 import Comment from '../components/reviewpage/Comment';
+import { useLocation } from 'react-router-dom';
 
 const reviewCount = 3000;
 const registered = true;
 
 const CinemaReviewPage = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const movieTitle = queryParams.get('movie');
+
   const [starRate, setStarRate] = useState(0);
   const [review, setReview] = useState<string>('');
 

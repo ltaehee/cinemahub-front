@@ -1,4 +1,4 @@
-import { FC, SVGAttributes } from 'react';
+import { FC, SVGAttributes } from "react";
 
 const GoogleIcon: FC<SVGAttributes<SVGSVGElement>> = (props) => {
   const { ...svgsProps } = props;

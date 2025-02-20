@@ -1,49 +1,57 @@
-import star from "/images/star.svg";
+import { useNavigate } from "react-router-dom";
+import StarIcon from "../../icons/StarIcon";
 import FavoritesBtn from "./FavoritesBtn";
+import { genres } from "@consts/genres";
+import { FC } from "react";
+
 interface MovieProps {
-  id: string;
-  name: string;
-  image: string;
-  rating: number;
-  genre: string;
-  ageLimit: string;
-  className?: string;
+  title: string;
+  movieId: string;
+  releaseDate: string;
+  posterPath: string;
+  genreIds: [];
 }
 
-const MovieCard: React.FC<MovieProps> = ({
-  image,
-  name,
-  rating,
-  genre,
-  ageLimit,
+const MovieCard: FC<MovieProps> = ({
+  posterPath,
+  movieId,
+  title,
+  releaseDate,
+  genreIds,
 }) => {
-  const handleCardClick = () => {};
+  const navigate = useNavigate();
 
   return (
     <div
-      onClick={handleCardClick}
-      className="cursor-pointer shadow-md w-56 rounded-md"
+      onClick={() => navigate(`/cinema/${movieId}`)}
+      className="cursor-pointer shadow-md w-56 h-full rounded-md bg-white"
     >
       <div className="relative">
         <img
-          src={image}
-          alt="영화 이미지"
-          className="rounded-tl-md rounded-tr-md select-none"
+          src={`https://image.tmdb.org/t/p/w500${posterPath}`}
+          alt={title}
+          className="h-[340px] object-cover rounded-tl-md rounded-tr-md select-none"
           onDragStart={(e) => e.preventDefault()}
         />
         <FavoritesBtn className="absolute top-2 left-2" />
       </div>
-      <div className="p-2">
-        <h3 className="text-lg font-semibold w-52">{name}</h3>
+      <div className="flex flex-col gap-1 p-4">
+        <h3 className="text-lg font-semibold w-52 truncate">{title}</h3>
         <div className="flex items-center gap-1">
-          <img src={star} alt="별" />
-          <div className="text-yellow-500 text-sm">{rating}</div>
+          <StarIcon className="w-5" />
+          <div className="text-yellow-500 text-sm">4.0</div>
         </div>
         <div className="flex items-center justify-between mt-2">
-          <span className="text-sm font-medium text-gray-500">{genre}</span>
-          <span className="text-xs px-2 py-1 bg-gray-500 text-white">
-            {ageLimit}
+          <span className="text-sm font-medium text-gray-500">
+            {releaseDate}
           </span>
+        </div>
+        <div className="text-sm font-medium text-gray-500">
+          {genreIds.map((genreId) => (
+            <span key={genreId} className="pr-1">
+              {genres.find((genre) => genre.id === genreId)?.name}
+            </span>
+          ))}
         </div>
       </div>
     </div>

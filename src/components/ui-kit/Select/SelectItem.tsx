@@ -1,6 +1,7 @@
 import { ReactNode, useContext, useMemo } from "react";
 import { SelectContext } from ".";
 import { selectItemCls } from "@consts/className";
+import { PopoverContext } from "@ui/Popover";
 
 interface SelectItemProps {
   children: ReactNode;
@@ -11,10 +12,11 @@ interface SelectItemProps {
 const SelectItem = (props: SelectItemProps) => {
   const { children, className, value } = props;
   const { setItem, onChange } = useContext(SelectContext);
-
+  const { closePopover } = useContext(PopoverContext);
   const handleClick = () => {
     setItem({ label: children, value });
     onChange(value);
+    closePopover();
   };
 
   const cls = useMemo(

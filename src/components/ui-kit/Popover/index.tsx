@@ -22,6 +22,8 @@ interface PopoverContextProps {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   position: "bottom-left" | "bottom-center" | "bottom-right";
+  openPopover: () => void;
+  closePopover: () => void;
 }
 
 export const PopoverContext = createContext<PopoverContextProps>({
@@ -30,6 +32,8 @@ export const PopoverContext = createContext<PopoverContextProps>({
   isOpen: false,
   setIsOpen: () => {},
   position: "bottom-left",
+  openPopover: () => {},
+  closePopover: () => {},
 });
 
 interface PopoverProps {
@@ -43,12 +47,17 @@ const Popover: FC<PopoverProps> & PopoverCompoundProps = (props) => {
   const [triggerRect, setTriggerRect] = useState(new DOMRect());
   const [isOpen, setIsOpen] = useState(false);
 
+  const openPopover = () => setIsOpen(true);
+  const closePopover = () => setIsOpen(false);
+
   const contextValue = {
     triggerRect,
     setTriggerRect,
     isOpen,
     setIsOpen,
     position,
+    openPopover,
+    closePopover,
   };
 
   const cls = useMemo(
