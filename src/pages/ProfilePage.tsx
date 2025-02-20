@@ -213,23 +213,22 @@ const ProfilePage = () => {
                 {profile.introduce || "자기소개를 해주세요"}
               </p>
             )}
-            {!isOwnProfile && !isFollowing && (
-              <div className="w-full px-12">
+
+            <div className="w-full px-12">
+              {!isOwnProfile && !isFollowing && (
                 <Button onClick={() => handleFollow(profile.nickname)}>
                   팔로우
                 </Button>
-              </div>
-            )}
-            {!isOwnProfile && isFollowing && (
-              <div className="w-full px-12">
+              )}
+              {!isOwnProfile && isFollowing && (
                 <Button
                   onClick={() => handleUnfollow(profile.nickname)}
                   className="bg-gray-500 hover:bg-gray-400"
                 >
                   언팔로우
                 </Button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
 

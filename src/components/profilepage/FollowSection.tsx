@@ -3,6 +3,7 @@ import Button from "../Button";
 import profileImg from "/images/profileImg.png";
 import closeImg from "/images/close.png";
 import { useNavigate } from "react-router-dom";
+import useLoginStore from "../../store/useStore";
 
 // FollowUser 타입 수정: isFollowing을 optional로 설정
 interface FollowUser {
@@ -40,6 +41,7 @@ const FollowSection = ({
 
   const [view, setView] = useState<"follower" | "following" | null>(null);
   const navigate = useNavigate();
+  const { IsLogin } = useLoginStore();
   console.log("loggedInUserNickname", loggedInUserNickname);
   console.log("Test", { profile });
 
@@ -107,8 +109,13 @@ const FollowSection = ({
                     </div>
                   </div>
 
-                  {/* 현재 로그인한 유저와 비교하여 버튼 숨기기 */}
-                  {user.nickname !== loggedInUserNickname && (
+                  {/* 로그인 안 했을 때 */}
+                  {!IsLogin && (
+                    <Button onClick={() => navigate("/login")}>팔로우</Button>
+                  )}
+
+                  {/* 로그인 했을 때 */}
+                  {IsLogin && user.nickname !== loggedInUserNickname && (
                     <Button
                       onClick={() =>
                         user.isFollowing
