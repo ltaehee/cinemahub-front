@@ -1,7 +1,7 @@
 import { SVGAttributes } from 'react';
 
 interface UnlikeIconProps extends SVGAttributes<SVGSVGElement> {
-  recomm: false;
+  recomm: boolean;
 }
 
 const UnlikeIcon = (props: UnlikeIconProps) => {
@@ -22,7 +22,7 @@ const UnlikeIcon = (props: UnlikeIconProps) => {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        fill={recomm ? '#ff0000' : ''}
+        fill={recomm ? '#ff0000' : '#ffffff'}
       />
     </svg>
   );

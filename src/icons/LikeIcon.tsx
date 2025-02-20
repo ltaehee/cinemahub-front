@@ -22,7 +22,7 @@ const LikeIcon = (props: LikeIconProps) => {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        fill={recomm ? '#ff0000' : ''}
+        fill={recomm ? '#ff0000' : '#ffffff'}
       />
     </svg>
   );

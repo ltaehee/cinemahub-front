@@ -13,7 +13,6 @@ const defaultLikes = {
 };
 
 const LikeComponent = () => {
-  const [recomm, setRecomm] = useState<boolean>(false);
   const [likes, setLikes] = useState<likesType>(defaultLikes);
 
   const handleLikeUnLike = (type: string) => {
@@ -37,21 +36,17 @@ const LikeComponent = () => {
     <>
       <div className="flex gap-3">
         <div
-          className={`flex items-center gap-2 ${
-            likes.like ? `bg-[#FF0000]` : `bg-[#D1D1D1] hover:bg-[#BDBDBD]`
-          } p-[8px] rounded-[5px] transition`}
+          className={`flex items-center gap-2 bg-[#D1D1D1] hover:bg-[#BDBDBD] p-[8px] rounded-[5px] transition`}
           onClick={() => handleLikeUnLike('like')}
         >
-          <LikeIcon recomm={false} />
+          <LikeIcon recomm={likes.like} />
           <span>{10}</span>
         </div>
         <div
-          className={`flex items-center gap-2 ${
-            likes.unlike ? `bg-[#FF0000]` : `bg-[#D1D1D1] hover:bg-[#BDBDBD]`
-          } p-[8px] rounded-[5px] transition`}
+          className={`flex items-center gap-2 bg-[#D1D1D1] hover:bg-[#BDBDBD] p-[8px] rounded-[5px] transition`}
           onClick={() => handleLikeUnLike('unlike')}
         >
-          <UnlikeIcon recomm={false} />
+          <UnlikeIcon recomm={likes.unlike} />
           <span>{10}</span>
         </div>
       </div>
