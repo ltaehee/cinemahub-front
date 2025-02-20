@@ -8,6 +8,7 @@ import UseDebounce from "../hooks/useDebounce";
 import Select from "@ui/Select";
 import LogoIcon from "../icons/LogoIcon";
 import XIcon from "../icons/XIcon";
+import { getLoggedInUserInfo } from "../apis/profile";
 
 type SelectedItem = {
   label: ReactNode;
@@ -57,6 +58,17 @@ const Header = () => {
     navigate(`/search?category=${category}&keyword=${data.keyword}`);
   };
 
+  // 프로필이미지 선택 시 프로필페이지로 이동
+  const handleClickProfile = async () => {
+    try {
+      const response = await getLoggedInUserInfo();
+      console.log(response);
+      navigate(`/profile/${response.nickname}`);
+    } catch (err) {
+      console.error("로그인한 유저 정보 가져오기 실패: ", err);
+    }
+  };
+
   useEffect(() => {
     if (debounceKeyword) {
       navigate(`/search?category=${category}&keyword=${debounceKeyword}`);
@@ -82,7 +94,7 @@ const Header = () => {
     <header className="top-0 z-5 bg-white sticky">
       <div className="flex justify-center items-center border-b border-slate-300 px-8">
         <div className="flex justify-between items-center gap-8 px-8 py-2 h-16 w-[1280px]">
-          <div className="">
+          <div className="flex items-center">
             <button onClick={handleClickMain}>
               <LogoIcon className="h-5 hover:cursor-pointer" />
             </button>
@@ -139,7 +151,7 @@ const Header = () => {
             <div>
               {IsLogin ? (
                 <DefaultUserIcon
-                  onClick={() => navigate("/profile/박찬호")}
+                  onClick={handleClickProfile}
                   className="w-10 hover:cursor-pointer"
                 />
               ) : null}
