@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { baseInstance } from "../apis/axios.config";
 import Modal from "@ui/Modal";
 import FollowSection from "../components/profilepage/FollowSection";
+import TabContainer from "../components/profilepage/TabContainer";
 
 interface UserProfile {
   userId: string;
@@ -27,6 +28,7 @@ const ProfilePage = () => {
     null
   );
   const [isOwnProfile, setIsOwnProfile] = useState(false);
+  const [loggedInUserNickname, setLoggedInUserNickname] = useState<string>("");
   const [isFollowing, setIsFollowing] = useState(false);
   const navigate = useNavigate();
 
@@ -39,14 +41,50 @@ const ProfilePage = () => {
   const handleCloseModal = () => {
     setIsOpen(false);
   };
+  /* 로그인한 유저 프로필 조회 */
+  const getLoggedInUserInfo = async () => {
+    try {
+      const response = await baseInstance.get(`/profile/me`);
+      if (response.status === 200) {
+        setLoggedInUserNickname(response.data.nickname);
+      }
+    } catch (error) {
+      console.error("로그인한 유저 정보 가져오기 실패:", error);
+    }
+  };
 
-  /* 프로필 조회 */
+  /* url에 나온 닉네임 기준 프로필 조회 */
   const getProfileData = async () => {
     try {
       const response = await baseInstance.get(`/profile/${nickname}`);
 
       if (response.status === 200) {
-        setProfile(response.data);
+        const profileData = response.data;
+
+        // 팔로우 상태 추가: 현재 유저가 팔로우하고 있는 사람 목록
+        const followingNicknames = profileData.following.map(
+          (user: { nickname: string }) => user.nickname
+        );
+
+        const updatedFollowers = profileData.followers.map(
+          (user: { nickname: string }) => ({
+            ...user,
+            isFollowing: followingNicknames.includes(user.nickname),
+          })
+        );
+
+        const updatedFollowing = profileData.following.map(
+          (user: { nickname: string }) => ({
+            ...user,
+            isFollowing: true, // 팔로잉 목록에는 무조건 isFollowing이 true
+          })
+        );
+        setProfile({
+          ...profileData,
+          followers: updatedFollowers,
+          following: updatedFollowing,
+        });
+        console.log("현재 페이지 유저 프로필", profile);
         setOriginalProfile(response.data);
         setIsOwnProfile(response.data.isOwnProfile);
         setIsFollowing(response.data.isFollowing);
@@ -91,34 +129,33 @@ const ProfilePage = () => {
   };
 
   /* 팔로우 요청 */
-  const handleFollow = async () => {
+  const handleFollow = async (targetNickname: string) => {
     try {
-      await baseInstance.post(`/follow/${nickname}`);
+      await baseInstance.post(`/follow/${targetNickname}`);
       getProfileData();
-      console.log("팔로우 성공", isFollowing);
+      console.log("팔로우 성공", targetNickname);
     } catch (error) {
       console.error("팔로우 요청 오류:", error);
     }
   };
   /* 언팔로우 요청 */
-  const handleUnfollow = async () => {
+  const handleUnfollow = async (targetNickname: string) => {
     try {
-      await baseInstance.delete(`/follow/${nickname}`);
+      await baseInstance.delete(`/follow/${targetNickname}`);
       getProfileData();
-      handleCloseModal();
+      console.log("언팔로우 성공", targetNickname);
     } catch (error) {
       console.error("언팔로우 요청 오류:", error);
     }
   };
   useEffect(() => {
     getProfileData();
-    console.log("profile", profile);
-    console.log("isOwnProfile", isOwnProfile);
   }, [nickname]);
 
-  /* useEffect(() => {
-    checkFollowingStatus();
-  }, [nickname]); */
+  useEffect(() => {
+    getLoggedInUserInfo();
+    console.log("my Nickname", loggedInUserNickname);
+  }, []);
 
   if (!profile) {
     return;
@@ -178,13 +215,15 @@ const ProfilePage = () => {
             )}
             {!isOwnProfile && !isFollowing && (
               <div className="w-full px-12">
-                <Button onClick={handleFollow}>팔로우</Button>
+                <Button onClick={() => handleFollow(profile.nickname)}>
+                  팔로우
+                </Button>
               </div>
             )}
             {!isOwnProfile && isFollowing && (
               <div className="w-full px-12">
                 <Button
-                  onClick={handleUnfollow}
+                  onClick={() => handleUnfollow(profile.nickname)}
                   className="bg-gray-500 hover:bg-gray-400"
                 >
                   언팔로우
@@ -195,14 +234,14 @@ const ProfilePage = () => {
         </div>
 
         <FollowSection
-          followerCount={profile.followers.length}
-          followingCount={profile.following.length}
-          followerList={profile.followers}
-          followingList={profile.following}
+          profile={profile}
+          loggedInUserNickname={loggedInUserNickname}
+          handleFollow={handleFollow}
+          handleUnfollow={handleUnfollow}
         />
       </div>
 
-      {/* <TabContainer /> */}
+      <TabContainer />
     </div>
   );
 };
