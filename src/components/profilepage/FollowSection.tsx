@@ -188,7 +188,7 @@ const FollowSection = ({
                         >
                           {isDebouncing ? (
                             <div className="flex justify-center items-center">
-                              <div className="w-4 h-4 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
+                              <div className="w-6 h-6  border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
                             </div>
                           ) : isFollowing ? (
                             "언팔로우"

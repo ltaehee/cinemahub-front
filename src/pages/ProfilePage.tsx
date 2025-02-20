@@ -4,11 +4,17 @@ import profileImg from "/images/profileImg.png";
 import profileEdit from "/images/profileEdit.png";
 import profileEdit2 from "/images/profileEdit2.png";
 import { useEffect, useState } from "react";
-import { baseInstance } from "../apis/axios.config";
 import FollowSection from "../components/profilepage/FollowSection";
 import TabContainer from "../components/profilepage/TabContainer";
 import useLoginStore from "../store/useStore";
-import { getFetchNicknameCheck } from "../apis/profile";
+import {
+  followUser,
+  getFetchNicknameCheck,
+  getLoggedInUserInfo,
+  getProfileData,
+  unfollowUser,
+  updateProfileData,
+} from "../apis/profile";
 
 interface UserProfile {
   userId: string;
@@ -37,57 +43,18 @@ const ProfilePage = () => {
   const { IsLogin } = useLoginStore();
 
   /* 로그인한 유저 프로필 조회 */
-  const getLoggedInUserInfo = async () => {
-    try {
-      const response = await baseInstance.get(`/profile/me`);
-      if (response.status === 200) {
-        setLoggedInUserProfile(response.data);
-        console.log("LoggedInUserProfile", loggedInUserProfile);
-      }
-    } catch (error) {
-      console.error("로그인한 유저 정보 가져오기 실패:", error);
-    }
+  const fetchLoggedInUserInfo = async () => {
+    const userInfo = await getLoggedInUserInfo();
+    setLoggedInUserProfile(userInfo);
   };
 
   /* url에 나온 닉네임 기준 프로필 조회 */
-  const getProfileData = async () => {
-    try {
-      const response = await baseInstance.get(`/profile/${nickname}`);
-
-      if (response.status === 200) {
-        const profileData = response.data;
-
-        // 팔로우 상태 추가: 현재 유저가 팔로우하고 있는 사람 목록
-        const followingNicknames = profileData.following.map(
-          (user: { nickname: string }) => user.nickname
-        );
-
-        const updatedFollowers = profileData.followers.map(
-          (user: { nickname: string }) => ({
-            ...user,
-            isFollowing: followingNicknames.includes(user.nickname),
-          })
-        );
-
-        const updatedFollowing = profileData.following.map(
-          (user: { nickname: string }) => ({
-            ...user,
-            isFollowing: true, // 팔로잉 목록에는 무조건 isFollowing이 true
-          })
-        );
-        setProfile({
-          ...profileData,
-          followers: updatedFollowers,
-          following: updatedFollowing,
-        });
-        console.log("현재 페이지 유저 프로필", profile);
-        setOriginalProfile(response.data);
-        setIsOwnProfile(response.data.isOwnProfile);
-        setIsFollowing(response.data.isFollowing);
-      }
-    } catch (err) {
-      console.error("프로필 조회 실패:", err);
-    }
+  const fetchProfileData = async () => {
+    const profileData = await getProfileData(nickname as string);
+    setProfile(profileData);
+    setOriginalProfile(profileData);
+    setIsOwnProfile(profileData.isOwnProfile);
+    setIsFollowing(profileData.isFollowing);
   };
 
   /* 닉네임 중복 체크 */
@@ -101,42 +68,22 @@ const ProfilePage = () => {
     }
   };
   /* 프로필 수정 */
-  const updateProfileData = async () => {
-    if (!profile || !originalProfile || !isOwnProfile) return;
-    if (
-      profile.nickname === originalProfile.nickname &&
-      profile.introduce === originalProfile.introduce
-    ) {
-      console.log("변경된 내용 없음, API 요청 생략");
-      return;
-    }
-
-    try {
-      const response = await baseInstance.patch("/profile/profile-update", {
-        name: profile.nickname,
-        intro: profile.introduce,
-      });
-      setOriginalProfile({ ...profile });
-      if (profile.nickname !== originalProfile.nickname) {
-        navigate(`/profile/${profile.nickname}`);
-      }
-      console.log("프로필 업데이트 성공", response.data);
-    } catch (error) {
-      console.error("프로필 업데이트 오류", error);
-    }
-  };
-
-  /* 프로필 수정 버튼 */
   const handleEditClick = async () => {
     if (isEditing) {
       // 닉네임 중복 체크
       const isUnique = await checkNicknameCheck(profile?.nickname || "");
-      console.log("중복?", isUnique);
       if (!isUnique) {
         alert("이미 사용 중인 닉네임입니다. 다른 닉네임을 입력하세요.");
         return;
       }
-      updateProfileData();
+      if (!profile) {
+        return;
+      }
+      await updateProfileData(profile.nickname, profile.introduce);
+      // 닉네임이 변경된 경우 URL도 수정
+      if (originalProfile && profile.nickname !== originalProfile.nickname) {
+        navigate(`/profile/${profile.nickname}`);
+      }
     }
     setIsEditing(!isEditing);
   };
@@ -145,47 +92,29 @@ const ProfilePage = () => {
   const handleFollow = async (targetNickname: string) => {
     if (isDebouncing) return;
     setIsDebouncing(true);
-    try {
-      await baseInstance.post(`/follow/${targetNickname}`);
-      getProfileData();
-      console.log("팔로우 성공", targetNickname);
-    } catch (error) {
-      console.error("팔로우 요청 오류:", error);
-    } finally {
-      setTimeout(() => {
-        setIsDebouncing(false);
-      }, 1000);
-    }
+    await followUser(targetNickname);
+    fetchProfileData();
+    setTimeout(() => setIsDebouncing(false), 1000);
   };
+
   /* 언팔로우 요청 */
   const handleUnfollow = async (targetNickname: string) => {
     if (isDebouncing) return;
     setIsDebouncing(true);
-    try {
-      await baseInstance.delete(`/follow/${targetNickname}`);
-      getProfileData();
-      console.log("언팔로우 성공", targetNickname);
-    } catch (error) {
-      console.error("언팔로우 요청 오류:", error);
-    } finally {
-      setTimeout(() => {
-        setIsDebouncing(false);
-      }, 1000);
-    }
+    await unfollowUser(targetNickname);
+    fetchProfileData();
+    setTimeout(() => setIsDebouncing(false), 1000);
   };
   useEffect(() => {
-    getProfileData();
+    fetchProfileData();
   }, [nickname]);
 
   useEffect(() => {
-    getLoggedInUserInfo();
-    console.log("my Nickname", loggedInUserProfile);
+    fetchLoggedInUserInfo();
   }, []);
-
   if (!profile) {
     return;
   }
-
   return (
     <div className="w-full flex flex-col items-center justify-center">
       <div className="w-full max-w-[1280px] flex gap-2 mt-10 mb-20 ">
@@ -253,7 +182,7 @@ const ProfilePage = () => {
                 <Button onClick={() => handleFollow(profile.nickname)}>
                   {isDebouncing ? (
                     <div className="flex justify-center items-center">
-                      <div className="w-4 h-4 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
+                      <div className="w-6 h-6 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
                     </div>
                   ) : (
                     "팔로우"
@@ -267,7 +196,7 @@ const ProfilePage = () => {
                 >
                   {isDebouncing ? (
                     <div className="flex justify-center items-center">
-                      <div className="w-4 h-4 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
+                      <div className="w-6 h-6 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
                     </div>
                   ) : (
                     "언팔로우"
@@ -277,7 +206,6 @@ const ProfilePage = () => {
             </div>
           </div>
         </div>
-
         <FollowSection
           profile={profile}
           loggedInUserProfile={loggedInUserProfile}
