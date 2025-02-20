@@ -5,7 +5,6 @@ import closeImg from "/images/close.png";
 import { useNavigate } from "react-router-dom";
 import useLoginStore from "../../store/useStore";
 
-// FollowUser 타입 수정: isFollowing을 optional로 설정
 interface FollowUser {
   nickname: string;
   email: string;
@@ -26,7 +25,7 @@ interface UserProfile {
 
 interface FollowSectionProps {
   profile: UserProfile;
-  loggedInUserNickname: string; // 현재 로그인한 유저 닉네임 추가
+  loggedInUserProfile?: UserProfile | null; // 현재 로그인한 유저 정보 추가
   handleFollow: (nickname: string) => void;
   handleUnfollow: (nickname: string) => void;
 }
@@ -35,16 +34,65 @@ const FollowSection = ({
   profile,
   handleFollow,
   handleUnfollow,
-  loggedInUserNickname,
+  loggedInUserProfile,
 }: FollowSectionProps) => {
   const { followers, following } = profile;
 
   const [view, setView] = useState<"follower" | "following" | null>(null);
   const navigate = useNavigate();
   const { IsLogin } = useLoginStore();
-  console.log("loggedInUserNickname", loggedInUserNickname);
-  console.log("Test", { profile });
+  const [isDebouncing, setIsDebouncing] = useState(false);
+  const [loggedUserProfile, setLoggedUserProfile] =
+    useState<UserProfile | null>(loggedInUserProfile || null);
 
+  // 현재 로그인한 유저가 팔로잉하고 있는 닉네임 리스트 추출
+  const followingNicknames =
+    loggedUserProfile?.following.map((user) => user.nickname) || [];
+
+  const handleFollowClick = async (nickname: string) => {
+    if (isDebouncing) return;
+    setIsDebouncing(true);
+
+    try {
+      handleFollow(nickname);
+      setLoggedUserProfile((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          following: [
+            ...prev.following,
+            { nickname, email: "", profileImg: "" },
+          ],
+        };
+      });
+    } catch (error) {
+      console.error("팔로우 요청 오류:", error);
+    } finally {
+      setTimeout(() => setIsDebouncing(false), 1000);
+    }
+  };
+
+  const handleUnfollowClick = async (nickname: string) => {
+    if (isDebouncing) return;
+    setIsDebouncing(true);
+
+    try {
+      handleUnfollow(nickname);
+      setLoggedUserProfile((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          following: prev.following.filter(
+            (following) => following.nickname !== nickname
+          ),
+        };
+      });
+    } catch (error) {
+      console.error("언팔로우 요청 오류:", error);
+    } finally {
+      setTimeout(() => setIsDebouncing(false), 1000);
+    }
+  };
   return (
     <div className="w-full">
       {view === null ? (
@@ -86,51 +134,72 @@ const FollowSection = ({
 
           <div>
             {(view === "follower" ? followers : following).map(
-              (user, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-2"
-                >
+              (user, index) => {
+                // 현재 user.nickname이 로그인한 유저의 팔로잉 리스트에 포함되어 있는지 확인
+                const isFollowing = followingNicknames.includes(user.nickname);
+
+                return (
                   <div
-                    className="w-full flex items-center gap-3 cursor-pointer"
-                    onClick={() => {
-                      navigate(`/profile/${user.nickname}`);
-                      setView(null);
-                    }}
+                    key={index}
+                    className="flex items-center justify-between p-2"
                   >
-                    <img
-                      src={user.profileImg || profileImg}
-                      alt="프로필"
-                      className="w-10 h-10 rounded-full"
-                    />
-                    <div>
-                      <p className="font-bold">{user.nickname}</p>
-                      <p className="text-sm text-gray-500">{user.email}</p>
-                    </div>
-                  </div>
-
-                  {/* 로그인 안 했을 때 */}
-                  {!IsLogin && (
-                    <Button onClick={() => navigate("/login")}>팔로우</Button>
-                  )}
-
-                  {/* 로그인 했을 때 */}
-                  {IsLogin && user.nickname !== loggedInUserNickname && (
-                    <Button
-                      onClick={() =>
-                        user.isFollowing
-                          ? handleUnfollow(user.nickname)
-                          : handleFollow(user.nickname)
-                      }
-                      className={`${
-                        user.isFollowing ? "bg-gray-500 hover:bg-gray-400" : ""
-                      }`}
+                    <div
+                      className="w-full flex items-center gap-3 cursor-pointer"
+                      onClick={() => {
+                        navigate(`/profile/${user.nickname}`);
+                        setView(null);
+                      }}
                     >
-                      {user.isFollowing ? "언팔로우" : "팔로우"}
-                    </Button>
-                  )}
-                </div>
-              )
+                      <img
+                        src={user.profileImg || profileImg}
+                        alt="프로필"
+                        className="w-10 h-10 rounded-full"
+                      />
+                      <div>
+                        <p className="font-bold">{user.nickname}</p>
+                        <p className="text-sm text-gray-500">{user.email}</p>
+                      </div>
+                    </div>
+
+                    {/* 로그인 안 했을 때 */}
+                    {!IsLogin && (
+                      <Button
+                        onClick={() => {
+                          navigate("/login");
+                        }}
+                      >
+                        팔로우
+                      </Button>
+                    )}
+
+                    {/* 로그인 했을 때 */}
+                    {IsLogin &&
+                      user.nickname !== loggedInUserProfile?.nickname && (
+                        <Button
+                          onClick={() =>
+                            isFollowing
+                              ? handleUnfollowClick(user.nickname)
+                              : handleFollowClick(user.nickname)
+                          }
+                          disabled={isDebouncing}
+                          className={`${
+                            isFollowing ? "bg-gray-500 hover:bg-gray-400" : ""
+                          }`}
+                        >
+                          {isDebouncing ? (
+                            <div className="flex justify-center items-center">
+                              <div className="w-4 h-4 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
+                            </div>
+                          ) : isFollowing ? (
+                            "언팔로우"
+                          ) : (
+                            "팔로우"
+                          )}
+                        </Button>
+                      )}
+                  </div>
+                );
+              }
             )}
           </div>
         </div>
