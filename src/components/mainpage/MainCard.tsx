@@ -123,14 +123,14 @@ const MainCard: FC<MovieProps> = ({
           ))}
         </div>
         <div>{koreanRating}</div>
-        <Button
+        <button
           onClick={() => {
             navigate(`/cinema/${movieId}`), setIsMuted(true);
           }}
-          className="py-[1vw] text-[1.5vw]"
+          className="py-[1vw] text-[1.5vw] bg-red-500/80 rounded-lg hover:bg-red-500 backdrop-blur-xs transition ease-in-out"
         >
           자세히 보기
-        </Button>
+        </button>
       </div>
     </div>
   );

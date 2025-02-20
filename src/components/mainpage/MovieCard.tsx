@@ -24,7 +24,7 @@ const MovieCard: FC<MovieProps> = ({
   return (
     <div
       onClick={() => navigate(`/cinema/${movieId}`)}
-      className="cursor-pointer shadow-md w-56 h-full rounded-md bg-white border border-gray-200"
+      className="cursor-pointer shadow-md w-56 h-full rounded-md bg-white border border-gray-200 group:"
     >
       <div className="relative">
         <img
@@ -38,7 +38,7 @@ const MovieCard: FC<MovieProps> = ({
       <div className="flex flex-col gap-1 p-4">
         <h3 className="text-lg font-semibold w-52 truncate">{title}</h3>
         <div className="flex items-center gap-1">
-          <StarIcon className="w-5" />
+          <StarIcon className="w-5" index={0} rating={1} />
           <div className="text-yellow-500 text-sm">4.0</div>
         </div>
         <div className="flex items-center justify-between mt-2">
