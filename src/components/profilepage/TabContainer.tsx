@@ -82,23 +82,11 @@ const TabContainer = () => {
           </Tabs.Menu>
         </Tabs.MenuList>
         <Tabs.Pannel index={1}>
-          <div className="max-w-[1280px] w-full mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 mt-[50px] mb-4">
-            {/* {dummyMovies.map((movie) => (
-              <MovieCard
-                key={movie.id}
-                id={movie.id}
-                image={movie.image}
-                name={movie.name}
-                rating={movie.rating}
-                genre={movie.genre}
-                ageLimit={movie.ageLimit}
-                className="w-full"
-              />
-            ))} */}
-          </div>
+          <div className="max-w-[1280px] w-full mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 mt-[50px] mb-4"></div>
         </Tabs.Pannel>
         <Tabs.Pannel index={2}>
-          <PersonCard />
+          {/* <PersonCard /> */}
+          인물 컴포넌트
         </Tabs.Pannel>
         <Tabs.Pannel index={3}>평점 내역 컴포넌트</Tabs.Pannel>
       </Tabs>
