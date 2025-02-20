@@ -35,3 +35,21 @@ export const getFetchMovieInfo = async (MovieName: string) => {
     throw new Error("영화 정보를 불러오는 중 오류가 발생했습니다.");
   }
 };
+
+// 유저정보 검색
+export const getFetchUserInfo = async (keyword: string) => {
+  try {
+    const response = await baseInstance.get(`/search/user?keyword=${keyword}`);
+
+    if (!response.data || response.data.length === 0) {
+      throw new Error("검색된 유저가 없습니다.");
+    }
+
+    console.log("유저정보: ", response.data);
+
+    return response.data;
+  } catch (err) {
+    console.error("유저정보를 가져오는데 실패했습니다.", err);
+    throw new Error("유저정보를 불러오는 중 오류가 발생했습니다.");
+  }
+};

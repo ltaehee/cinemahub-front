@@ -1,8 +1,47 @@
 import Tabs from "@ui/Tabs";
 import { useState } from "react";
+import Table from "../components/adminpage/Table";
+import Button from "../components/Button";
+import SearchBar from "../components/adminpage/SearchBar";
+import { getFetchUserInfo } from "../apis/search";
+
+interface UserProps {
+  email: string;
+  nickname: string;
+  createdAt: string;
+}
 
 const AdminPage = () => {
-  const [users, setUsers] = useState();
+  const [users, setUsers] = useState<UserProps[]>([]);
+
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+
+  const handleSelectUser = (email: string) => {
+    setSelectedUsers((prev) =>
+      prev.includes(email)
+        ? prev.filter((userId) => userId !== email)
+        : [...prev, email]
+    );
+  };
+
+  const handleSelectAllUsers = (checked: boolean) => {
+    setSelectedUsers(checked ? users.map((user) => user.email) : []);
+  };
+
+  // 유저 검색
+  const handleSearch = async (query: string) => {
+    if (query.trim() === "") return;
+    try {
+      const response = await getFetchUserInfo(query);
+
+      setUsers(response);
+
+      console.log("user: ", response);
+    } catch (err) {
+      console.error("검색 오류", err);
+    }
+  };
+  console.log("user: ", users);
   const [activeIndex, setActiveIndex] = useState(1);
   const handleChangeTab = (index: number) => {
     setActiveIndex(index);
@@ -35,31 +74,30 @@ const AdminPage = () => {
                     유저 관리
                   </h1>
                 </div>
-                <div className="px-70">
-                  <input
-                    type="text"
+                <div className="px-70 flex justify-center">
+                  <SearchBar
+                    onSearch={handleSearch}
                     placeholder="회원 아이디 또는 이름 검색"
-                    className="border p-2 w-full mb-4 rounded"
                   />
+                  <div className="ml-2 w-[20%]">
+                    <Button className="">검색</Button>
+                  </div>
                 </div>
                 <div className="p-10 w-full">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="bg-gray-200">
-                        <th className="p-3 border w-15">
-                          <input type="checkbox" />
-                        </th>
-                        <th className="p-3 border">회원 아이디</th>
-                        <th className="p-3 border">이름</th>
-                        <th className="p-3 border">가입 날짜</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <td className="p-2 border">username</td>
-                      <td className="p-2 border">name</td>
-                      <td className="p-2 border">joinedAt</td>
-                    </tbody>
-                  </table>
+                  <Table
+                    columns={[
+                      { key: "email", label: "회원아이디" },
+                      { key: "nickname", label: "이름" },
+                      { key: "createdAt", label: "가입날짜" },
+                    ]}
+                    data={users}
+                    onSelectAll={handleSelectAllUsers}
+                    onSelectItem={handleSelectUser}
+                    selectedItems={selectedUsers}
+                  />
+                  <div className="mt-7 w-[50%] mx-auto ">
+                    <Button>삭제</Button>
+                  </div>
                 </div>
               </Tabs.Pannel>
               <Tabs.Pannel index={2}>신고리뷰</Tabs.Pannel>
