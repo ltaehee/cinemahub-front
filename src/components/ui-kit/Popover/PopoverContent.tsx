@@ -20,6 +20,7 @@ const PopoverContent = (props: PopoverContentProps) => {
     useContext(PopoverContext);
   const { className, children } = props;
   const contentRef = useRef<HTMLDivElement>(null);
+
   const handleClickOutside = (e: MouseEvent) => {
     if (contentRef.current && !contentRef.current.contains(e.target as Node)) {
       setIsOpen(false);
@@ -36,43 +37,71 @@ const PopoverContent = (props: PopoverContentProps) => {
     };
   }, [isOpen, setIsOpen]);
 
-  const contentPosition = (): CSSProperties => {
+  const getContentPosition = (): CSSProperties => {
+    if (!triggerRect) return {};
+    const scrollY = window.scrollY;
+    const scrollX = window.scrollX;
+
     if (position === "bottom-left")
       return {
         position: "absolute",
-        top: `${triggerRect.bottom}px`,
-        left: `${triggerRect.left}px`,
+        top: `${triggerRect.bottom + scrollY}px`,
+        left: `${triggerRect.left + scrollX}px`,
       };
     if (position === "bottom-center")
       return {
         position: "absolute",
-        top: `${triggerRect.bottom}px`,
-        left: `${triggerRect.left + triggerRect.width / 2}px`,
+        top: `${triggerRect.bottom + scrollY}px`,
+        left: `${triggerRect.left + scrollX + triggerRect.width / 2}px`,
+        transform: "translateX(-50%)",
       };
     if (position === "bottom-right")
       return {
         position: "absolute",
-        top: `${triggerRect.bottom}px`,
-        left: `${triggerRect.right}px`,
+        top: `${triggerRect.bottom + scrollY}px`,
+        left: `${triggerRect.right + scrollX}px`,
       };
     return {
       position: "absolute",
-      top: `${triggerRect.bottom}px`,
-      left: `${triggerRect.left}px`,
+      top: `${triggerRect.bottom + scrollY}px`,
+      left: `${triggerRect.left + scrollX}px`,
     };
   };
+
+  useEffect(() => {
+    const updatePosition = () => {
+      if (isOpen) {
+        contentRef.current?.style.setProperty(
+          "top",
+          `${triggerRect.bottom + window.scrollY}px`
+        );
+        contentRef.current?.style.setProperty(
+          "left",
+          `${triggerRect.left + window.scrollX}px`
+        );
+      }
+    };
+
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition);
+    return () => {
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition);
+    };
+  }, [isOpen, triggerRect]);
 
   const cls = useMemo(
     () => (className ? `${className} ${popoverContentCls}` : popoverContentCls),
     [className]
   );
+
   return (
     <>
       {isOpen &&
         createPortal(
           <div
             id="my-popover"
-            style={contentPosition()}
+            style={getContentPosition()}
             ref={contentRef}
             className={cls}
           >
@@ -83,4 +112,5 @@ const PopoverContent = (props: PopoverContentProps) => {
     </>
   );
 };
+
 export default PopoverContent;

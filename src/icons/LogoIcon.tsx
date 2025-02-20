@@ -2,7 +2,7 @@ import { SVGAttributes } from "react";
 
 interface IconProps extends SVGAttributes<SVGSVGElement> {}
 
-const HeaderIcon = (props: IconProps) => {
+const LogoIcon = (props: IconProps) => {
   const { ...rest } = props;
 
   return (
@@ -58,4 +58,4 @@ const HeaderIcon = (props: IconProps) => {
   );
 };
 
-export default HeaderIcon;
+export default LogoIcon;

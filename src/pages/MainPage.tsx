@@ -187,7 +187,7 @@ const MainPage = () => {
         <section className="pt-8">
           <div className="px-8">
             <h3 ref={baseRef} className="pb-2 font-medium text-xl">
-              카테고리
+              영화 카테고리
             </h3>
           </div>
           <CarouselXscroll
@@ -235,7 +235,7 @@ const MainPage = () => {
         <section className="pt-8">
           <div className="px-8">
             <h3 ref={baseRef} className="pb-2 font-medium text-xl">
-              이번주 트렌드
+              이번주 트렌드 영화
             </h3>
           </div>
           <CarouselXscroll
@@ -285,14 +285,14 @@ const MainPage = () => {
         <section className="pt-8">
           <div className="px-8">
             <h3 ref={baseRef} className="pb-2 font-medium text-xl">
-              이번주 트렌드
+              이번주 인기 배우
             </h3>
           </div>
           <CarouselXscroll
             baseRect={baseRect}
             pixelMove={window.outerWidth}
             itemListRef={personRef}
-            className="group"
+            className="group pb-16"
           >
             <CarouselXscroll.ItemContainer className="h-full">
               <CarouselXscroll.Items className="flex gap-4">

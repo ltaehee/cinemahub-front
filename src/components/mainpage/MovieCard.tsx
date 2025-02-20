@@ -24,7 +24,7 @@ const MovieCard: FC<MovieProps> = ({
   return (
     <div
       onClick={() => navigate(`/cinema/${movieId}`)}
-      className="cursor-pointer shadow-md w-56 h-full rounded-md bg-white"
+      className="cursor-pointer shadow-md w-56 h-full rounded-md bg-white border border-gray-200"
     >
       <div className="relative">
         <img
@@ -33,7 +33,7 @@ const MovieCard: FC<MovieProps> = ({
           className="h-[340px] object-cover rounded-tl-md rounded-tr-md select-none"
           onDragStart={(e) => e.preventDefault()}
         />
-        <FavoritesBtn className="absolute top-2 left-2" />
+        <FavoritesBtn className="absolute top-2 left-2 border border-gray-200 rounded-full" />
       </div>
       <div className="flex flex-col gap-1 p-4">
         <h3 className="text-lg font-semibold w-52 truncate">{title}</h3>
