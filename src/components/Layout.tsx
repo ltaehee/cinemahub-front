@@ -2,6 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { Outlet, useLocation } from "react-router-dom";
 import Header from "./Header";
 import { seoConfig } from "@consts/seoConfig";
+import Footer from "./Footer";
 
 const getSeoData = (pathname: string, search: string) => {
   const queryParams = new URLSearchParams(search);
@@ -37,6 +38,7 @@ const Layout = () => {
       )}
       <Header />
       <Outlet />
+      <Footer />
     </>
   );
 };

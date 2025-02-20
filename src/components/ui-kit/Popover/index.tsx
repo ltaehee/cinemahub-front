@@ -59,6 +59,7 @@ const Popover: FC<PopoverProps> & PopoverCompoundProps = (props) => {
     openPopover,
     closePopover,
   };
+  console.log(triggerRect);
 
   const cls = useMemo(
     () => (className ? `${className} ${popoverBaseCls}` : popoverBaseCls),

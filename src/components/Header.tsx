@@ -1,6 +1,5 @@
 import { useLocation, useNavigate, useSearchParams } from "react-router";
 import { getFetchUserLogout } from "../apis/login";
-import HeaderIcon from "../icons/HeaderIcon";
 import useLoginStore from "../store/useStore";
 import { ReactNode, useEffect, useState } from "react";
 import SearchIcon from "../icons/SearchIcon";
@@ -8,6 +7,7 @@ import DefaultUserIcon from "../icons/DefaultUserIcon";
 import { useForm } from "react-hook-form";
 import UseDebounce from "../hooks/useDebounce";
 import Select from "@ui/Select";
+import LogoIcon from "../icons/LogoIcon";
 
 type SelectedItem = {
   label: ReactNode;
@@ -79,24 +79,24 @@ const Header = () => {
   }, [urlCategory]);
 
   return (
-    <header className="top-0 z-5 bg-white ">
-      <div className="flex justify-center items-center border-b border-slate-300">
+    <header className="top-0 z-5 bg-white sticky">
+      <div className="flex justify-center items-center border-b border-slate-300 px-8">
         <div className="flex justify-between items-center gap-8 px-8 py-2 h-16 w-[1280px]">
           <div className="">
             <button onClick={handleClickMain}>
-              <HeaderIcon className="w-30 h-10 hover:cursor-pointer" />
+              <LogoIcon className="w-30 h-10 hover:cursor-pointer" />
             </button>
           </div>
           <form
             onSubmit={handleSubmit(onValid)}
-            className="relative flex items-center w-96 border border-gray-300 rounded-lg overflow-hidden"
+            className="relative flex items-center w-full border border-gray-300 rounded-lg overflow-hidden"
           >
             <Select
               value={category}
               onChange={setCategory}
               item={selectedItem}
               setItem={setSelectedItem}
-              className="relative p-1 border-r border-gray-300 hover:cursor-pointer"
+              className="p-1 border-r border-gray-300 hover:cursor-pointer sticky"
             >
               <Select.Trigger className="w-full px-3 py-1 text-gray-700 hover:bg-gray-100 focus:ring-2 focus:outline-none" />
               <Select.Content className="p-3 mt-2 bg-white border border-gray-300 rounded-md z-5 ">
@@ -129,7 +129,7 @@ const Header = () => {
             {IsLogin ? (
               <button
                 onClick={handleLogoutFetch}
-                className="hover:cursor-pointer"
+                className="hover:cursor-pointer text-nowrap"
               >
                 로그아웃
               </button>
