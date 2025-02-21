@@ -27,14 +27,20 @@ const ModalTrigger = (props: ModalTriggerProps) => {
     <>
       {children ? (
         isValidElement(children) ? (
-          cloneElement(children as ReactElement, {
-            onClick: onOpenModal,
-          })
+          cloneElement(
+            children as ReactElement,
+            {
+              onClick: onOpenModal,
+            } as Partial<ReactElement>
+          )
         ) : (
           Children.map(children, (child) =>
-            cloneElement(child as ReactElement, {
-              onClick: onOpenModal,
-            })
+            cloneElement(
+              child as ReactElement,
+              {
+                onClick: onOpenModal,
+              } as Partial<ReactElement>
+            )
           )
         )
       ) : (

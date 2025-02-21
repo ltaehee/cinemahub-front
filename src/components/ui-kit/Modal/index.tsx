@@ -28,7 +28,7 @@ interface ModalProps {
   children: ReactNode;
   className?: string;
   onCloseModal: () => void;
-  onOpenModal: () => void;
+  onOpenModal?: () => void;
   open: boolean;
 }
 
@@ -37,7 +37,7 @@ const Modal: FC<ModalProps> & ModalCompoundProps = (props) => {
 
   const contextValue = {
     onCloseModal,
-    onOpenModal,
+    onOpenModal: onOpenModal || (() => {}),
     open,
   };
 

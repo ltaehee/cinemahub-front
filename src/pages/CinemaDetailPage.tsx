@@ -1,14 +1,17 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { FC } from "react";
+import { Outlet } from "react-router-dom";
 
-const CinemaDetailPage = () => {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const movieTitle = queryParams.get("movie");
+interface CinemaDetailPageProps {
+  movieId: number;
+}
 
+const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
   return (
     <>
       <Outlet />
-      {movieTitle} 상세페이지
+      <div className="bg-white w-[1280px] h-[2000px] rounded-2xl">
+        {movieId}
+      </div>
     </>
   );
 };

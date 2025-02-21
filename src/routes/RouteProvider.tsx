@@ -5,9 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Layout from "../components/Layout";
 import ErrorPage from "../pages/ErrorPage";
 import MainPage from "../pages/MainPage";
-import CinemaDetailPage from "../pages/CinemaDetailPage";
 import CinemaReviewPage from "../pages/CinemaReviewPage";
-// import BoxOfficePage from '../pages/BoxOfficePage';
 // import MyPage from '../pages/MyPage';
 import useLoginStore from "../store/useStore";
 import { getFetchUserSession } from "../apis/login";
@@ -16,7 +14,6 @@ import PrivateRouter from "./PrivateRouter";
 import AgreePolicy from "../pages/AgreePolicy";
 import AdminPage from "../pages/AdminPage";
 import ProfilePage from "../pages/ProfilePage";
-import PersonDetailPage from "../pages/PersonDetailPage";
 
 const RouteProvider = () => {
   const login = useLoginStore((state) => state.login);
@@ -43,25 +40,11 @@ const RouteProvider = () => {
         {
           path: "/",
           element: <PrivateRouter element={<MainPage />} />,
-          children: [
-            {
-              path: "/cinema/:id",
-              element: <CinemaDetailPage />,
-            },
-            {
-              path: "/person/:id",
-              element: <PersonDetailPage />,
-            },
-          ],
         },
         {
           path: "/review",
           element: <CinemaReviewPage />,
         },
-        // {
-        //   path: '/boxoffice',
-        //   element: <BoxOfficePage />,
-        // },
         {
           path: "/login",
           element: <PrivateRouter element={<Login />} />,

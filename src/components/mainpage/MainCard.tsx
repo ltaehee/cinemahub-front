@@ -1,12 +1,11 @@
 import { FC, useEffect, useState } from "react";
-import Button from "../Button";
 import { genres } from "@consts/genres";
 import UnMuteIcon from "../../icons/UnMuteIcon";
 import MuteIcon from "../../icons/MuteIcon";
 import { useNavigate } from "react-router-dom";
 
 interface MovieProps {
-  movieId: string;
+  movieId: number;
   title: string;
   releaseDate: string;
   backdropPath: string;
@@ -50,7 +49,7 @@ const MainCard: FC<MovieProps> = ({
   const toggleMute = () => setIsMuted((prev) => !prev);
 
   return (
-    <div className="relative bg-cover bg-center w-full h-[50vw] flex items-center rounded-3xl text-white">
+    <div className="relative bg-cover bg-center w-full h-[45vw] flex items-center rounded-3xl text-white">
       <div className="absolute inset-0 rounded-3xl transition-opacity duration-1000 ease-in-out">
         {trailer && showTrailer && (
           <iframe
@@ -125,7 +124,7 @@ const MainCard: FC<MovieProps> = ({
         <div>{koreanRating}</div>
         <button
           onClick={() => {
-            navigate(`/cinema/${movieId}`), setIsMuted(true);
+            navigate(`?movie=${movieId}`), setIsMuted(true);
           }}
           className="py-[1vw] text-[1.5vw] bg-red-500/80 rounded-lg hover:bg-red-500 backdrop-blur-xs transition ease-in-out"
         >

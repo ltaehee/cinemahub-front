@@ -1,6 +1,5 @@
 import CarouselXscroll from "@ui/CarouselXscroll";
 import { useEffect, useRef, useState } from "react";
-import { Outlet } from "react-router-dom";
 import ChevronIcon from "../icons/ChevronIcon";
 import MainCard from "../components/mainpage/MainCard";
 import Carousel from "@ui/CarouselInfinite";
@@ -12,9 +11,14 @@ import { trendingMovies } from "../apis/movie";
 import MovieCard from "../components/mainpage/MovieCard";
 import { popularActors } from "../apis/person";
 import PersonCard from "../components/mainpage/PersonCard";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import CinemaDetailPage from "./CinemaDetailPage";
+import PersonDetailPage from "./PersonDetailPage";
+import Modal from "@ui/Modal";
+import XIcon from "../icons/XIcon";
 
 interface trendingDayMovie {
-  movieId: string;
+  movieId: number;
   title: string;
   releaseDate: string;
   backdropPath: string;
@@ -25,7 +29,7 @@ interface trendingDayMovie {
 }
 
 interface trendingWeekMovie {
-  movieId: string;
+  movieId: number;
   title: string;
   releaseDate: string;
   posterPath: string;
@@ -39,6 +43,9 @@ interface PopularActors {
 }
 
 const MainPage = () => {
+  const navigate = useNavigate();
+  const [isMovieOpen, setIsMovieOpen] = useState<boolean>(false);
+  const [isPersonOpen, setIsPersonOpen] = useState<boolean>(false);
   const baseRef = useRef<HTMLDivElement>(null);
   const genreRef = useRef<HTMLDivElement>(null);
   const weekCardRef = useRef<HTMLDivElement>(null);
@@ -46,7 +53,7 @@ const MainPage = () => {
   const [baseRect, setBaseRect] = useState(new DOMRect());
   const [trendingDayMovie, setTrendingDayMovie] = useState<trendingDayMovie[]>([
     {
-      movieId: "",
+      movieId: 0,
       title: "",
       releaseDate: "",
       backdropPath: "",
@@ -60,7 +67,7 @@ const MainPage = () => {
     trendingWeekMovie[]
   >([
     {
-      movieId: "",
+      movieId: 0,
       title: "",
       releaseDate: "",
       posterPath: "",
@@ -75,22 +82,42 @@ const MainPage = () => {
     },
   ]);
 
-  const fetchData = async () => {
-    try {
-      const [movieResponse, actorResponse] = await Promise.all([
-        trendingMovies(),
-        popularActors(),
-      ]);
+  const [searchParams] = useSearchParams();
+  const movieId = searchParams.get("movie");
+  const personId = searchParams.get("person");
 
-      setTrendingDayMovie(movieResponse.trending_day);
-      setTrendingWeekMovie(movieResponse.trending_week);
-      setPopularPeople(actorResponse);
-    } catch (err) {
-      console.error("데이터를 가져오는데 실패했습니다.", err);
-    }
+  const [selectedMovie, setSelectedMovie] = useState<number | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<number | null>(null);
+
+  const closeModal = () => {
+    setSelectedMovie(null);
+    setSelectedPerson(null);
+    setIsMovieOpen(false);
+    setIsPersonOpen(false);
+    navigate("/", { replace: true });
   };
 
   useEffect(() => {
+    if (movieId) setSelectedMovie(Number(movieId));
+    if (personId) setSelectedPerson(Number(personId));
+  }, [movieId, personId]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [movieResponse, actorResponse] = await Promise.all([
+          trendingMovies(),
+          popularActors(),
+        ]);
+
+        setTrendingDayMovie(movieResponse.trending_day);
+        setTrendingWeekMovie(movieResponse.trending_week);
+        setPopularPeople(actorResponse);
+      } catch (err) {
+        console.error("데이터를 가져오는데 실패했습니다.", err);
+      }
+    };
+
     fetchData();
   }, []);
 
@@ -113,9 +140,24 @@ const MainPage = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (selectedMovie) {
+      setIsMovieOpen(true);
+    } else {
+      setIsMovieOpen(false);
+    }
+  }, [selectedMovie]);
+
+  useEffect(() => {
+    if (selectedPerson) {
+      setIsPersonOpen(true);
+    } else {
+      setIsPersonOpen(false);
+    }
+  }, [selectedPerson]);
+
   return (
     <>
-      <Outlet />
       <main>
         <Carousel className="relative px-16 pt-8">
           <Carousel.ItemContainer>
@@ -331,6 +373,31 @@ const MainPage = () => {
           </CarouselXscroll>
         </section>
       </main>
+      <Modal onCloseModal={closeModal} open={isMovieOpen}>
+        <Modal.Backdrop className="z-1 bg-black/50 backdrop-blur-lg" />
+        <Modal.Content className="top-0 my-[128px] z-2 left-[50%] transform -translate-x-1/2">
+          <Modal.Close>
+            <XIcon fill="#000" className="fixed top-4 right-4 w-6" />
+          </Modal.Close>
+          {selectedMovie !== null && (
+            <CinemaDetailPage movieId={selectedMovie} />
+          )}
+        </Modal.Content>
+      </Modal>
+      {/* <Modal onCloseModal={closeModal} open={isPersonOpen}>
+        <Modal.Backdrop className="z-1 bg-black/50 backdrop-blur-lg" />
+        <Modal.Content>
+          <div className="bg-white w-[1280px] h-[2000px] rounded-2xl">
+            <Modal.Close>
+              <button>닫기</button>
+            </Modal.Close>
+
+            {selectedPerson !== null && (
+              <PersonDetailPage personId={selectedPerson} />
+            )}
+          </div>
+        </Modal.Content>
+      </Modal> */}
     </>
   );
 };
