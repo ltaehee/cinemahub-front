@@ -82,3 +82,39 @@ export const unfollowUser = async (targetNickname: string) => {
     throw new Error("언팔로우 요청 중 오류가 발생했습니다.");
   }
 };
+
+/* 즐겨찾기 상태체크 */
+export const checkFavoriteAPI = async (
+  favoriteType: string,
+  favoriteId: string
+) => {
+  const response = await baseInstance.get(`/favorite/check`, {
+    params: {
+      favoriteType,
+      favoriteId,
+    },
+  });
+  return response.data;
+};
+/* 즐겨찾기 추가 */
+export const addFavoriteAPI = async (
+  favoriteType: string,
+  favoriteId: string
+) => {
+  const response = await baseInstance.post(`/favorite/add`, {
+    favoriteType,
+    favoriteId,
+  });
+  return response.data;
+};
+/* 즐겨찾기 삭제 */
+export const removeFavoriteAPI = async (
+  favoriteType: string,
+  favoriteId: string
+) => {
+  const response = await baseInstance.post(`/favorite/remove`, {
+    favoriteType,
+    favoriteId,
+  });
+  return response.data;
+};

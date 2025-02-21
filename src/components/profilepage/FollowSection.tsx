@@ -119,7 +119,7 @@ const FollowSection = ({
           </div>
         </div>
       ) : (
-        <div className="border border-[#DFDFDF] rounded-2xl p-4 w-full h-full ">
+        <div className="border border-[#DFDFDF] rounded-2xl p-4 w-full h-[300px] overflow-y-scroll ">
           <div className="flex justify-between items-center pb-2">
             <h2 className="text-xl font-bold">
               {view === "follower" ? "팔로워" : "팔로잉"}
@@ -141,7 +141,7 @@ const FollowSection = ({
                 return (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-2"
+                    className="flex items-center justify-between p-2 "
                   >
                     <div
                       className="w-full flex items-center gap-3 cursor-pointer"

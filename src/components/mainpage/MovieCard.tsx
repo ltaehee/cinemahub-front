@@ -35,7 +35,11 @@ const MovieCard: FC<MovieProps> = ({
             onDragStart={(e) => e.preventDefault()}
           />
         </div>
-        <FavoritesBtn className="absolute top-2 left-2 border border-gray-200 rounded-full" />
+        <FavoritesBtn
+          favoriteType="Movie"
+          favoriteId={movieId.toString()}
+          className="absolute top-2 left-2 border border-gray-200 rounded-full"
+        />
       </div>
       <div className="flex flex-col gap-1 p-4">
         <h3 className="text-lg font-semibold w-52 truncate">{title}</h3>

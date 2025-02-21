@@ -22,7 +22,11 @@ const PersonCard: FC<PopularPerson> = ({ personId, name, profilePath }) => {
           className="object-cover  w-full h-full border border-gray-200 shadow-md hover:scale-110 duration-300 ease-in-out "
         />
       </div>
-      <FavoritesBtn className="absolute top-2 left-2 border border-gray-200 rounded-full" />
+      <FavoritesBtn
+        favoriteType="Person"
+        favoriteId={personId.toString()}
+        className="absolute top-2 left-2 border border-gray-200 rounded-full"
+      />
       <h3 className="text-center pt-2 text-lg">{name}</h3>
     </div>
   );
