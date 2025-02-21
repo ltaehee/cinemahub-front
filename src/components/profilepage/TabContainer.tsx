@@ -5,41 +5,6 @@ import movie2 from "/images/movie2.png";
 import { useState } from "react";
 import PersonCard from "../mainpage/PersonCard";
 
-const dummyMovies = [
-  {
-    id: "1",
-    name: "중증외상센터",
-    image: movie2,
-    rating: 8.8,
-    genre: "드라마",
-    ageLimit: "15+",
-  },
-  {
-    id: "2",
-    name: "백두산",
-    image: movie1,
-    rating: 8.8,
-    genre: "SF, 액션",
-    ageLimit: "12세 이상",
-  },
-  {
-    id: "3",
-    name: "부산행2",
-    image: movie1,
-    rating: 8.8,
-    genre: "SF, 액션",
-    ageLimit: "12+",
-  },
-  {
-    id: "4",
-    name: "중증외상센터2",
-    image: movie2,
-    rating: 8.8,
-    genre: "SF, 액션",
-    ageLimit: "12+",
-  },
-];
-
 const TabContainer = () => {
   const [activeTab, setActiveTab] = useState(1);
   const handleChangeTab = (index: number) => {
@@ -47,7 +12,7 @@ const TabContainer = () => {
   };
 
   return (
-    <div className="w-full max-w-[1280px]">
+    <div className="w-full max-w-[1280px] flex px-8">
       <Tabs onChangeTab={handleChangeTab} className="w-[1280px]">
         <Tabs.MenuList className="flex w-full mb-12">
           <Tabs.Menu
@@ -82,7 +47,17 @@ const TabContainer = () => {
           </Tabs.Menu>
         </Tabs.MenuList>
         <Tabs.Pannel index={1}>
-          <div className="max-w-[1280px] w-full mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 mt-[50px] mb-4"></div>
+          <div className="max-w-[1280px] w-full mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 mt-[50px] mb-4">
+            {/* {favoriteMovies.map((movie) => (
+              <MovieCard
+                key={movie.movieId}
+                movieId={movie.movieId}
+                title={movie.title}
+                releaseDate={movie.releaseDate}
+                posterPath={movie.posterPath}
+              />
+            ))} */}
+          </div>
         </Tabs.Pannel>
         <Tabs.Pannel index={2}>
           {/* <PersonCard /> */}
