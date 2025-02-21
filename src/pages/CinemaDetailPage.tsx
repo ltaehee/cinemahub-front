@@ -9,9 +9,7 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
   return (
     <>
       <Outlet />
-      <div className="bg-white w-[1280px] h-[2000px] rounded-2xl">
-        {movieId}
-      </div>
+      <div className="bg-white w-[1280px] rounded-2xl">{movieId}</div>
     </>
   );
 };

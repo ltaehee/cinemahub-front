@@ -41,7 +41,7 @@ const ModalContent = (props: ModalContentProps) => {
           <div
             style={{
               position: "absolute",
-              top: window.scrollY,
+              top: "0",
               left: "50%",
               transform: "translateX(-50%)",
             }}

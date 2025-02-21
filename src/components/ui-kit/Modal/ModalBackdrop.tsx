@@ -21,10 +21,10 @@ const ModalBackdrop = (props: ModalBackdropProps) => {
         createPortal(
           <div
             style={{
-              top: window.scrollY,
+              top: 0,
               width: "100vw",
               height: "100vh",
-              position: "absolute",
+              position: "fixed",
             }}
             className={cls}
           ></div>,
