@@ -99,12 +99,13 @@ const Register = () => {
 
     try {
       const { result, message } = await getFetchUserData(userInfo);
-      console.log(result, message);
 
       if (!result) {
         throw new Error(message);
       }
+
       login();
+      alert(message);
     } catch (e) {
       console.error(e);
     }
@@ -113,7 +114,7 @@ const Register = () => {
   useEffect(() => {
     if (social === '1') handleGetGoogleDataFetch();
     if (social === '2') handleGetNaverDataFetch();
-    if (social === null) {
+    if (social === null && (social !== '1' || social !== '2')) {
       navigator('/login', { replace: true });
     }
   }, []);

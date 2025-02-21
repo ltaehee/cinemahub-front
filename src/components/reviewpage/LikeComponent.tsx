@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import LikeIcon from '../../icons/LikeIcon';
 import UnlikeIcon from '../../icons/UnlikeIcon';
+import { useCommentContext } from './comment';
 
 type likesType = {
   like: boolean;
@@ -14,6 +15,8 @@ const defaultLikes = {
 
 const LikeComponent = () => {
   const [likes, setLikes] = useState<likesType>(defaultLikes);
+
+  const { comment } = useCommentContext();
 
   const handleLikeUnLike = (type: string) => {
     switch (type) {
@@ -29,7 +32,11 @@ const LikeComponent = () => {
   };
 
   useEffect(() => {
-    setLikes((prev) => ({ ...prev, like: true, unlike: false }));
+    setLikes((prev) => ({
+      ...prev,
+      like: comment.like,
+      unlike: comment.dislike,
+    }));
   }, []);
 
   return (
@@ -40,14 +47,14 @@ const LikeComponent = () => {
           onClick={() => handleLikeUnLike('like')}
         >
           <LikeIcon recomm={likes.like} />
-          <span>{10}</span>
+          <span>{comment.totalLike}</span>
         </div>
         <div
           className={`flex items-center gap-2 bg-[#D1D1D1] hover:bg-[#BDBDBD] p-[8px] rounded-[5px] transition`}
           onClick={() => handleLikeUnLike('unlike')}
         >
           <UnlikeIcon recomm={likes.unlike} />
-          <span>{10}</span>
+          <span>{comment.totalUnlike}</span>
         </div>
       </div>
     </>

@@ -1,17 +1,17 @@
-import CarouselXscroll from "@ui/CarouselXscroll";
-import { useEffect, useRef, useState } from "react";
-import { Outlet } from "react-router-dom";
-import ChevronIcon from "../icons/ChevronIcon";
-import MainCard from "../components/mainpage/MainCard";
-import Carousel from "@ui/CarouselInfinite";
-import CarouselItem from "@ui/CarouselInfinite/CarouselInfiniteItem";
-import CarouselItemList from "@ui/CarouselInfinite/CarouselInfiniteItemList";
-import { genres } from "@consts/genres";
-import Button from "../components/Button";
-import { trendingMovies } from "../apis/movie";
-import MovieCard from "../components/mainpage/MovieCard";
-import { popularActors } from "../apis/person";
-import PersonCard from "../components/mainpage/PersonCard";
+import CarouselXscroll from '@ui/CarouselXscroll';
+import { useEffect, useRef, useState } from 'react';
+import { Outlet } from 'react-router-dom';
+import ChevronIcon from '../icons/ChevronIcon';
+import MainCard from '../components/mainpage/MainCard';
+import Carousel from '@ui/CarouselInfinite';
+import CarouselItem from '@ui/CarouselInfinite/CarouselInfiniteItem';
+import CarouselItemList from '@ui/CarouselInfinite/CarouselInfiniteItemList';
+import { genres } from '@consts/genres';
+import Button from '../components/Button';
+import { trendingMovies } from '../apis/movie';
+import MovieCard from '../components/mainpage/MovieCard';
+import { popularActors } from '../apis/person';
+import PersonCard from '../components/mainpage/PersonCard';
 
 interface trendingDayMovie {
   movieId: string;
@@ -46,53 +46,53 @@ const MainPage = () => {
   const [baseRect, setBaseRect] = useState(new DOMRect());
   const [trendingDayMovie, setTrendingDayMovie] = useState<trendingDayMovie[]>([
     {
-      movieId: "",
-      title: "",
-      releaseDate: "",
-      backdropPath: "",
+      movieId: '',
+      title: '',
+      releaseDate: '',
+      backdropPath: '',
       genreIds: [],
-      trailer: "",
+      trailer: '',
       logoPath: null,
-      koreanRating: "",
+      koreanRating: '',
     },
   ]);
   const [trendingWeekMovie, setTrendingWeekMovie] = useState<
     trendingWeekMovie[]
   >([
     {
-      movieId: "",
-      title: "",
-      releaseDate: "",
-      posterPath: "",
+      movieId: '',
+      title: '',
+      releaseDate: '',
+      posterPath: '',
       genreIds: [],
     },
   ]);
   const [popularPeople, setPopularPeople] = useState<PopularActors[]>([
     {
       personId: 0,
-      name: "",
-      profilePath: "",
+      name: '',
+      profilePath: '',
     },
   ]);
 
-  const fetchData = async () => {
-    try {
-      const [movieResponse, actorResponse] = await Promise.all([
-        trendingMovies(),
-        popularActors(),
-      ]);
+  // const fetchData = async () => {
+  //   try {
+  //     const [movieResponse, actorResponse] = await Promise.all([
+  //       trendingMovies(),
+  //       popularActors(),
+  //     ]);
 
-      setTrendingDayMovie(movieResponse.trending_day);
-      setTrendingWeekMovie(movieResponse.trending_week);
-      setPopularPeople(actorResponse);
-    } catch (err) {
-      console.error("데이터를 가져오는데 실패했습니다.", err);
-    }
-  };
+  //     setTrendingDayMovie(movieResponse.trending_day);
+  //     setTrendingWeekMovie(movieResponse.trending_week);
+  //     setPopularPeople(actorResponse);
+  //   } catch (err) {
+  //     console.error('데이터를 가져오는데 실패했습니다.', err);
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
 
   const calculateBaseDivRect = () => {
     if (!baseRef.current) return;
@@ -106,10 +106,10 @@ const MainPage = () => {
       calculateBaseDivRect();
     };
 
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
@@ -163,7 +163,7 @@ const MainPage = () => {
                   <ChevronIcon height="40px" color="#fff" thickness="3" />
                 </button>
                 <div
-                  style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)" }}
+                  style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)' }}
                   className="text-white text-xl px-2"
                 >
                   {displayIndex}/{itemLength}

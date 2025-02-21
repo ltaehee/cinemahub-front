@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
-import { getFetchActorInfo, getFetchMovieInfo } from "../apis/search";
+import { useEffect, useState } from 'react';
+import { useLocation, useSearchParams } from 'react-router-dom';
+import { getFetchActorInfo, getFetchMovieInfo } from '../apis/search';
 
 interface Actor {
   id: number;
@@ -27,19 +27,19 @@ interface Movie {
 
 const SearchPage = () => {
   const [searchParams] = useSearchParams();
-  const keyword = searchParams.get("keyword") ?? "";
+  const keyword = searchParams.get('keyword') ?? '';
   const [actor, setActor] = useState<Actor[]>([]);
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const category = searchParams.get("category") ?? "movie";
+  const category = searchParams.get('category') ?? 'movie';
 
-  console.log("actor ", actor);
+  console.log('actor ', actor);
 
   const getFetchData = async (keyword: string) => {
     setLoading(true);
     try {
       let response;
-      if (category === "movie") {
+      if (category === 'movie') {
         response = await getFetchMovieInfo(keyword);
         setMovies(response);
         setActor([]);
@@ -49,7 +49,7 @@ const SearchPage = () => {
         setMovies([]);
       }
     } catch (err) {
-      console.error("검색 오류: ", err);
+      console.error('검색 오류: ', err);
     } finally {
       setLoading(false);
     }
@@ -70,7 +70,7 @@ const SearchPage = () => {
           </h2>
           {loading && <p>로딩 중...</p>}
 
-          {category === "actor" && (
+          {category === 'actor' && (
             <>
               <div className="flex justify-center items-center gap-5 mt-2">
                 {actor && actor.length > 0
@@ -106,7 +106,7 @@ const SearchPage = () => {
             </>
           )}
 
-          {category === "movie" && (
+          {category === 'movie' && (
             <>
               <div className="flex justify-center items-center gap-5 mt-2">
                 {movies && movies.length > 0
