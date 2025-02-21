@@ -1,4 +1,4 @@
-const prefixCls = "chanho";
+const prefixCls = "cinema-hub";
 
 const getBaseCls = (suffix: string) => {
   return `${prefixCls}-${suffix}`;

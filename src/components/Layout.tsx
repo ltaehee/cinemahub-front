@@ -13,7 +13,7 @@ const Layout = () => {
   const seo = getSeoData(location.pathname);
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen justify-between">
       {seo && (
         <Helmet>
           <title>{seo.title}</title>
@@ -23,7 +23,7 @@ const Layout = () => {
       <Header />
       <Outlet />
       <Footer />
-    </>
+    </div>
   );
 };
 

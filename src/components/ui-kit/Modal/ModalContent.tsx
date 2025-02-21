@@ -39,7 +39,12 @@ const ModalContent = (props: ModalContentProps) => {
       {open &&
         createPortal(
           <div
-            style={{ position: "absolute" }}
+            style={{
+              position: "absolute",
+              top: window.scrollY,
+              left: "50%",
+              transform: "translateX(-50%)",
+            }}
             ref={contentRef}
             className={cls}
           >
@@ -52,7 +57,3 @@ const ModalContent = (props: ModalContentProps) => {
 };
 
 export default ModalContent;
-
-// 컨텐츠내부에 클로즈가 렌더링
-// 칠드런안에 클로즈를 빼오고
-// 클로즈와 클로즈가 아닌것들 분류

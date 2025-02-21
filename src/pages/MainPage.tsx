@@ -375,7 +375,7 @@ const MainPage = () => {
       </main>
       <Modal onCloseModal={closeModal} open={isMovieOpen}>
         <Modal.Backdrop className="z-1 bg-black/50 backdrop-blur-lg" />
-        <Modal.Content className="top-0 my-[128px] z-2 left-[50%] transform -translate-x-1/2">
+        <Modal.Content className="my-[128px] z-2">
           <Modal.Close>
             <XIcon fill="#000" className="fixed top-4 right-4 w-6" />
           </Modal.Close>
@@ -384,20 +384,6 @@ const MainPage = () => {
           )}
         </Modal.Content>
       </Modal>
-      {/* <Modal onCloseModal={closeModal} open={isPersonOpen}>
-        <Modal.Backdrop className="z-1 bg-black/50 backdrop-blur-lg" />
-        <Modal.Content>
-          <div className="bg-white w-[1280px] h-[2000px] rounded-2xl">
-            <Modal.Close>
-              <button>닫기</button>
-            </Modal.Close>
-
-            {selectedPerson !== null && (
-              <PersonDetailPage personId={selectedPerson} />
-            )}
-          </div>
-        </Modal.Content>
-      </Modal> */}
     </>
   );
 };
