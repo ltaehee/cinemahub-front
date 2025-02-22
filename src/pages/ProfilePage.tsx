@@ -16,7 +16,7 @@ import {
   updateProfileData,
 } from "../apis/profile";
 
-interface UserProfile {
+export interface UserProfile {
   userId: string;
   email: string;
   nickname: string;
@@ -25,15 +25,30 @@ interface UserProfile {
   followers: { nickname: string; email: string; profileImg?: string }[];
   following: { nickname: string; email: string; profileImg?: string }[];
   favorites: { favoriteType: string; favoriteId: string }[];
+  favoriteMovies?: {
+    movieId: number;
+    title: string;
+    releaseDate: string;
+    posterPath: string;
+    genreIds: number[];
+  }[];
+
+  favoritePersons?: {
+    personId: number;
+    name: string;
+    profilePath: string;
+  }[];
 }
 
 const ProfilePage = () => {
   const { nickname } = useParams();
   const [isEditing, setIsEditing] = useState(false);
+
+  // url 기준 프로필 정보
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [originalProfile, setOriginalProfile] = useState<UserProfile | null>(
-    null
-  );
+
+  // originalNickname 프로필 수정 전 닉네임
+  const [originalNickname, setOriginalNickname] = useState<string>("");
   const [loggedInUserProfile, setLoggedInUserProfile] =
     useState<UserProfile | null>(null);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
@@ -46,21 +61,24 @@ const ProfilePage = () => {
   const fetchLoggedInUserInfo = async () => {
     const userInfo = await getLoggedInUserInfo();
     setLoggedInUserProfile(userInfo);
+    setOriginalNickname(userInfo.nickname);
   };
 
   /* url에 나온 닉네임 기준 프로필 조회 */
   const fetchProfileData = async () => {
     const profileData = await getProfileData(nickname as string);
     setProfile(profileData);
-    setOriginalProfile(profileData);
     setIsOwnProfile(profileData.isOwnProfile);
     setIsFollowing(profileData.isFollowing);
   };
 
   /* 닉네임 중복 체크 */
-  const checkNicknameCheck = async (nickname: string) => {
+  const checkNicknameCheck = async (
+    nickname: string,
+    currentNickname: string
+  ) => {
     try {
-      const { result } = await getFetchNicknameCheck(nickname);
+      const { result } = await getFetchNicknameCheck(nickname, currentNickname);
       return result;
     } catch (error) {
       console.error("닉네임 중복 체크 오류:", error);
@@ -69,9 +87,12 @@ const ProfilePage = () => {
   };
   /* 프로필 수정 */
   const handleEditClick = async () => {
-    if (isEditing) {
+    if (isEditing && originalNickname) {
       // 닉네임 중복 체크
-      const isUnique = await checkNicknameCheck(profile?.nickname || "");
+      const isUnique = await checkNicknameCheck(
+        profile?.nickname || "",
+        originalNickname
+      );
       if (!isUnique) {
         alert("이미 사용 중인 닉네임입니다. 다른 닉네임을 입력하세요.");
         return;
@@ -81,7 +102,7 @@ const ProfilePage = () => {
       }
       await updateProfileData(profile.nickname, profile.introduce);
       // 닉네임이 변경된 경우 URL도 수정
-      if (originalProfile && profile.nickname !== originalProfile.nickname) {
+      if (originalNickname && profile.nickname !== originalNickname) {
         navigate(`/profile/${profile.nickname}`);
       }
     }
@@ -119,7 +140,7 @@ const ProfilePage = () => {
   console.log("url기준 프로필", profile);
   return (
     <div className="w-full flex flex-col items-center justify-center">
-      <div className="w-full max-w-[1280px] flex gap-2 mt-10 mb-20 px-8">
+      <div className="w-full max-w-[1280px] flex gap-2 mt-10 mb-20 px-8 max-h-[365px]">
         <div className="w-full  border border-[#DFDFDF] rounded-2xl">
           <div className="w-full relative flex flex-col gap-2 items-center p-2">
             <div className="w-full flex justify-end mb-4">
@@ -216,7 +237,7 @@ const ProfilePage = () => {
         />
       </div>
 
-      <TabContainer />
+      <TabContainer profile={profile} />
     </div>
   );
 };
