@@ -59,8 +59,8 @@ const Comments = (props: CommentProps) => {
   return (
     <>
       {comments.map((comment, index) => (
-        <CommentContext.Provider value={{ comment }}>
-          <Comment key={index} />
+        <CommentContext.Provider key={index} value={{ comment }}>
+          <Comment />
         </CommentContext.Provider>
       ))}
     </>

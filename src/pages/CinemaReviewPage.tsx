@@ -14,7 +14,6 @@ import CloseIcon from '../icons/CloseIcon';
 import CameraIcon from '../icons/CameraIcon';
 import Comments from '../components/reviewpage/comment';
 
-const reviewCount = 3000;
 const movieTitle = '영화제목';
 const movieId = '1';
 const image = 'image';
@@ -47,12 +46,16 @@ type UserType = {
 const CinemaReviewPage = () => {
   const IsLogin = useLoginStore((set) => set.IsLogin);
 
-  const [comments, setComments] = useState<CommentType[]>([]);
+  const [comments, setComments] = useState<
+    Omit<CommentType, 'totalstarpoint'>[]
+  >([]);
+
   const [starRate, setStarRate] = useState(0);
   const [review, setReview] = useState<string>('');
   const [files, setFiles] = useState<File[]>([]);
   const [imageSrcs, setImageSrcs] = useState<string[]>([]);
   const [imageUrl, setImageUrl] = useState<string[]>([]);
+  const [totalStarPoint, setTotalStarPoint] = useState<number>(0);
 
   const SingleFileReader = async (file: File) => {
     return new Promise((resolve, reject) => {
@@ -120,7 +123,7 @@ const CinemaReviewPage = () => {
       return;
     }
     try {
-      const { result, data, message } = await RegisterReviewFetch({
+      const { result, message } = await RegisterReviewFetch({
         movieId,
         image,
         content,
@@ -130,8 +133,10 @@ const CinemaReviewPage = () => {
       if (!result) {
         throw new Error(message);
       }
-
       alert(message);
+      setReview(''); // 글 초기화
+      setStarRate(0); // 별점 초기화
+      handleGetComments(); // 목록 갱신
     } catch (e) {}
   };
 
@@ -144,8 +149,10 @@ const CinemaReviewPage = () => {
       if (!result) {
         throw new Error(message);
       }
-      setComments(data);
-      alert(message);
+
+      const { totalstarpoint, reviews } = data;
+      setComments(reviews);
+      setTotalStarPoint(totalstarpoint);
     } catch (e) {}
   };
 
@@ -161,11 +168,18 @@ const CinemaReviewPage = () => {
             <p className="text-3xl">{movieTitle}</p>
             <div className="flex gap-5 mt-5 items-center justify-between">
               <div className="flex gap-5">
-                <StarContainer handleRating={handleRating} defaultStar={0} />
-                <p className="">{reviewCount}개 평점</p>
+                {IsLogin ? (
+                  <StarContainer
+                    starRate={starRate}
+                    handleRating={handleRating}
+                    defaultStar={0}
+                  />
+                ) : null}
+
+                <p className="">{comments.length}개 리뷰</p>
               </div>
 
-              <p className="text-3xl font-bold">4.0</p>
+              <p className="text-3xl font-bold">평점 {totalStarPoint}</p>
             </div>
 
             {IsLogin ? (
@@ -180,7 +194,7 @@ const CinemaReviewPage = () => {
                         <AspectRatio.Image
                           className="w-full h-full"
                           src={src}
-                          alt={'영화 사진 사진'}
+                          alt={'리뷰 사진'}
                         />
                       </AspectRatio>
 
@@ -270,34 +284,3 @@ const CinemaReviewPage = () => {
 };
 
 export default CinemaReviewPage;
-
-{
-  /* <Modal
-  onCloseModal={handleCloseModal}
-  onOpenModal={handleOpenModal}
-  open={open}
->
-  <ModalTrigger className=""></ModalTrigger>
-  <ModalContent className="">
-    <ModalClose>
-      <CloseIcon className="" />
-    </ModalClose>
-  </ModalContent>
-</Modal>; */
-}
-
-// import Modal from '@ui/Modal';
-// import ModalBackdrop from '@ui/Modal/ModalBackdrop';
-// import ModalClose from '@ui/Modal/ModalClose';
-// import ModalTrigger from '@ui/Modal/ModalTrigger';
-// import ModalContent from '@ui/Modal/ModalContent';
-// import CloseIcon from '../icons/CloseIcon';
-
-// const [open, setOpen] = useState<boolean>(false);
-
-// const handleOpenModal = () => {
-//   setOpen(true);
-// };
-// const handleCloseModal = () => {
-//   setOpen(false);
-// };

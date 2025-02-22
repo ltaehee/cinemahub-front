@@ -1,13 +1,13 @@
 import { FC, SVGAttributes } from 'react';
+import { useStarContext } from '../components/reviewpage/StarContainer';
 
 interface StarIconProps extends SVGAttributes<SVGSVGElement> {
   index: number;
-  painting?: number;
-  rating: number;
 }
 
 const StarIcon: FC<StarIconProps> = (props) => {
-  const { index, painting, rating, ...svgsProps } = props;
+  const { index, ...svgsProps } = props;
+  const { painting = 0, rating } = useStarContext();
 
   return (
     <svg
