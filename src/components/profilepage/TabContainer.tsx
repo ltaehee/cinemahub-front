@@ -2,10 +2,15 @@ import Tabs from "@ui/Tabs";
 import MovieCard from "../mainpage/MovieCard";
 import movie1 from "/images/movie1.png";
 import movie2 from "/images/movie2.png";
-import { useState } from "react";
+import { FC, useState } from "react";
 import PersonCard from "../mainpage/PersonCard";
+import { UserProfile } from "../../pages/ProfilePage";
 
-const TabContainer = () => {
+interface TabContainerProps {
+  profile: UserProfile;
+}
+
+const TabContainer: FC<TabContainerProps> = ({ profile }) => {
   const [activeTab, setActiveTab] = useState(1);
   const handleChangeTab = (index: number) => {
     setActiveTab(index);
@@ -48,20 +53,37 @@ const TabContainer = () => {
         </Tabs.MenuList>
         <Tabs.Pannel index={1}>
           <div className="max-w-[1280px] w-full mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 mt-[50px] mb-4">
-            {/* {favoriteMovies.map((movie) => (
-              <MovieCard
-                key={movie.movieId}
-                movieId={movie.movieId}
-                title={movie.title}
-                releaseDate={movie.releaseDate}
-                posterPath={movie.posterPath}
-              />
-            ))} */}
+            {profile.favoriteMovies?.length ? (
+              profile.favoriteMovies.map((movie) => (
+                <MovieCard
+                  key={movie.movieId}
+                  movieId={movie.movieId}
+                  title={movie.title}
+                  releaseDate={movie.releaseDate}
+                  posterPath={movie.posterPath}
+                  genreIds={movie.genreIds}
+                />
+              ))
+            ) : (
+              <p>즐겨찾기한 영화가 없습니다.</p>
+            )}
           </div>
         </Tabs.Pannel>
         <Tabs.Pannel index={2}>
-          {/* <PersonCard /> */}
-          인물 컴포넌트
+          <div className="max-w-[1280px] w-full mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 mt-[50px] mb-4">
+            {profile.favoritePersons?.length ? (
+              profile.favoritePersons.map((person) => (
+                <PersonCard
+                  key={person.personId}
+                  personId={person.personId}
+                  name={person.name}
+                  profilePath={person.profilePath}
+                />
+              ))
+            ) : (
+              <p>즐겨찾기한 인물이 없습니다.</p>
+            )}
+          </div>
         </Tabs.Pannel>
         <Tabs.Pannel index={3}>평점 내역 컴포넌트</Tabs.Pannel>
       </Tabs>

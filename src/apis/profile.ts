@@ -28,10 +28,14 @@ export const getProfileData = async (nickname: string) => {
 };
 
 /* 닉네임 중복 체크 */
-export const getFetchNicknameCheck = async (nickname: string) => {
+export const getFetchNicknameCheck = async (
+  nickname: string,
+  currentNickname: string
+) => {
   try {
     const response = await baseInstance.post("/profile/check-name", {
       nickname,
+      currentNickname,
     });
 
     if (response.data.isError) {
