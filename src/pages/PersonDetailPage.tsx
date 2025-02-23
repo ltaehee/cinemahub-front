@@ -5,7 +5,9 @@ interface PersonDetailPageProps {
 }
 
 const PersonDetailPage: FC<PersonDetailPageProps> = ({ personId }) => {
-  return <div>인물 상세 페이지 - 인물 ID: {personId}</div>;
+  return (
+    <div className="bg-white w-[1280px] h-[1000px] rounded-2xl">{personId}</div>
+  );
 };
 
 export default PersonDetailPage;

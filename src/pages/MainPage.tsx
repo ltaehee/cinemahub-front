@@ -109,7 +109,8 @@ const MainPage = () => {
           trendingMovies(),
           popularActors(),
         ]);
-
+        console.log(movieResponse);
+        console.log(actorResponse);
         setTrendingDayMovie(movieResponse.trending_day);
         setTrendingWeekMovie(movieResponse.trending_week);
         setPopularPeople(actorResponse);
@@ -373,14 +374,27 @@ const MainPage = () => {
           </CarouselXscroll>
         </section>
       </main>
+
       <Modal onCloseModal={closeModal} open={isMovieOpen}>
         <Modal.Backdrop className="z-1 bg-black/50 backdrop-blur-lg" />
-        <Modal.Content className="my-[128px] z-2">
+        <Modal.Content className="z-2 my-[64px]">
           <Modal.Close>
             <XIcon fill="#000" className="fixed top-4 right-4 w-6" />
           </Modal.Close>
           {selectedMovie !== null && (
             <CinemaDetailPage movieId={selectedMovie} />
+          )}
+        </Modal.Content>
+      </Modal>
+
+      <Modal onCloseModal={closeModal} open={isPersonOpen}>
+        <Modal.Backdrop className="z-1 bg-black/50 backdrop-blur-lg" />
+        <Modal.Content className="z-2 my-[64px]">
+          <Modal.Close>
+            <XIcon fill="#000" className="fixed top-4 right-4 w-6" />
+          </Modal.Close>
+          {selectedPerson !== null && (
+            <PersonDetailPage personId={selectedPerson} />
           )}
         </Modal.Content>
       </Modal>

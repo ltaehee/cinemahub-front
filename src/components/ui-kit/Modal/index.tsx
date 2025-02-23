@@ -1,4 +1,11 @@
-import { createContext, FC, ReactNode, useMemo } from "react";
+import {
+  createContext,
+  FC,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import ModalBackdrop from "./ModalBackdrop";
 import ModalContent from "./ModalContent";
 import ModalTrigger from "./ModalTrigger";
@@ -34,12 +41,30 @@ interface ModalProps {
 
 const Modal: FC<ModalProps> & ModalCompoundProps = (props) => {
   const { children, className, onCloseModal, onOpenModal, open } = props;
+  const [scrollY, setScrollY] = useState(0);
 
   const contextValue = {
     onCloseModal,
     onOpenModal: onOpenModal || (() => {}),
     open,
   };
+
+  useEffect(() => {
+    const rootElement = document.getElementById("root");
+
+    if (rootElement) {
+      if (open) {
+        setScrollY(window.scrollY);
+        rootElement.style.top = `-${scrollY}px`;
+        rootElement.style.position = "fixed";
+        window.scrollTo(0, 0);
+      } else {
+        rootElement.style.position = "";
+        rootElement.style.top = "";
+        window.scrollTo(0, scrollY);
+      }
+    }
+  }, [open]);
 
   const cls = useMemo(
     () => (className ? `${className} ${modalBaseCls}` : modalBaseCls),
