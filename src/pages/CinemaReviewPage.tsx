@@ -26,6 +26,7 @@ type Review = {
 };
 
 type CommentType = {
+  _id: string;
   userId: UserType;
   content: string;
   createdAt: string;

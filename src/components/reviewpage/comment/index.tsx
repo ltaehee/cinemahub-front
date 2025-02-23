@@ -2,6 +2,7 @@ import { createContext, useContext } from 'react';
 import Comment from './comment';
 
 type CommentType = {
+  _id: string;
   userId: UserType;
   content: string;
   createdAt: string;
@@ -29,6 +30,7 @@ interface CommentProps {
 
 const CommentContext = createContext<CommentContextType>({
   comment: {
+    _id: '',
     userId: {
       nickname: '',
       profile: '',

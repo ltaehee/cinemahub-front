@@ -9,6 +9,11 @@ type Review = {
   starpoint: number;
 };
 
+type likesType = {
+  like: boolean;
+  unlike: boolean;
+};
+
 export const RegisterReviewFetch = async ({
   movieId,
   image,
@@ -51,6 +56,38 @@ export const getMovieidCommentArrayFetch = async ({
   try {
     const response = await baseInstance.post(`/review/totalcomments`, {
       movieId,
+    });
+
+    if (response.data.isError) {
+      throw new Error(response.data.message);
+    }
+    return response.data;
+  } catch (err) {
+    if (err instanceof AxiosError && err.response) {
+      console.log(err.response.data.message);
+    }
+    throw err;
+  }
+};
+
+export const getLikesNumber = async ({
+  commentId,
+  likes,
+}: {
+  commentId: string;
+  likes: likesType;
+}) => {
+  if (emptyChecker({ commentId })) {
+    throw new Error('댓글을 참조할 수 없습니다. 새로고침 해주세요.');
+  }
+
+  if (likes.like === false && likes.unlike === false) {
+    throw new Error('알 수 없는 에러가 발생했어요. 새로고침 해주세요.');
+  }
+  try {
+    const response = await baseInstance.post(`/review/likes`, {
+      commentId,
+      likes,
     });
 
     if (response.data.isError) {
