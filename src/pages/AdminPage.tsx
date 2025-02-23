@@ -4,6 +4,7 @@ import Table from "../components/adminpage/Table";
 import Button from "../components/Button";
 import SearchBar from "../components/adminpage/SearchBar";
 import { getFetchUserInfo } from "../apis/search";
+import { deleteFetchUser } from "../apis/admin";
 
 interface UserProps {
   email: string;
@@ -41,8 +42,21 @@ const AdminPage = () => {
       console.error("검색 오류", err);
     }
   };
-  console.log("user: ", users);
-  const [activeIndex, setActiveIndex] = useState(1);
+
+  // 유저 삭제
+  const handleClickDeleteUser = async () => {
+    try {
+      console.log("selectedUsers: ", selectedUsers);
+
+      const response = await deleteFetchUser(selectedUsers);
+
+      console.log("delete result", response);
+    } catch (err) {
+      console.error("삭제 오류", err);
+    }
+  };
+
+  const [_, setActiveIndex] = useState(1);
   const handleChangeTab = (index: number) => {
     setActiveIndex(index);
   };
@@ -96,7 +110,7 @@ const AdminPage = () => {
                     selectedItems={selectedUsers}
                   />
                   <div className="mt-7 w-[50%] mx-auto ">
-                    <Button>삭제</Button>
+                    <Button onClick={handleClickDeleteUser}>삭제</Button>
                   </div>
                 </div>
               </Tabs.Pannel>

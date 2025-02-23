@@ -1,3 +1,4 @@
+import { Movie } from "../pages/SearchPage";
 import { baseInstance } from "./axios.config";
 
 // 배우Id로 검색
@@ -6,9 +7,6 @@ export const getFetchActorInfo = async (actorName: string) => {
   try {
     const response = await baseInstance.get(`/search/actor?name=${actorName}`);
 
-    if (response.data.isError) {
-      throw new Error(response.data.message);
-    }
     // console.log("배우정보: ", response.data);
     return response.data;
   } catch (err) {
@@ -18,10 +16,10 @@ export const getFetchActorInfo = async (actorName: string) => {
 };
 
 // 검색어로 영화정보 검색
-export const getFetchMovieInfo = async (MovieName: string) => {
+export const getFetchMovieInfo = async (MovieName: string, page: number) => {
   try {
     const response = await baseInstance.get(
-      `/search/movie?keyword=${MovieName}`
+      `/search/movie?keyword=${MovieName}&page=${page}`
     );
 
     if (!response.data || response.data.length === 0) {

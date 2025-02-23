@@ -84,9 +84,9 @@ const Header = () => {
   }, [urlKeyword]);
 
   useEffect(() => {
-    if (urlCategory === "actor") {
-      setCategory("actor");
-      setSelectedItem({ label: "배우", value: "actor" });
+    if (urlCategory === "person") {
+      setCategory("person");
+      setSelectedItem({ label: "영화인", value: "person" });
     }
   }, [urlCategory]);
 
@@ -115,7 +115,7 @@ const Header = () => {
                 <Select.Item className="pb-1" value="movie">
                   영화
                 </Select.Item>
-                <Select.Item value="actor">배우</Select.Item>
+                <Select.Item value="person">영화인</Select.Item>
               </Select.Content>
             </Select>
             <input

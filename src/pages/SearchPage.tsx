@@ -1,51 +1,68 @@
-import { useEffect, useState } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { getFetchActorInfo, getFetchMovieInfo } from "../apis/search";
+import MovieCard from "../components/mainpage/MovieCard";
+import PersonCard from "../components/mainpage/PersonCard";
+import CarouselXscroll from "@ui/CarouselXscroll";
+import ChevronIcon from "../icons/ChevronIcon";
 
-interface Actor {
+interface People {
   id: number;
   name: string;
   known_for_department: string;
   profile_path: string;
   known_for: [
-    // 작품활동
     {
-      backdrop_path: string;
       poster_path: string;
       id: number;
       name: string;
       popularity: number;
+      title: string;
+      release_date: string;
+      genre_ids: [];
     }
   ];
 }
 
-interface Movie {
+export interface Movie {
   movieId: number;
   posterPath: string;
   title: string;
+  releaseDate: string;
+  genreIds: [];
 }
 
 const SearchPage = () => {
   const [searchParams] = useSearchParams();
   const keyword = searchParams.get("keyword") ?? "";
-  const [actor, setActor] = useState<Actor[]>([]);
+  const [people, setPeople] = useState<People[]>([]);
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const category = searchParams.get("category") ?? "movie";
 
-  console.log("actor ", actor);
+  const [baseRect, setBaseRect] = useState(new DOMRect());
+  const personRef = useRef<HTMLDivElement>(null);
 
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const observerRef = useRef<HTMLDivElement | null>(null);
+  console.log("저장된 movie: ", movies);
+  console.log("page: ", page);
   const getFetchData = async (keyword: string) => {
     setLoading(true);
     try {
-      let response;
       if (category === "movie") {
-        response = await getFetchMovieInfo(keyword);
-        setMovies(response);
-        setActor([]);
+        const response = await getFetchMovieInfo(keyword, page);
+        if (response.movies.length > 0) {
+          setMovies((prevMovies) => [...prevMovies, ...response.movies]);
+        } else {
+          setHasMore(false); // 더 가져올 데이터 없으면
+        }
+        console.log("movie data: ", response.movies);
+        setPeople([]);
       } else {
-        response = await getFetchActorInfo(keyword);
-        setActor(response);
+        const response = await getFetchActorInfo(keyword);
+        setPeople(response);
         setMovies([]);
       }
     } catch (err) {
@@ -57,49 +74,107 @@ const SearchPage = () => {
 
   useEffect(() => {
     if (keyword) {
+      setPage(1);
+      setMovies([]);
+      setHasMore(true);
       getFetchData(keyword);
     }
   }, [keyword]);
 
+  useEffect(() => {
+    if (keyword && page > 1) {
+      getFetchData(keyword);
+    }
+  }, [page, keyword]);
+  useEffect(() => {
+    if (observerRef.current && hasMore && !loading) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            setPage((prevPage) => prevPage + 1);
+          }
+        },
+        { threshold: 0.5 }
+      );
+      observer.observe(observerRef.current);
+    }
+  }, [hasMore, loading]);
+
   return (
     <>
       <div>
-        <div className="mt-3 ">
-          <h2 className="flex flex-col items-center">
+        <div className="mt-5 ">
+          <h2 className="flex flex-col items-center pb-3 font-medium text-xl">
             "{keyword}" (으)로 검색한 결과 입니다.
           </h2>
           {loading && <p>로딩 중...</p>}
 
-          {category === "actor" && (
+          {category === "person" && (
             <>
-              <div className="flex justify-center items-center gap-5 mt-2">
-                {actor && actor.length > 0
-                  ? actor.map((person) => (
-                      <div key={person.id}>
-                        <h3 className="text-xl font-bold hover:cursor-pointer">
-                          {person.name}
-                        </h3>
-                      </div>
-                    ))
-                  : !loading && <p>검색된 결과가 없습니다.</p>}
-              </div>
-
-              <div className="mt-5 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-                {actor &&
-                  actor.flatMap((person) =>
-                    person.known_for.map((movie) => (
-                      <div
-                        key={`${movie.id}-${person.id}`}
-                        className="flex justify-center"
-                      >
-                        <div className="flex flex-col items-center">
-                          <img
-                            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                            alt={movie.name}
-                            className="w-full h-80 shadow-lg hover:cursor-pointer"
+              <CarouselXscroll
+                baseRect={baseRect}
+                pixelMove={window.outerWidth}
+                itemListRef={personRef}
+                className="group pb-16"
+              >
+                <CarouselXscroll.ItemContainer className="h-full">
+                  <CarouselXscroll.Items className="flex gap-4">
+                    {people && people.length > 0
+                      ? people.map((person) => (
+                          <PersonCard
+                            key={person.id}
+                            personId={person.id}
+                            name={person.name}
+                            profilePath={person.profile_path}
                           />
-                        </div>
-                      </div>
+                        ))
+                      : !loading && <p>검색된 결과가 없습니다.</p>}
+                  </CarouselXscroll.Items>
+                </CarouselXscroll.ItemContainer>
+                <CarouselXscroll.Navigator>
+                  {(prev, next, leftStyle, rightStyle) => (
+                    <>
+                      <button
+                        className="bg-[rgba(255,255,255,0.5)] rounded-full opacity-0 group-hover:opacity-100 duration-300 ease-in-out b backdrop-blur-sm"
+                        style={leftStyle}
+                        onClick={prev}
+                      >
+                        <ChevronIcon height="56px" />
+                      </button>
+                      <button
+                        className="bg-[rgba(255,255,255,0.5)] rounded-full opacity-0 group-hover:opacity-100 duration-300 ease-in-out backdrop-blur-sm"
+                        style={rightStyle}
+                        onClick={next}
+                      >
+                        <ChevronIcon height="56px" className="rotate-180" />
+                      </button>
+                    </>
+                  )}
+                </CarouselXscroll.Navigator>
+              </CarouselXscroll>
+
+              <div className="mt-8 flex flex-col items-center">
+                <h2 className="pb-3 font-medium text-xl">
+                  "{keyword}"와 관련된 영화
+                </h2>
+              </div>
+              <div
+                className="grid gap-4 w-full pb-20r justify-items-center"
+                style={{
+                  gridTemplateColumns: "repeat(auto-fill, minmax(224px, 1fr))",
+                }}
+              >
+                {people &&
+                  people.flatMap((person) =>
+                    person.known_for.map((movie) => (
+                      <MovieCard
+                        key={movie.id}
+                        movieId={movie.id}
+                        title={movie.title}
+                        releaseDate={movie.release_date}
+                        posterPath={movie.poster_path}
+                        genreIds={movie.genre_ids}
+                      ></MovieCard>
                     ))
                   )}
               </div>
@@ -108,33 +183,32 @@ const SearchPage = () => {
 
           {category === "movie" && (
             <>
-              <div className="flex justify-center items-center gap-5 mt-2">
-                {movies && movies.length > 0
-                  ? movies.map((movie) => (
-                      <div key={movie.movieId}>
-                        <h3 className="text-xl font-bold hover:cursor-pointer">
-                          {movie.title}
-                        </h3>
-                      </div>
-                    ))
-                  : !loading && <p>검색된 결과가 없습니다.</p>}
-              </div>
-
-              <div className="mt-5 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+              <div
+                className="grid gap-4 w-full pb-20r justify-items-center"
+                style={{
+                  gridTemplateColumns: "repeat(auto-fill, minmax(225px, 1fr))",
+                }}
+              >
                 {movies &&
                   movies.map((movie) => (
-                    <div key={movie.movieId} className="flex justify-center">
-                      <div className="flex flex-col items-center">
-                        <img
-                          src={`https://image.tmdb.org/t/p/w500${movie.posterPath}`}
-                          alt={movie.title}
-                          className="w-full h-80 shadow-lg hover:cursor-pointer"
-                        />
-                      </div>
-                    </div>
+                    <MovieCard
+                      key={movie.movieId}
+                      movieId={movie.movieId}
+                      title={movie.title}
+                      posterPath={movie.posterPath}
+                      releaseDate={movie.releaseDate}
+                      genreIds={movie.genreIds}
+                    ></MovieCard>
                   ))}
               </div>
             </>
+          )}
+
+          {hasMore && !loading && (
+            <div
+              ref={observerRef}
+              className="w-full h-12 bg-transparent border border-dashed"
+            ></div>
           )}
         </div>
       </div>
