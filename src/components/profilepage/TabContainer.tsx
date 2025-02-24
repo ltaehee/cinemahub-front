@@ -1,7 +1,5 @@
 import Tabs from "@ui/Tabs";
 import MovieCard from "../mainpage/MovieCard";
-import movie1 from "/images/movie1.png";
-import movie2 from "/images/movie2.png";
 import { FC, useState } from "react";
 import PersonCard from "../mainpage/PersonCard";
 import { UserProfile } from "../../pages/ProfilePage";
@@ -53,7 +51,7 @@ const TabContainer: FC<TabContainerProps> = ({ profile }) => {
           </Tabs.Menu>
         </Tabs.MenuList>
         <Tabs.Pannel index={1}>
-          <div className="max-w-[1280px] w-full mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 mt-[50px] mb-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {profile.favoriteMovies?.length ? (
               profile.favoriteMovies.map((movie) => (
                 <MovieCard
@@ -71,7 +69,7 @@ const TabContainer: FC<TabContainerProps> = ({ profile }) => {
           </div>
         </Tabs.Pannel>
         <Tabs.Pannel index={2}>
-          <div className="max-w-[1280px] w-full mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 mt-[50px] mb-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4  ">
             {profile.favoritePersons?.length ? (
               profile.favoritePersons.map((person) => (
                 <PersonCard
