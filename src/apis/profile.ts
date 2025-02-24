@@ -2,19 +2,11 @@ import { AxiosError } from "axios";
 import { baseInstance } from "./axios.config";
 
 /* Presigned URL 요청 */
-export const getPresignedUrl = async ({
-  fileName,
-  fileType,
-}: {
-  fileName: string;
-  fileType: string;
-}) => {
+export const getPresignedUrl = async (fileName: string) => {
   try {
+    console.log("Requested fileName:", fileName);
     const response = await baseInstance.get(
-      `/upload/presigned-url?fileName=${fileName}&fileType=${fileType}`,
-      {
-        params: { fileName },
-      }
+      `/upload/presigned-url?fileName=${fileName}`
     );
 
     console.log("response.data.url", response.data.url);

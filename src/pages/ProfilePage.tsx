@@ -105,16 +105,13 @@ const ProfilePage = () => {
       reader.readAsDataURL(file);
     }
   };
-
+  console.log("selectedImage: ", selectedImage);
   /* 이미지 업로드 */
   const handleImageUpload = async () => {
     if (!selectedImage) return;
     try {
       // Presigned URL 요청
-      const presignedUrl = await getPresignedUrl({
-        fileName: selectedImage.name,
-        fileType: selectedImage.type,
-      });
+      const presignedUrl = await getPresignedUrl(selectedImage.name);
 
       // S3에 이미지 업로드
       await uploadImageToS3(presignedUrl, selectedImage);
