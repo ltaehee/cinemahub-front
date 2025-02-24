@@ -15,6 +15,7 @@ const TabContainer: FC<TabContainerProps> = ({ profile }) => {
   const handleChangeTab = (index: number) => {
     setActiveTab(index);
   };
+  console.log("profile 찐찐", { profile });
 
   return (
     <div className="w-full max-w-[1280px] flex px-8">

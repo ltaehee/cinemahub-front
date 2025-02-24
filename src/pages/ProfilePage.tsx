@@ -30,7 +30,7 @@ export interface UserProfile {
     title: string;
     releaseDate: string;
     posterPath: string;
-    genreIds: number[];
+    genreIds: [];
   }[];
 
   favoritePersons?: {
@@ -195,7 +195,7 @@ const ProfilePage = () => {
               {!IsLogin && (
                 <Button
                   onClick={() => {
-                    navigate("/login");
+                    alert("로그인이 필요합니다.");
                   }}
                 >
                   팔로우
