@@ -52,7 +52,7 @@ const Header = () => {
   const keyword = watch("keyword");
   const urlKeyword = searchParams.get("keyword") ?? "";
   const urlCategory = searchParams.get("category") ?? "";
-  const debounceKeyword = UseDebounce(keyword, 500);
+  const debounceKeyword = UseDebounce(keyword, 700);
 
   const onValid = (data: SearchForm) => {
     navigate(`/search?category=${category}&keyword=${data.keyword}`);

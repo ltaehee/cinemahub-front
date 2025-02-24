@@ -1,7 +1,7 @@
 import { RefObject, useEffect, useState } from "react";
 
 const useInfinite = (trigger: Function, deps: number[]) => {
-  const [targetRef, setTargetRef] = useState<RefObject<HTMLElement>>();
+  const [targetRef, setTargetRef] = useState<RefObject<HTMLElement | null>>();
 
   const observerCallback: IntersectionObserverCallback = (entries) => {
     if (entries[0].isIntersecting) {

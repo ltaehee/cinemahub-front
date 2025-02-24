@@ -5,6 +5,7 @@ import MovieCard from "../components/mainpage/MovieCard";
 import PersonCard from "../components/mainpage/PersonCard";
 import CarouselXscroll from "@ui/CarouselXscroll";
 import ChevronIcon from "../icons/ChevronIcon";
+import useInfinite from "../hooks/useInfinite";
 
 interface People {
   id: number;
@@ -34,31 +35,30 @@ export interface Movie {
 
 const SearchPage = () => {
   const [searchParams] = useSearchParams();
-  const keyword = searchParams.get("keyword") ?? "";
   const [people, setPeople] = useState<People[]>([]);
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const category = searchParams.get("category") ?? "movie";
-
-  const [baseRect, setBaseRect] = useState(new DOMRect());
-  const personRef = useRef<HTMLDivElement>(null);
-
+  const [baseRect, _] = useState(new DOMRect());
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const observerRef = useRef<HTMLDivElement | null>(null);
-  console.log("저장된 movie: ", movies);
-  console.log("page: ", page);
+  const [responseTotalCount, setResponseTotalCount] = useState(0);
+  const personRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<HTMLDivElement>(null);
+  const category = searchParams.get("category") ?? "movie";
+  const keyword = searchParams.get("keyword") ?? "";
+
+  // console.log("저장된 movie: ", movies);
+  // console.log("page: ", page);
   const getFetchData = async (keyword: string) => {
     setLoading(true);
     try {
       if (category === "movie") {
         const response = await getFetchMovieInfo(keyword, page);
+        setResponseTotalCount(response.totalCount);
+        console.log("respone.movies: ", response.movies.length);
         if (response.movies.length > 0) {
           setMovies((prevMovies) => [...prevMovies, ...response.movies]);
-        } else {
-          setHasMore(false); // 더 가져올 데이터 없으면
         }
-        console.log("movie data: ", response.movies);
         setPeople([]);
       } else {
         const response = await getFetchActorInfo(keyword);
@@ -72,8 +72,16 @@ const SearchPage = () => {
     }
   };
 
+  const loadMore = () => {
+    if (hasMore && !loading) {
+      setPage((prevPage) => prevPage + 1);
+    }
+  };
+
+  const { setTargetRef } = useInfinite(loadMore, [page]);
+
   useEffect(() => {
-    if (keyword) {
+    if (keyword.length >= 2) {
       setPage(1);
       setMovies([]);
       setHasMore(true);
@@ -82,23 +90,20 @@ const SearchPage = () => {
   }, [keyword]);
 
   useEffect(() => {
-    if (keyword && page > 1) {
+    if (keyword.length >= 2 && page > 1 && hasMore) {
       getFetchData(keyword);
     }
-  }, [page, keyword]);
+  }, [page, hasMore, keyword]);
+
   useEffect(() => {
-    if (observerRef.current && hasMore && !loading) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          if (entries[0].isIntersecting) {
-            setPage((prevPage) => prevPage + 1);
-          }
-        },
-        { threshold: 0.5 }
-      );
-      observer.observe(observerRef.current);
+    setTargetRef(observerRef);
+  }, []);
+
+  useEffect(() => {
+    if (movies.length > 0 && responseTotalCount === movies.length) {
+      setHasMore(false);
     }
-  }, [hasMore, loading]);
+  }, [movies, responseTotalCount]);
 
   return (
     <>
@@ -204,12 +209,7 @@ const SearchPage = () => {
             </>
           )}
 
-          {hasMore && !loading && (
-            <div
-              ref={observerRef}
-              className="w-full h-12 bg-transparent border border-dashed"
-            ></div>
-          )}
+          {hasMore && !loading && <div ref={observerRef}></div>}
         </div>
       </div>
     </>
