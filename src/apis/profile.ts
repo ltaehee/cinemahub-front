@@ -1,6 +1,43 @@
 import { AxiosError } from "axios";
 import { baseInstance } from "./axios.config";
 
+/* Presigned URL 요청 */
+export const getPresignedUrl = async ({
+  fileName,
+  fileType,
+}: {
+  fileName: string;
+  fileType: string;
+}) => {
+  try {
+    const response = await baseInstance.get(
+      `/upload/presigned-url?fileName=${fileName}&fileType=${fileType}`,
+      {
+        params: { fileName },
+      }
+    );
+
+    console.log("response.data.url", response.data.url);
+    return response.data.url;
+  } catch (error) {
+    console.error("Presigned URL 요청 실패:", error);
+    throw new Error("이미지 업로드 URL 요청 중 오류가 발생했습니다.");
+  }
+};
+
+/* S3에 이미지 업로드 */
+export const uploadImageToS3 = async (url: string, file: File) => {
+  try {
+    await baseInstance.put(url, file, {
+      headers: {
+        "Content-Type": file.type,
+      },
+    });
+  } catch (error) {
+    console.error("이미지 업로드 실패:", error);
+    throw new Error("이미지 업로드 중 오류가 발생했습니다.");
+  }
+};
 /* 로그인한 유저 프로필 조회 */
 export const getLoggedInUserInfo = async () => {
   try {
