@@ -23,9 +23,22 @@ export interface UserProfile {
   nickname: string;
   introduce: string;
   profileImg?: string;
-  followers: { nickname: string; email: string; profileImg?: string }[];
-  following: { nickname: string; email: string; profileImg?: string }[];
-  favorites: { favoriteType: string; favoriteId: string }[];
+  followers: {
+    nickname: string;
+    email: string;
+    profileImg?: string;
+    deletedAt?: string | null;
+  }[];
+  following: {
+    nickname: string;
+    email: string;
+    profileImg?: string;
+    deletedAt?: string | null;
+  }[];
+  favorites: {
+    favoriteType: string;
+    favoriteId: string;
+  }[];
   favoriteMovies?: {
     movieId: number;
     title: string;
