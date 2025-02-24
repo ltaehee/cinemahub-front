@@ -15,6 +15,7 @@ import {
   unfollowUser,
   updateProfileData,
 } from "../apis/profile";
+import { profileSchema } from "../schemas/ProfileSchema";
 
 export interface UserProfile {
   userId: string;
@@ -88,6 +89,17 @@ const ProfilePage = () => {
   /* 프로필 수정 */
   const handleEditClick = async () => {
     if (isEditing && originalNickname) {
+      const result = profileSchema.safeParse({
+        nickname: profile?.nickname || "",
+        introduce: profile?.introduce || "",
+      });
+
+      // 유효성 검사 실패 시 에러 메시지 나오게
+      if (!result.success) {
+        const errorMessages = result.error.errors.map((err) => err.message);
+        alert(errorMessages);
+        return;
+      }
       // 닉네임 중복 체크
       const isUnique = await checkNicknameCheck(
         profile?.nickname || "",
@@ -132,7 +144,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     fetchLoggedInUserInfo();
-  }, []);
+  }, [nickname]);
   if (!profile) {
     return;
   }
@@ -140,7 +152,7 @@ const ProfilePage = () => {
   console.log("url기준 프로필", profile);
   return (
     <div className="w-full flex flex-col items-center justify-center">
-      <div className="w-full max-w-[1280px] flex gap-2 mt-10 mb-20 px-8 max-h-[365px]">
+      <div className="w-full max-w-[1280px] flex gap-2 mt-10 mb-20 px-8 max-h-[440px]">
         <div className="w-full  border border-[#DFDFDF] rounded-2xl">
           <div className="w-full relative flex flex-col gap-2 items-center p-2">
             <div className="w-full flex justify-end mb-4">
@@ -160,7 +172,7 @@ const ProfilePage = () => {
             />
             {isEditing ? (
               <div className="w-[90%]">
-                <p>이름</p>
+                <p className="font-semibold">닉네임</p>
                 <input
                   type="text"
                   value={profile.nickname}
@@ -168,7 +180,11 @@ const ProfilePage = () => {
                     setProfile({ ...profile, nickname: e.target.value })
                   }
                   className="border border-gray-400 w-full p-1 rounded"
+                  maxLength={10}
                 />
+                <p className="text-sm text-gray-500">
+                  최소 2글자, 최대 10글자까지 가능합니다.
+                </p>
               </div>
             ) : (
               <p>{profile.nickname}</p>
@@ -176,19 +192,22 @@ const ProfilePage = () => {
             {!isEditing && <p className="text-gray-500">{profile.email}</p>}
             {isEditing ? (
               <div className="w-[90%]">
-                <p>자기소개</p>
+                <p className="font-semibold mt-2">자기소개</p>
                 <textarea
                   value={profile.introduce}
                   onChange={(e) =>
                     setProfile({ ...profile, introduce: e.target.value })
                   }
-                  className="border border-gray-400 w-full p-1 rounded resize-none"
+                  className="border border-gray-400 w-full p-1 pb-10  rounded resize-none relative"
+                  maxLength={50}
                 />
+                <div className="text-sm text-gray-500 ">
+                  <span>최대 50글자까지 가능합니다.</span>
+                  <span className=" pl-2">{profile.introduce.length} / 50</span>
+                </div>
               </div>
             ) : (
-              <p className="text-gray-500">
-                {profile.introduce || "자기소개를 해주세요"}
-              </p>
+              <p>{profile.introduce || "자기소개를 해주세요"}</p>
             )}
 
             <div className="w-full px-12">
