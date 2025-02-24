@@ -7,6 +7,8 @@ import CarouselXscroll from "@ui/CarouselXscroll";
 import ChevronIcon from "../icons/ChevronIcon";
 import useInfinite from "../hooks/useInfinite";
 
+const isHangulConsonantPattern = /^[\u3131-\u314e]+$/; // 한글 자음 확인
+
 interface People {
   id: number;
   name: string;
@@ -47,15 +49,17 @@ const SearchPage = () => {
   const category = searchParams.get("category") ?? "movie";
   const keyword = searchParams.get("keyword") ?? "";
 
-  // console.log("저장된 movie: ", movies);
-  // console.log("page: ", page);
   const getFetchData = async (keyword: string) => {
     setLoading(true);
     try {
+      if (!keyword.trim()) {
+        setHasMore(false);
+        return;
+      }
       if (category === "movie") {
         const response = await getFetchMovieInfo(keyword, page);
         setResponseTotalCount(response.totalCount);
-        console.log("respone.movies: ", response.movies.length);
+
         if (response.movies.length > 0) {
           setMovies((prevMovies) => [...prevMovies, ...response.movies]);
         }
@@ -72,16 +76,21 @@ const SearchPage = () => {
     }
   };
 
-  const loadMore = () => {
-    if (hasMore && !loading) {
+  const trigger = () => {
+    if (
+      hasMore &&
+      !loading &&
+      movies.length > 0 // 영화데이터가 있을 경우에만 페이지 증가
+    ) {
       setPage((prevPage) => prevPage + 1);
     }
   };
 
-  const { setTargetRef } = useInfinite(loadMore, [page]);
+  const { setTargetRef } = useInfinite(trigger, [page]);
 
+  // 초기 검색어 검색 시 한글 자음만 입력 아닌 경우에 검색
   useEffect(() => {
-    if (keyword.length >= 2) {
+    if (keyword && !isHangulConsonantPattern.test(keyword)) {
       setPage(1);
       setMovies([]);
       setHasMore(true);
@@ -89,21 +98,30 @@ const SearchPage = () => {
     }
   }, [keyword]);
 
+  // 2 페이지 이상일 때 실행
   useEffect(() => {
-    if (keyword.length >= 2 && page > 1 && hasMore) {
+    if (
+      keyword &&
+      page > 1 &&
+      hasMore &&
+      !isHangulConsonantPattern.test(keyword)
+    ) {
       getFetchData(keyword);
     }
   }, [page, hasMore, keyword]);
 
-  useEffect(() => {
-    setTargetRef(observerRef);
-  }, []);
-
+  // 검색한 전체 데이터 다 가져오면 api 호출 못하게
   useEffect(() => {
     if (movies.length > 0 && responseTotalCount === movies.length) {
       setHasMore(false);
     }
   }, [movies, responseTotalCount]);
+
+  useEffect(() => {
+    if (observerRef) {
+      setTargetRef(observerRef);
+    }
+  }, [observerRef]);
 
   return (
     <>
