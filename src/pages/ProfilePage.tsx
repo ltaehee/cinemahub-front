@@ -11,11 +11,14 @@ import {
   followUser,
   getFetchNicknameCheck,
   getLoggedInUserInfo,
+  getPresignedUrl,
   getProfileData,
   unfollowUser,
   updateProfileData,
+  uploadImageToS3,
 } from "../apis/profile";
 import { profileSchema } from "../schemas/ProfileSchema";
+import axios from "axios";
 
 export interface UserProfile {
   userId: string;
@@ -61,6 +64,10 @@ const ProfilePage = () => {
   // url 기준 프로필 정보
   const [profile, setProfile] = useState<UserProfile | null>(null);
 
+  // 이미지 상태 추가
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+
   // originalNickname 프로필 수정 전 닉네임
   const [originalNickname, setOriginalNickname] = useState<string>("");
   const [loggedInUserProfile, setLoggedInUserProfile] =
@@ -84,6 +91,41 @@ const ProfilePage = () => {
     setProfile(profileData);
     setIsOwnProfile(profileData.isOwnProfile);
     setIsFollowing(profileData.isFollowing);
+  };
+
+  /* 이미지 미리보기 */
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  /* 이미지 업로드 */
+  const handleImageUpload = async () => {
+    if (!selectedImage) return;
+    try {
+      // Presigned URL 요청
+      const presignedUrl = await getPresignedUrl({
+        fileName: selectedImage.name,
+        fileType: selectedImage.type,
+      });
+
+      // S3에 이미지 업로드
+      await uploadImageToS3(presignedUrl, selectedImage);
+      alert("이미지 업로드 완료!");
+      setSelectedImage(null);
+      setPreviewImage(null);
+    } catch (error) {
+      setPreviewImage(null);
+      console.error("이미지 업로드 오류:", error);
+      alert("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
+    }
   };
 
   /* 닉네임 중복 체크 */
@@ -113,6 +155,12 @@ const ProfilePage = () => {
         alert(errorMessages);
         return;
       }
+
+      // 이미지 업로드
+      if (selectedImage) {
+        await handleImageUpload();
+      }
+
       // 닉네임 중복 체크
       const isUnique = await checkNicknameCheck(
         profile?.nickname || "",
@@ -179,10 +227,15 @@ const ProfilePage = () => {
               ) : null}
             </div>
             <img
-              src={profile.profileImg || profileImg}
+              src={previewImage || profile.profileImg || profileImg}
               alt="프로필 사진"
               className="w-30"
             />
+            {isEditing && (
+              <div className="w-[90%]">
+                <input type="file" onChange={handleImageChange} />
+              </div>
+            )}
             {isEditing ? (
               <div className="w-[90%]">
                 <p className="font-semibold">닉네임</p>
