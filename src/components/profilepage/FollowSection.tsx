@@ -192,7 +192,7 @@ const FollowSection = ({
                   {!IsLogin && (
                     <Button
                       onClick={() => {
-                        navigate("/login");
+                        alert("로그인이 필요합니다.");
                       }}
                     >
                       팔로우

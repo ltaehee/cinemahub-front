@@ -60,8 +60,10 @@ const FavoritesBtn = ({
   };
 
   useEffect(() => {
-    checkFavorite();
-  }, []);
+    if (IsLogin) {
+      checkFavorite();
+    }
+  }, [IsLogin]);
 
   return (
     <svg

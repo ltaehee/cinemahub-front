@@ -5,7 +5,7 @@ import FavoritesBtn from "./FavoritesBtn";
 interface PopularPerson {
   personId: number;
   name: string;
-  profilePath: string;
+  profilePath?: string;
 }
 
 const PersonCard: FC<PopularPerson> = ({ personId, name, profilePath }) => {
