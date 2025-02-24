@@ -48,7 +48,7 @@ const SearchPage = () => {
   const observerRef = useRef<HTMLDivElement>(null);
   const category = searchParams.get("category") ?? "movie";
   const keyword = searchParams.get("keyword") ?? "";
-
+  console.log("people: ", people);
   const getFetchData = async (keyword: string) => {
     setLoading(true);
     try {

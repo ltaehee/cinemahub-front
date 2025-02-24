@@ -1,4 +1,3 @@
-import { Movie } from "../pages/SearchPage";
 import { baseInstance } from "./axios.config";
 
 // 배우Id로 검색

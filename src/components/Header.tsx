@@ -53,20 +53,16 @@ const Header = () => {
   const urlKeyword = searchParams.get("keyword") ?? "";
   const urlCategory = searchParams.get("category") ?? "";
   const debounceKeyword = UseDebounce(keyword, 700);
+  const [isAdmin, setIsAdmin] = useState(false); // 관리자인지 확인
+  const [userNickname, setUserNickname] = useState(); // 프로필로 이동할 때 쓰는
 
   const onValid = (data: SearchForm) => {
     navigate(`/search?category=${category}&keyword=${data.keyword}`);
   };
 
   // 프로필이미지 선택 시 프로필페이지로 이동
-  const handleClickProfile = async () => {
-    try {
-      const response = await getLoggedInUserInfo();
-      console.log(response);
-      navigate(`/profile/${response.nickname}`);
-    } catch (err) {
-      console.error("로그인한 유저 정보 가져오기 실패: ", err);
-    }
+  const handleClickProfile = () => {
+    navigate(`/profile/${userNickname}`);
   };
 
   useEffect(() => {
@@ -89,6 +85,25 @@ const Header = () => {
       setSelectedItem({ label: "영화인", value: "person" });
     }
   }, [urlCategory]);
+
+  // 로그인 시 관리자계정인지 확인
+  useEffect(() => {
+    if (IsLogin) {
+      const fetchUserInfo = async () => {
+        try {
+          const userInfo = await getLoggedInUserInfo();
+          setUserNickname(userInfo.nickname);
+
+          if (userInfo.role === "admin") {
+            setIsAdmin(true);
+          }
+        } catch (err) {
+          console.error("로그인한 유저 정보 가져오기 실패: ", err);
+        }
+      };
+      fetchUserInfo();
+    }
+  }, [IsLogin]);
 
   return (
     <header className="top-0 z-3 bg-white sticky">
@@ -134,12 +149,23 @@ const Header = () => {
           </form>
           <div className="flex gap-4 text-sm text-gray-500">
             {IsLogin ? (
-              <button
-                onClick={handleLogoutFetch}
-                className="hover:cursor-pointer text-nowrap"
-              >
-                로그아웃
-              </button>
+              <>
+                {isAdmin && (
+                  <button
+                    onClick={() => navigate("/admin")}
+                    className="hover:cursor-pointer text-nowrap text-red-500"
+                  >
+                    관리자
+                  </button>
+                )}
+
+                <button
+                  onClick={handleLogoutFetch}
+                  className="hover:cursor-pointer text-nowrap"
+                >
+                  로그아웃
+                </button>
+              </>
             ) : (
               <div
                 onClick={() => navigate("/login")}

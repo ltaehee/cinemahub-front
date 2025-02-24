@@ -14,7 +14,7 @@ interface UserProps {
 
 const AdminPage = () => {
   const [users, setUsers] = useState<UserProps[]>([]);
-
+  console.log("users: ", users);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
   const handleSelectUser = (email: string) => {
@@ -34,22 +34,29 @@ const AdminPage = () => {
     if (query.trim() === "") return;
     try {
       const response = await getFetchUserInfo(query);
-
       setUsers(response);
-
-      console.log("user: ", response);
     } catch (err) {
-      console.error("검색 오류", err);
+      setUsers([]);
+      console.error(err);
     }
   };
 
   // 유저 삭제
   const handleClickDeleteUser = async () => {
+    const isConfirmed = window.confirm("정말로 유저를 삭제하시겠습니까?");
+
+    if (!isConfirmed) {
+      return;
+    }
+
     try {
       console.log("selectedUsers: ", selectedUsers);
 
       const response = await deleteFetchUser(selectedUsers);
 
+      setUsers((prevUsers) =>
+        prevUsers.filter((user) => !selectedUsers.includes(user.email))
+      );
       console.log("delete result", response);
     } catch (err) {
       console.error("삭제 오류", err);
@@ -84,20 +91,22 @@ const AdminPage = () => {
             <div className="w-full flex flex-col relative">
               <Tabs.Pannel index={1}>
                 <div className="p-10 w-full">
-                  <h1 className="text-2xl mb-3 flex justify-center">
-                    유저 관리
-                  </h1>
+                  <h1 className="text-2xl flex justify-center">유저 관리</h1>
                 </div>
-                <div className="px-70 flex justify-center">
-                  <SearchBar
-                    onSearch={handleSearch}
-                    placeholder="회원 아이디 또는 이름 검색"
-                  />
+                {/* <div className="px-70 flex justify-center">
                   <div className="ml-2 w-[20%]">
                     <Button className="">검색</Button>
                   </div>
-                </div>
+                </div> */}
                 <div className="p-10 w-full">
+                  <div className="p-2 flex flex-row-reverse">
+                    <SearchBar
+                      onSearch={handleSearch}
+                      placeholder="회원 이름 검색"
+                      useDebounce={true}
+                    />
+                  </div>
+
                   <Table
                     columns={[
                       { key: "email", label: "회원아이디" },
