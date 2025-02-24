@@ -29,6 +29,13 @@ const FollowSection = ({
   loggedInUserProfile,
 }: FollowSectionProps) => {
   const { followers, following } = profile;
+  const filteredFollowers = followers
+    ? followers.filter((user) => user.deletedAt === null)
+    : [];
+
+  const filteredFollowing = following
+    ? following.filter((user) => user.deletedAt === null)
+    : [];
 
   const [view, setView] = useState<"follower" | "following" | null>(null);
   const navigate = useNavigate();
@@ -45,13 +52,13 @@ const FollowSection = ({
 
     if (view === "follower") {
       setFilteredUsers(
-        followers.filter((user) =>
+        filteredFollowers.filter((user) =>
           user.nickname.toLowerCase().includes(term.toLowerCase())
         )
       );
     } else if (view === "following") {
       setFilteredUsers(
-        following.filter((user) =>
+        filteredFollowing.filter((user) =>
           user.nickname.toLowerCase().includes(term.toLowerCase())
         )
       );
@@ -117,7 +124,9 @@ const FollowSection = ({
         <div className="w-full h-full flex flex-col gap-2">
           <div className="h-full flex flex-col justify-center items-center border border-[#DFDFDF] rounded-2xl py-4 px-12">
             <p className="font-semibold">팔로워</p>
-            <p className="font-bold text-2xl py-4">{followers.length}명</p>
+            <p className="font-bold text-2xl py-4">
+              {filteredFollowers.length}명
+            </p>
             <Button
               className="bg-gray-500 hover:bg-gray-600"
               onClick={() => setView("follower")}
@@ -127,7 +136,9 @@ const FollowSection = ({
           </div>
           <div className="h-full flex flex-col justify-center items-center border border-[#DFDFDF] rounded-2xl py-4 px-12">
             <p className="font-semibold">팔로잉</p>
-            <p className="font-bold text-2xl py-4">{following.length}명</p>
+            <p className="font-bold text-2xl py-4">
+              {filteredFollowing.length}명
+            </p>
             <Button
               className="bg-gray-500 hover:bg-gray-600"
               onClick={() => setView("following")}
@@ -159,8 +170,8 @@ const FollowSection = ({
             {(searchTerm
               ? filteredUsers
               : view === "follower"
-              ? followers
-              : following
+              ? filteredFollowers
+              : filteredFollowing
             ).map((user) => {
               // 현재 user.nickname이 로그인한 유저의 팔로잉 리스트에 포함되어 있는지 확인
               const isFollowing = followingNicknames.includes(user.nickname);
