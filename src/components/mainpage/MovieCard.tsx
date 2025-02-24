@@ -9,7 +9,7 @@ interface MovieProps {
   movieId: number;
   releaseDate: string;
   posterPath: string;
-  genreIds: [];
+  genreIds: number[];
 }
 
 const MovieCard: FC<MovieProps> = ({

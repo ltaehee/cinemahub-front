@@ -16,25 +16,7 @@ import CinemaDetailPage from "./CinemaDetailPage";
 import PersonDetailPage from "./PersonDetailPage";
 import Modal from "@ui/Modal";
 import XIcon from "../icons/XIcon";
-
-interface trendingDayMovie {
-  movieId: number;
-  title: string;
-  releaseDate: string;
-  backdropPath: string;
-  genreIds: [];
-  trailer: string | null;
-  logoPath: string | null;
-  koreanRating: string;
-}
-
-interface trendingWeekMovie {
-  movieId: number;
-  title: string;
-  releaseDate: string;
-  posterPath: string;
-  genreIds: [];
-}
+import { useTrendingMoviesStore } from "../store/useTrendingMovieStore";
 
 interface PopularActors {
   personId: number;
@@ -46,34 +28,19 @@ const MainPage = () => {
   const navigate = useNavigate();
   const [isMovieOpen, setIsMovieOpen] = useState<boolean>(false);
   const [isPersonOpen, setIsPersonOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const baseRef = useRef<HTMLDivElement>(null);
   const genreRef = useRef<HTMLDivElement>(null);
   const weekCardRef = useRef<HTMLDivElement>(null);
   const personRef = useRef<HTMLDivElement>(null);
   const [baseRect, setBaseRect] = useState(new DOMRect());
-  const [trendingDayMovie, setTrendingDayMovie] = useState<trendingDayMovie[]>([
-    {
-      movieId: 0,
-      title: "",
-      releaseDate: "",
-      backdropPath: "",
-      genreIds: [],
-      trailer: "",
-      logoPath: null,
-      koreanRating: "",
-    },
-  ]);
-  const [trendingWeekMovie, setTrendingWeekMovie] = useState<
-    trendingWeekMovie[]
-  >([
-    {
-      movieId: 0,
-      title: "",
-      releaseDate: "",
-      posterPath: "",
-      genreIds: [],
-    },
-  ]);
+  const {
+    trendingDayMovies,
+    trendingWeekMovies,
+    setTrendingDayMovie,
+    setTrendingWeekMovie,
+  } = useTrendingMoviesStore();
+
   const [popularPeople, setPopularPeople] = useState<PopularActors[]>([
     {
       personId: 0,
@@ -104,18 +71,19 @@ const MainPage = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const [movieResponse, actorResponse] = await Promise.all([
           trendingMovies(),
           popularActors(),
         ]);
-        console.log(movieResponse);
-        console.log(actorResponse);
         setTrendingDayMovie(movieResponse.trending_day);
         setTrendingWeekMovie(movieResponse.trending_week);
         setPopularPeople(actorResponse);
       } catch (err) {
         console.error("데이터를 가져오는데 실패했습니다.", err);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -157,36 +125,44 @@ const MainPage = () => {
     }
   }, [selectedPerson]);
 
+  console.log("트랜딩무비", trendingDayMovies);
+
   return (
     <>
       <main>
         <Carousel className="relative px-16 pt-8">
           <Carousel.ItemContainer>
             <CarouselItemList>
-              {trendingDayMovie.map((movie, index) => {
-                return (
-                  <CarouselItem
-                    key={movie.movieId}
-                    className="px-4"
-                    index={index}
-                  >
-                    {(carouselIndex) => (
-                      <MainCard
-                        movieId={movie.movieId}
-                        title={movie.title}
-                        releaseDate={movie.releaseDate}
-                        backdropPath={movie.backdropPath}
-                        genreIds={movie.genreIds}
-                        trailer={movie.trailer}
-                        logoPath={movie.logoPath}
-                        koreanRating={movie.koreanRating}
-                        carouselIndex={carouselIndex}
-                        index={index + 1}
-                      />
-                    )}
-                  </CarouselItem>
-                );
-              })}
+              {isLoading ? (
+                <div>로딩 중...</div>
+              ) : trendingDayMovies.length > 0 ? (
+                trendingDayMovies.map((movie, index) => {
+                  return (
+                    <CarouselItem
+                      key={movie.movieId}
+                      className="px-4"
+                      index={index}
+                    >
+                      {(carouselIndex) => (
+                        <MainCard
+                          movieId={movie.movieId}
+                          title={movie.title}
+                          releaseDate={movie.releaseDate}
+                          backdropPath={movie.backdropPath}
+                          genreIds={movie.genreIds}
+                          trailer={movie.trailer}
+                          logoPath={movie.logoPath}
+                          koreanRating={movie.koreanRating}
+                          carouselIndex={carouselIndex}
+                          index={index + 1}
+                        />
+                      )}
+                    </CarouselItem>
+                  );
+                })
+              ) : (
+                <div>트렌딩 영화가 없습니다.</div>
+              )}
             </CarouselItemList>
           </Carousel.ItemContainer>
           <Carousel.Navigator className=" absolute right-[calc(2vw+80px)] bottom-[2vw] flex items-center">
@@ -289,7 +265,7 @@ const MainPage = () => {
           >
             <CarouselXscroll.ItemContainer className="h-full">
               <CarouselXscroll.Items className="flex gap-4">
-                {trendingWeekMovie.map((movie) => {
+                {trendingWeekMovies.map((movie) => {
                   return (
                     <MovieCard
                       key={movie.movieId}
