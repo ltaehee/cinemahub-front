@@ -8,10 +8,10 @@ type CommentType = {
   createdAt: string;
   image: string;
   starpoint: number;
-  totalLike: number;
-  totalUnlike: number;
   like: boolean;
   dislike: boolean;
+  totalLike: number;
+  totalDisLike: number;
 };
 
 type UserType = {
@@ -40,10 +40,10 @@ const CommentContext = createContext<CommentContextType>({
     createdAt: '',
     image: '',
     starpoint: 0,
-    totalLike: 0,
-    totalUnlike: 0,
     like: false,
     dislike: false,
+    totalLike: 0,
+    totalDisLike: 0,
   },
 });
 

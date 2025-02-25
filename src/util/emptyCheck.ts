@@ -3,6 +3,7 @@ type Param = {
 };
 
 export const emptyChecker = (param: Param) => {
+  // [[]] , [{}];
   const objectValues = Object.values({ ...param });
 
   return (
@@ -10,7 +11,8 @@ export const emptyChecker = (param: Param) => {
     objectValues.includes(0) ||
     objectValues.includes(undefined) ||
     objectValues.includes(null) ||
-    objectValues.includes([]) ||
-    objectValues.includes({})
+    objectValues.some(
+      (item) => JSON.stringify(item) === '[]' || JSON.stringify(item) === '{}'
+    )
   );
 };

@@ -32,10 +32,10 @@ type CommentType = {
   createdAt: string;
   image: string;
   starpoint: number;
-  totalLike: number;
-  totalUnlike: number;
   like: boolean;
   dislike: boolean;
+  totalLike: number;
+  totalDisLike: number;
 };
 
 type UserType = {
@@ -152,6 +152,7 @@ const CinemaReviewPage = () => {
       }
 
       const { totalstarpoint, reviews } = data;
+
       setComments(reviews);
       setTotalStarPoint(totalstarpoint);
     } catch (e) {}
