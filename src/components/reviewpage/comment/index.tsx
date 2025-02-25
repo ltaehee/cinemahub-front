@@ -1,5 +1,5 @@
-import { createContext, useContext } from 'react';
-import Comment from './comment';
+import { createContext, useContext } from "react";
+import Comment from "./Comment";
 
 type CommentType = {
   _id: string;
@@ -30,15 +30,15 @@ interface CommentProps {
 
 const CommentContext = createContext<CommentContextType>({
   comment: {
-    _id: '',
+    _id: "",
     userId: {
-      nickname: '',
-      profile: '',
-      _id: '',
+      nickname: "",
+      profile: "",
+      _id: "",
     },
-    content: '',
-    createdAt: '',
-    image: '',
+    content: "",
+    createdAt: "",
+    image: "",
     starpoint: 0,
     like: false,
     dislike: false,
@@ -50,7 +50,7 @@ const CommentContext = createContext<CommentContextType>({
 export const useCommentContext = () => {
   const context = useContext(CommentContext);
   if (!context) {
-    throw new Error('CommentContext에서 호출 가능');
+    throw new Error("CommentContext에서 호출 가능");
   }
   return context;
 };
