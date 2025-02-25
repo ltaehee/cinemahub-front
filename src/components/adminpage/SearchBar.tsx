@@ -5,24 +5,20 @@ interface SearchBarProps {
   onSearch: (query: string) => void;
   placeholder?: string;
   className?: string;
-  useDebounce?: boolean;
+  useDebounce: boolean;
 }
 
 const SearchBar: FC<SearchBarProps> = ({
   onSearch,
   placeholder = "검색어를 입력하세요",
   className,
-  useDebounce = true,
 }) => {
   const [query, setQuery] = useState("");
 
-  const debouncedSearch = useDebounce ? UseDebounce(query, 700) : query;
+  const debouncedSearch = UseDebounce(query, 700);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
-    if (!useDebounce) {
-      onSearch(e.target.value);
-    }
   };
 
   useEffect(() => {

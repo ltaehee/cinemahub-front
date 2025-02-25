@@ -18,24 +18,23 @@ import {
   uploadImageToS3,
 } from "../apis/profile";
 import { profileSchema } from "../schemas/ProfileSchema";
-import axios from "axios";
 
 export interface UserProfile {
   userId: string;
   email: string;
   nickname: string;
   introduce: string;
-  profileImg?: string;
+  profile?: string;
   followers: {
     nickname: string;
     email: string;
-    profileImg?: string;
+    profile?: string;
     deletedAt?: string | null;
   }[];
   following: {
     nickname: string;
     email: string;
-    profileImg?: string;
+    profile?: string;
     deletedAt?: string | null;
   }[];
   favorites: {
@@ -105,7 +104,7 @@ const ProfilePage = () => {
       reader.readAsDataURL(file);
     }
   };
-  console.log("selectedImage: ", selectedImage);
+
   /* 이미지 업로드 */
   const handleImageUpload = async () => {
     if (!selectedImage) return;
@@ -115,7 +114,14 @@ const ProfilePage = () => {
 
       // S3에 이미지 업로드
       await uploadImageToS3(presignedUrl, selectedImage);
-      alert("이미지 업로드 완료!");
+      const imageUrl = presignedUrl.split("?")[0];
+
+      if (!profile) {
+        return;
+      }
+      await updateProfileData(profile.nickname, profile.introduce, imageUrl);
+      setProfile({ ...profile, profile: imageUrl });
+
       setSelectedImage(null);
       setPreviewImage(null);
     } catch (error) {
@@ -140,43 +146,53 @@ const ProfilePage = () => {
   };
   /* 프로필 수정 */
   const handleEditClick = async () => {
-    if (isEditing && originalNickname) {
-      const result = profileSchema.safeParse({
-        nickname: profile?.nickname || "",
-        introduce: profile?.introduce || "",
-      });
+    try {
+      if (isEditing && originalNickname) {
+        const result = profileSchema.safeParse({
+          nickname: profile?.nickname || "",
+          introduce: profile?.introduce || "",
+        });
 
-      // 유효성 검사 실패 시 에러 메시지 나오게
-      if (!result.success) {
-        const errorMessages = result.error.errors.map((err) => err.message);
-        alert(errorMessages);
-        return;
-      }
+        // 유효성 검사 실패 시 에러 메시지 나오게
+        if (!result.success) {
+          const errorMessages = result.error.errors.map((err) => err.message);
+          alert(errorMessages);
+          return;
+        }
 
-      // 이미지 업로드
-      if (selectedImage) {
-        await handleImageUpload();
-      }
+        // 이미지 업로드
+        if (selectedImage) {
+          await handleImageUpload();
+        }
 
-      // 닉네임 중복 체크
-      const isUnique = await checkNicknameCheck(
-        profile?.nickname || "",
-        originalNickname
-      );
-      if (!isUnique) {
-        alert("이미 사용 중인 닉네임입니다. 다른 닉네임을 입력하세요.");
-        return;
+        // 닉네임 중복 체크
+        const isUnique = await checkNicknameCheck(
+          profile?.nickname || "",
+          originalNickname
+        );
+        if (!isUnique) {
+          alert("이미 사용 중인 닉네임입니다. 다른 닉네임을 입력하세요.");
+          return;
+        }
+        if (!profile) {
+          return;
+        }
+
+        // 프로필 데이터 업데이트
+        await updateProfileData(profile.nickname, profile.introduce);
+
+        alert("프로필 수정 완료");
+
+        // 닉네임이 변경된 경우 URL도 수정
+        if (originalNickname && profile.nickname !== originalNickname) {
+          navigate(`/profile/${profile.nickname}`);
+        }
       }
-      if (!profile) {
-        return;
-      }
-      await updateProfileData(profile.nickname, profile.introduce);
-      // 닉네임이 변경된 경우 URL도 수정
-      if (originalNickname && profile.nickname !== originalNickname) {
-        navigate(`/profile/${profile.nickname}`);
-      }
+    } catch (error) {
+      alert("프로필 수정 실패");
+    } finally {
+      setIsEditing(!isEditing);
     }
-    setIsEditing(!isEditing);
   };
 
   /* 팔로우 요청 */
@@ -203,6 +219,7 @@ const ProfilePage = () => {
   useEffect(() => {
     fetchLoggedInUserInfo();
   }, [nickname]);
+
   if (!profile) {
     return;
   }
@@ -224,7 +241,7 @@ const ProfilePage = () => {
               ) : null}
             </div>
             <img
-              src={previewImage || profile.profileImg || profileImg}
+              src={previewImage || profile.profile || profileImg}
               alt="프로필 사진"
               className="w-30"
             />

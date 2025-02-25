@@ -25,7 +25,7 @@ const FavoritesBtn = ({
       const response = await checkFavoriteAPI(favoriteType, favoriteId);
       setIsFavorite(response.isFavorite);
     } catch (error) {
-      console.error("즐겨찾기 상태 확인 실패:", error);
+      alert("즐겨찾기 상태 확인 실패");
     }
   };
 
@@ -35,7 +35,7 @@ const FavoritesBtn = ({
       await addFavoriteAPI(favoriteType, favoriteId);
       setIsFavorite(true);
     } catch (error) {
-      console.error("즐겨찾기 추가 실패:", error);
+      alert("즐겨찾기 추가 실패");
     }
   };
 
@@ -45,7 +45,7 @@ const FavoritesBtn = ({
       await removeFavoriteAPI(favoriteType, favoriteId);
       setIsFavorite(false);
     } catch (error) {
-      console.error("즐겨찾기 삭제 실패:", error);
+      alert("즐겨찾기 삭제가 실패");
     }
   };
   // 좋아요 상태 토글 함수

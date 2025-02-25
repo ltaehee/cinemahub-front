@@ -82,13 +82,16 @@ export const getFetchNicknameCheck = async (
 /* 프로필 업데이트 */
 export const updateProfileData = async (
   nickname: string,
-  introduce: string
+  introduce: string,
+  profile?: string
 ) => {
   try {
     const response = await baseInstance.patch("/profile/profile-update", {
-      name: nickname,
-      intro: introduce,
+      nickname,
+      introduce,
+      profile,
     });
+
     return response.data;
   } catch (error) {
     console.error("프로필 업데이트 오류:", error);

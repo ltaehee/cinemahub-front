@@ -11,7 +11,7 @@ import { UserProfile } from "../../pages/ProfilePage";
 interface FollowUser {
   nickname: string;
   email: string;
-  profileImg?: string;
+  profile?: string;
   isFollowing?: boolean;
 }
 
@@ -79,10 +79,7 @@ const FollowSection = ({
         if (!prev) return null;
         return {
           ...prev,
-          following: [
-            ...prev.following,
-            { nickname, email: "", profileImg: "" },
-          ],
+          following: [...prev.following, { nickname, email: "", profile: "" }],
         };
       });
     } catch (error) {
@@ -189,7 +186,7 @@ const FollowSection = ({
                     }}
                   >
                     <img
-                      src={user.profileImg || profileImg}
+                      src={user.profile || profileImg}
                       alt="프로필"
                       className="w-10 h-10 rounded-full"
                     />
