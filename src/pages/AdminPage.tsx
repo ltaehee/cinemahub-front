@@ -1,10 +1,11 @@
 import Tabs from "@ui/Tabs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Table from "../components/adminpage/Table";
 import Button from "../components/Button";
 import SearchBar from "../components/adminpage/SearchBar";
 import { getFetchUserInfo } from "../apis/search";
-import { deleteFetchUser } from "../apis/admin";
+import { deleteFetchUser, getFetchUser } from "../apis/admin";
+import Pagination from "@ui/Pagination";
 
 interface UserProps {
   email: string;
@@ -12,10 +13,15 @@ interface UserProps {
   createdAt: string;
 }
 
+const limit = 4; // 한 페이지에 표시할 항목 수
+
 const AdminPage = () => {
   const [users, setUsers] = useState<UserProps[]>([]);
   console.log("users: ", users);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+
+  const [searchQuery, setSearchQuery] = useState<string>(""); // 검색어 상태
+  const [isSearching, setIsSearching] = useState(false); // 검색 중인지 여부
 
   const handleSelectUser = (email: string) => {
     setSelectedUsers((prev) =>
@@ -32,13 +38,9 @@ const AdminPage = () => {
   // 유저 검색
   const handleSearch = async (query: string) => {
     if (query.trim() === "") return;
-    try {
-      const response = await getFetchUserInfo(query);
-      setUsers(response);
-    } catch (err) {
-      setUsers([]);
-      console.error(err);
-    }
+    setSearchQuery(query);
+    setIsSearching(query.trim() !== ""); // 검색어가 있으면 true, 없으면 false
+    setPage(0);
   };
 
   // 유저 삭제
@@ -67,6 +69,35 @@ const AdminPage = () => {
   const handleChangeTab = (index: number) => {
     setActiveIndex(index);
   };
+
+  const [totalPages, setTotalPages] = useState(0); // 전체 페이지 수
+  const [totalUsers, setTotalUsers] = useState(0); // 총 데이터 수
+  const [page, setPage] = useState(0);
+  const handleChangePage = (page: number) => {
+    setPage(page);
+  };
+
+  // 유저데이터 가져오기 (검색 or 전체 조회)
+  const getUserData = async () => {
+    try {
+      let response;
+      if (isSearching) {
+        response = await getFetchUserInfo(searchQuery, page, limit);
+      } else {
+        response = await getFetchUser(page, limit);
+      }
+      console.log("response: ", response);
+      setTotalPages(response.data.totalPages);
+      setTotalUsers(response.data.totalCount);
+      setUsers(response.data.users);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  useEffect(() => {
+    getUserData();
+  }, [page, isSearching, searchQuery]);
+
   return (
     <>
       <div className="w-full flex items-center justify-center h-[calc(100vh-65px)] ">
@@ -93,11 +124,7 @@ const AdminPage = () => {
                 <div className="p-10 w-full">
                   <h1 className="text-2xl flex justify-center">유저 관리</h1>
                 </div>
-                {/* <div className="px-70 flex justify-center">
-                  <div className="ml-2 w-[20%]">
-                    <Button className="">검색</Button>
-                  </div>
-                </div> */}
+
                 <div className="p-10 w-full">
                   <div className="p-2 flex flex-row-reverse">
                     <SearchBar
@@ -118,6 +145,18 @@ const AdminPage = () => {
                     onSelectItem={handleSelectUser}
                     selectedItems={selectedUsers}
                   />
+                  <Pagination
+                    total={totalUsers}
+                    value={page}
+                    onPageChange={handleChangePage}
+                    blockSize={totalPages}
+                    pageSize={limit}
+                    className="flex justify-center p-3 "
+                  >
+                    <Pagination.Navigator className="flex gap-4">
+                      <Pagination.Buttons className="PaginationButtons flex gap-4 font-bold text-slate-300" />
+                    </Pagination.Navigator>
+                  </Pagination>
                   <div className="mt-7 w-[50%] mx-auto ">
                     <Button onClick={handleClickDeleteUser}>삭제</Button>
                   </div>

@@ -1,11 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { getFetchMovieInfo, getFetchPeopleInfo } from "../apis/search";
 import MovieCard from "../components/mainpage/MovieCard";
 import PersonCard from "../components/mainpage/PersonCard";
 import CarouselXscroll from "@ui/CarouselXscroll";
 import ChevronIcon from "../icons/ChevronIcon";
 import useInfinite from "../hooks/useInfinite";
+import Modal from "@ui/Modal";
+import XIcon from "../icons/XIcon";
+import CinemaDetailPage from "./CinemaDetailPage";
+import PersonDetailPage from "./PersonDetailPage";
 
 const isHangulConsonantPattern = /^[\u3131-\u314e]+$/; // 한글 자음 확인
 
@@ -141,6 +145,43 @@ const SearchPage = () => {
   }, [observerRef]);
 
   // people.forEach((person) => console.log(person.id));
+
+  const [isMovieOpen, setIsMovieOpen] = useState<boolean>(false);
+  const [isPersonOpen, setIsPersonOpen] = useState<boolean>(false);
+  const movieId = searchParams.get("movie");
+  const personId = searchParams.get("person");
+  const navigate = useNavigate();
+  const [selectedMovie, setSelectedMovie] = useState<number | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<number | null>(null);
+
+  const closeModal = () => {
+    setSelectedMovie(null);
+    setSelectedPerson(null);
+    setIsMovieOpen(false);
+    setIsPersonOpen(false);
+    navigate("/", { replace: true });
+  };
+
+  useEffect(() => {
+    if (movieId) setSelectedMovie(Number(movieId));
+    if (personId) setSelectedPerson(Number(personId));
+  }, [movieId, personId]);
+
+  useEffect(() => {
+    if (selectedMovie) {
+      setIsMovieOpen(true);
+    } else {
+      setIsMovieOpen(false);
+    }
+  }, [selectedMovie]);
+
+  useEffect(() => {
+    if (selectedPerson) {
+      setIsPersonOpen(true);
+    } else {
+      setIsPersonOpen(false);
+    }
+  }, [selectedPerson]);
   return (
     <>
       <div>
@@ -229,9 +270,9 @@ const SearchPage = () => {
                 }}
               >
                 {movies &&
-                  movies.map((movie) => (
+                  movies.map((movie, index) => (
                     <MovieCard
-                      key={movie.movieId}
+                      key={`${movie.movieId}-${index}`}
                       movieId={movie.movieId}
                       title={movie.title}
                       posterPath={movie.posterPath}
@@ -242,6 +283,31 @@ const SearchPage = () => {
               </div>
             </>
           )}
+          <>
+            <Modal onCloseModal={closeModal} open={isMovieOpen}>
+              <Modal.Backdrop className="z-1 bg-black/50 backdrop-blur-lg" />
+              <Modal.Content className="z-2 my-[128px] top-0">
+                <Modal.Close>
+                  <XIcon fill="#fff" className="fixed top-4 right-4 w-6 z-1" />
+                </Modal.Close>
+                {selectedMovie !== null && (
+                  <CinemaDetailPage movieId={selectedMovie} />
+                )}
+              </Modal.Content>
+            </Modal>
+
+            <Modal onCloseModal={closeModal} open={isPersonOpen}>
+              <Modal.Backdrop className="z-1 bg-black/50 backdrop-blur-lg" />
+              <Modal.Content className="z-2 my-[128px] top-0">
+                <Modal.Close>
+                  <XIcon fill="#000" className="fixed top-4 right-4 w-6" />
+                </Modal.Close>
+                {selectedPerson !== null && (
+                  <PersonDetailPage personId={selectedPerson} />
+                )}
+              </Modal.Content>
+            </Modal>
+          </>
 
           {hasMore && !loading && <div ref={observerRef}></div>}
         </div>
