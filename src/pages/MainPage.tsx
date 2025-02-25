@@ -69,24 +69,24 @@ const MainPage = () => {
     if (personId) setSelectedPerson(Number(personId));
   }, [movieId, personId]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const [movieResponse, actorResponse] = await Promise.all([
-          trendingMovies(),
-          popularActors(),
-        ]);
-        setTrendingDayMovie(movieResponse.trending_day);
-        setTrendingWeekMovie(movieResponse.trending_week);
-        setPopularPeople(actorResponse);
-      } catch (err) {
-        console.error("데이터를 가져오는데 실패했습니다.", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const [movieResponse, actorResponse] = await Promise.all([
+        trendingMovies(),
+        popularActors(),
+      ]);
+      setTrendingDayMovie(movieResponse.trending_day);
+      setTrendingWeekMovie(movieResponse.trending_week);
+      setPopularPeople(actorResponse);
+    } catch (err) {
+      console.error("데이터를 가져오는데 실패했습니다.", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -124,8 +124,6 @@ const MainPage = () => {
       setIsPersonOpen(false);
     }
   }, [selectedPerson]);
-
-  console.log("트랜딩무비", trendingDayMovies);
 
   return (
     <>

@@ -16,13 +16,13 @@ interface Director {
 interface TrendingDayMovie {
   movieId: number;
   title: string;
+  overview: string;
   releaseDate: string;
   backdropPath: string;
   genreIds: number[];
   trailer: string | null;
   logoPath: string | null;
   koreanRating: string;
-  imgPath: string[];
   runtime: number;
   actor: Actor[];
   director: Director[];

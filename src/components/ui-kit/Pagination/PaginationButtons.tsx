@@ -19,6 +19,9 @@ const PaginationButtons = (props: PaginationButtonsProps) => {
           key={`paginator-button-key-${pageIndex}`}
           onClick={() => handleChangePageIndex(pageIndex)}
           disabled={currentPage === pageIndex}
+          style={{
+            color: currentPage === pageIndex ? "#5B21B6" : "#CBD5E1",
+          }}
         >
           {pageIndex + 1}
         </button>

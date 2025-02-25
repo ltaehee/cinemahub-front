@@ -104,7 +104,7 @@ const MainCard: FC<MovieProps> = ({
             <img
               src={`https://image.tmdb.org/t/p/original${logoPath}`}
               alt={title}
-              className="pb-[2vw] max-w-[36vw] max-h-[30vw]"
+              className="pb-[2vw] max-w-[36vw] max-h-[25vw]"
             />
           ) : (
             <h1 className="pb-[2vw] text-[4vw]/[5vw] font-bold">{title}</h1>
