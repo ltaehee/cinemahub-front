@@ -12,7 +12,7 @@ import useLoginStore from '../store/useStore';
 import { emptyChecker } from '../util/emptyCheck';
 import CloseIcon from '../icons/CloseIcon';
 import CameraIcon from '../icons/CameraIcon';
-import Comments from '../components/reviewpage/comment';
+import Comments, { CommentContext } from '../components/reviewpage/comment';
 
 const movieTitle = '영화제목';
 const movieId = '1';

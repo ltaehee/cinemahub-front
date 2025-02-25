@@ -35,6 +35,7 @@ const Comment = () => {
       </div>
 
       <p className="mt-2">{comment.content}</p>
+
       <div className="mt-4">
         <LikeComponent />
       </div>
