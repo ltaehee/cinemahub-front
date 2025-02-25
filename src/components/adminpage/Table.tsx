@@ -1,40 +1,70 @@
-// interface TableProps<T> {
-//   columns: { key: keyof T; label: string }[];
-//   data: T[];
-//   selectedItems: number[];
-//   onSelectItem: (id: number) => void;
-//   onSelectAll: (checked: boolean) => void;
-// }
+interface TableProps<T> {
+  columns: { key: keyof T; label: string }[];
+  data: T[];
+  selectedItems: string[];
+  onSelectItem: (email: string) => void;
+  onSelectAll: (checked: boolean) => void;
+}
 
-// const Table = <T extends { id: number }>({
-//   columns,
-//   data,
-//   selectedItems,
-//   onSelectedItems,
-//   onSelectItem,
-//   onSelectAll,
-// }: TableProps<T>) => {
-//   return (
-//     <>
-//       <table className="w-full">
-//         <thead>
-//           <tr className="bg-gray-200">
-//             <th className="p-3 border w-15">
-//               <input type="checkbox" />
-//             </th>
-//             <th className="p-3 border">회원 아이디</th>
-//             <th className="p-3 border">이름</th>
-//             <th className="p-3 border">가입 날짜</th>
-//           </tr>
-//         </thead>
-//         <tbody>
-//           <td className="p-2 border">username</td>
-//           <td className="p-2 border">name</td>
-//           <td className="p-2 border">joinedAt</td>
-//         </tbody>
-//       </table>
-//     </>
-//   );
-// };
+const Table = <T extends { email: string }>({
+  columns,
+  data,
+  selectedItems,
+  onSelectItem,
+  onSelectAll,
+}: TableProps<T>) => {
+  return (
+    <>
+      <table className="w-full">
+        <thead>
+          <tr className="bg-gray-200">
+            <th className="p-3 border w-15">
+              {/* 전체 선택 */}
+              <input
+                type="checkbox"
+                onChange={(e) => onSelectAll(e.target.checked)}
+                checked={
+                  selectedItems.length === data.length && data.length > 0
+                }
+              />
+            </th>
+            {columns.map((col) => (
+              <th key={col.key.toString()} className="p-3 border">
+                {col.label}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {data.length > 0 ? (
+            data.map((item) => (
+              <tr key={item.email} className="text-center">
+                {/* 개별 선택 체크박스 */}
+                <td className="p-3 border">
+                  <input
+                    type="checkbox"
+                    checked={selectedItems.includes(item.email)}
+                    onChange={() => onSelectItem(item.email)}
+                  />
+                </td>
+                {columns.map((col) => (
+                  <td key={col.key.toString()} className="p-3 border">
+                    {String(item[col.key]) ?? ""}
+                  </td>
+                ))}
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={columns.length + 1} className="text-center p-4">
+                데이터가 없습니다.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </>
+  );
+};
 
-// export default Table;
+export default Table;

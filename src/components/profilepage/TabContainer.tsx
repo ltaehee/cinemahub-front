@@ -1,53 +1,22 @@
 import Tabs from "@ui/Tabs";
 import MovieCard from "../mainpage/MovieCard";
-import movie1 from "/images/movie1.png";
-import movie2 from "/images/movie2.png";
-import { useState } from "react";
+import { FC, useState } from "react";
 import PersonCard from "../mainpage/PersonCard";
+import { UserProfile } from "../../pages/ProfilePage";
 
-const dummyMovies = [
-  {
-    id: "1",
-    name: "중증외상센터",
-    image: movie2,
-    rating: 8.8,
-    genre: "드라마",
-    ageLimit: "15+",
-  },
-  {
-    id: "2",
-    name: "백두산",
-    image: movie1,
-    rating: 8.8,
-    genre: "SF, 액션",
-    ageLimit: "12세 이상",
-  },
-  {
-    id: "3",
-    name: "부산행2",
-    image: movie1,
-    rating: 8.8,
-    genre: "SF, 액션",
-    ageLimit: "12+",
-  },
-  {
-    id: "4",
-    name: "중증외상센터2",
-    image: movie2,
-    rating: 8.8,
-    genre: "SF, 액션",
-    ageLimit: "12+",
-  },
-];
+interface TabContainerProps {
+  profile: UserProfile;
+}
 
-const TabContainer = () => {
+const TabContainer: FC<TabContainerProps> = ({ profile }) => {
   const [activeTab, setActiveTab] = useState(1);
   const handleChangeTab = (index: number) => {
     setActiveTab(index);
   };
+  console.log("profile 찐찐", { profile });
 
   return (
-    <div className="w-full max-w-[1280px]">
+    <div className="w-full max-w-[1280px] flex px-8">
       <Tabs onChangeTab={handleChangeTab} className="w-[1280px]">
         <Tabs.MenuList className="flex w-full mb-12">
           <Tabs.Menu
@@ -82,23 +51,38 @@ const TabContainer = () => {
           </Tabs.Menu>
         </Tabs.MenuList>
         <Tabs.Pannel index={1}>
-          <div className="max-w-[1280px] w-full mx-auto grid grid-cols-2 lg:grid-cols-4 gap-4 mt-[50px] mb-4">
-            {/* {dummyMovies.map((movie) => (
-              <MovieCard
-                key={movie.id}
-                id={movie.id}
-                image={movie.image}
-                name={movie.name}
-                rating={movie.rating}
-                genre={movie.genre}
-                ageLimit={movie.ageLimit}
-                className="w-full"
-              />
-            ))} */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {profile.favoriteMovies?.length ? (
+              profile.favoriteMovies.map((movie) => (
+                <MovieCard
+                  key={movie.movieId}
+                  movieId={movie.movieId}
+                  title={movie.title}
+                  releaseDate={movie.releaseDate}
+                  posterPath={movie.posterPath}
+                  genreIds={movie.genreIds}
+                />
+              ))
+            ) : (
+              <p>즐겨찾기한 영화가 없습니다.</p>
+            )}
           </div>
         </Tabs.Pannel>
         <Tabs.Pannel index={2}>
-          <PersonCard />
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4  ">
+            {profile.favoritePersons?.length ? (
+              profile.favoritePersons.map((person) => (
+                <PersonCard
+                  key={person.personId}
+                  personId={person.personId}
+                  name={person.name}
+                  profilePath={person.profilePath}
+                />
+              ))
+            ) : (
+              <p>즐겨찾기한 인물이 없습니다.</p>
+            )}
+          </div>
         </Tabs.Pannel>
         <Tabs.Pannel index={3}>평점 내역 컴포넌트</Tabs.Pannel>
       </Tabs>

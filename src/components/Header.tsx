@@ -1,13 +1,14 @@
 import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { getFetchUserLogout } from '../apis/login';
-import HeaderIcon from '../icons/HeaderIcon';
 import useLoginStore from '../store/useStore';
 import { ReactNode, useEffect, useState } from 'react';
-import SearchIcon from '../icons/SearchIcon';
 import DefaultUserIcon from '../icons/DefaultUserIcon';
 import { useForm } from 'react-hook-form';
 import UseDebounce from '../hooks/useDebounce';
 import Select from '@ui/Select';
+import LogoIcon from '../icons/LogoIcon';
+import XIcon from '../icons/XIcon';
+import { getLoggedInUserInfo } from '../apis/profile';
 
 type SelectedItem = {
   label: ReactNode;
@@ -20,11 +21,11 @@ interface SearchForm {
 
 const Header = () => {
   const { IsLogin, logout } = useLoginStore();
-  const navigator = useNavigate();
+  const navigate = useNavigate();
   const { pathname } = useLocation();
 
   const handleClickMain = () => {
-    navigator('/');
+    navigate('/');
     setValue('keyword', '');
   };
 
@@ -33,7 +34,7 @@ const Header = () => {
       const { result } = await getFetchUserLogout();
       if (result) {
         logout();
-        navigator('/login', { replace: true });
+        navigate('/login', { replace: true });
       }
     } catch (e) {}
   };
@@ -51,17 +52,24 @@ const Header = () => {
   const keyword = watch('keyword');
   const urlKeyword = searchParams.get('keyword') ?? '';
   const urlCategory = searchParams.get('category') ?? '';
-  const debounceKeyword = UseDebounce(keyword, 500);
+  const debounceKeyword = UseDebounce(keyword, 700);
+  const [isAdmin, setIsAdmin] = useState(false); // 관리자인지 확인
+  const [userNickname, setUserNickname] = useState(); // 프로필로 이동할 때 쓰는
 
   const onValid = (data: SearchForm) => {
-    navigator(`/search?category=${category}&keyword=${data.keyword}`);
+    navigate(`/search?category=${category}&keyword=${data.keyword}`);
+  };
+
+  // 프로필이미지 선택 시 프로필페이지로 이동
+  const handleClickProfile = () => {
+    navigate(`/profile/${userNickname}`);
   };
 
   useEffect(() => {
     if (debounceKeyword) {
-      navigator(`/search?category=${category}&keyword=${debounceKeyword}`);
+      navigate(`/search?category=${category}&keyword=${debounceKeyword}`);
     } else if (pathname === '/search') {
-      navigator('/');
+      navigate('/');
     }
   }, [debounceKeyword]);
 
@@ -72,45 +80,62 @@ const Header = () => {
   }, [urlKeyword]);
 
   useEffect(() => {
-    if (urlCategory === 'actor') {
-      setCategory('actor');
-      setSelectedItem({ label: '배우', value: 'actor' });
+    if (urlCategory === 'person') {
+      setCategory('person');
+      setSelectedItem({ label: '영화인', value: 'person' });
     }
   }, [urlCategory]);
 
+  // 로그인 시 관리자계정인지 확인
+  useEffect(() => {
+    if (IsLogin) {
+      const fetchUserInfo = async () => {
+        try {
+          const userInfo = await getLoggedInUserInfo();
+          setUserNickname(userInfo.nickname);
+
+          if (userInfo.role === 'admin') {
+            setIsAdmin(true);
+          }
+        } catch (err) {
+          console.error('로그인한 유저 정보 가져오기 실패: ', err);
+        }
+      };
+      fetchUserInfo();
+    }
+  }, [IsLogin]);
+
   return (
-    <header className="top-0 z-5 bg-white ">
-      <div className="flex justify-center items-center border-b border-slate-300">
+    <header className="top-0 z-3 bg-white sticky">
+      <div className="flex justify-center items-center border-b border-slate-300 px-8">
         <div className="flex justify-between items-center gap-8 px-8 py-2 h-16 w-[1280px]">
-          <div className="">
+          <div className="flex items-center">
             <button onClick={handleClickMain}>
-              <HeaderIcon className="w-30 h-10 hover:cursor-pointer" />
+              <LogoIcon className="h-5 hover:cursor-pointer" />
             </button>
           </div>
           <form
             onSubmit={handleSubmit(onValid)}
-            className="relative flex items-center w-96 border border-gray-300 rounded-lg overflow-hidden"
+            className="relative flex items-center w-full border border-gray-300 rounded-lg overflow-hidden"
           >
             <Select
               value={category}
               onChange={setCategory}
               item={selectedItem}
               setItem={setSelectedItem}
-              className="relative p-1 border-r border-gray-300 hover:cursor-pointer"
+              className="z-4 p-1 border-r border-gray-300 hover:cursor-pointer sticky"
             >
-              <Select.Trigger className="w-full px-3 py-1 text-gray-700 hover:bg-gray-100 focus:ring-2 focus:outline-none" />
-              <Select.Content className="p-3 mt-2 bg-white border border-gray-300 rounded-md z-5 ">
-                <Select.Item className="hover:cursor-pointer" value="movie">
+              <Select.Trigger className="w-full px-3 py-1 text-gray-700 hover:text-gray-950 focus:ring-2 focus:outline-none cursor-pointer" />
+              <Select.Content className="p-3 mt-2 bg-white border border-gray-300 rounded-md z-5 cursor-pointer">
+                <Select.Item className="pb-1" value="movie">
                   영화
                 </Select.Item>
-                <Select.Item className="hover:cursor-pointer" value="actor">
-                  배우
-                </Select.Item>
+                <Select.Item value="person">영화인</Select.Item>
               </Select.Content>
             </Select>
             <input
               {...register('keyword', { required: true, minLength: 2 })}
-              className="flex-1 p-1 outline-none"
+              className="flex-1 px-3 py-1 outline-none"
               placeholder="검색어를 입력하세요"
             />
             {keyword && (
@@ -118,30 +143,45 @@ const Header = () => {
                 onClick={() => setValue('keyword', '')}
                 className="hover:cursor-pointer"
               >
-                x
+                <XIcon fill="#555" className="w-3 mr-3" />
               </button>
             )}
-            <button type="submit">
-              <SearchIcon className="w-8 h-6 hover:cursor-pointer" />
-            </button>
           </form>
-          <div className="flex gap-4">
+          <div className="flex gap-4 text-sm text-gray-500">
             {IsLogin ? (
-              <button
-                onClick={handleLogoutFetch}
-                className="hover:cursor-pointer"
-              >
-                로그아웃
-              </button>
+              <>
+                {isAdmin && (
+                  <button
+                    onClick={() => navigate('/admin')}
+                    className="hover:cursor-pointer text-nowrap text-red-500"
+                  >
+                    관리자
+                  </button>
+                )}
+
+                <button
+                  onClick={handleLogoutFetch}
+                  className="hover:cursor-pointer text-nowrap"
+                >
+                  로그아웃
+                </button>
+              </>
             ) : (
               <div
-                onClick={() => navigator('/login')}
-                className="hover:cursor-pointer"
+                onClick={() => navigate('/login')}
+                className="hover:cursor-pointer text-nowrap"
               >
                 로그인
               </div>
             )}
-            <div>{IsLogin ? <DefaultUserIcon /> : ''}</div>
+            <div>
+              {IsLogin ? (
+                <DefaultUserIcon
+                  onClick={handleClickProfile}
+                  className="w-10 hover:cursor-pointer"
+                />
+              ) : null}
+            </div>
           </div>
         </div>
       </div>

@@ -8,7 +8,7 @@ interface PopoverTriggerProps {
 }
 
 const PopoverTrigger = (props: PopoverTriggerProps) => {
-  const { setTriggerRect, setIsOpen, isOpen } = useContext(PopoverContext);
+  const { setTriggerRect, setIsOpen } = useContext(PopoverContext);
   const { className, children } = props;
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -22,14 +22,12 @@ const PopoverTrigger = (props: PopoverTriggerProps) => {
   }, []);
 
   useEffect(() => {
-    if (isOpen) {
-      window.addEventListener("resize", calculateTriggerRect);
-    }
+    window.addEventListener("resize", calculateTriggerRect);
 
     return () => {
       window.removeEventListener("resize", calculateTriggerRect);
     };
-  }, [isOpen]);
+  }, []);
 
   const cls = useMemo(
     () => (className ? `${className} ${popoverTriggerCls}` : popoverTriggerCls),

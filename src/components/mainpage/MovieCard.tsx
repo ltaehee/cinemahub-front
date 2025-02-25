@@ -6,10 +6,10 @@ import { FC } from "react";
 
 interface MovieProps {
   title: string;
-  movieId: string;
+  movieId: number;
   releaseDate: string;
   posterPath: string;
-  genreIds: [];
+  genreIds: number[];
 }
 
 const MovieCard: FC<MovieProps> = ({
@@ -23,22 +23,28 @@ const MovieCard: FC<MovieProps> = ({
 
   return (
     <div
-      onClick={() => navigate(`/cinema/${movieId}`)}
-      className="cursor-pointer shadow-md w-56 h-full rounded-md bg-white"
+      onClick={() => navigate(`?movie=${movieId}`)}
+      className="cursor-pointer shadow-md w-56 h-full rounded-md bg-white border border-gray-200"
     >
-      <div className="relative">
-        <img
-          src={`https://image.tmdb.org/t/p/w500${posterPath}`}
-          alt={title}
-          className="h-[340px] object-cover rounded-tl-md rounded-tr-md select-none"
-          onDragStart={(e) => e.preventDefault()}
+      <div className="relative overflow-hidden rounded-tl-md rounded-tr-md">
+        <div className="h-[340px]">
+          <img
+            src={`https://image.tmdb.org/t/p/w500${posterPath}`}
+            alt={title}
+            className="h-full object-cover select-none duration-300 ease-in-out hover:scale-110"
+            onDragStart={(e) => e.preventDefault()}
+          />
+        </div>
+        <FavoritesBtn
+          favoriteType="Movie"
+          favoriteId={movieId.toString()}
+          className="absolute top-2 left-2 border border-gray-200 rounded-full"
         />
-        <FavoritesBtn className="absolute top-2 left-2" />
       </div>
       <div className="flex flex-col gap-1 p-4">
         <h3 className="text-lg font-semibold w-52 truncate">{title}</h3>
         <div className="flex items-center gap-1">
-          <StarIcon className="w-5" />
+          <StarIcon className="w-5" index={0} rating={1} />
           <div className="text-yellow-500 text-sm">4.0</div>
         </div>
         <div className="flex items-center justify-between mt-2">

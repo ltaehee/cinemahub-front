@@ -1,19 +1,70 @@
-import { SVGAttributes, useState } from "react";
+import { SVGAttributes, useEffect, useState } from "react";
+import useLoginStore from "../../store/useStore";
+import {
+  addFavoriteAPI,
+  checkFavoriteAPI,
+  removeFavoriteAPI,
+} from "../../apis/profile";
 
-interface FavoritesProps extends SVGAttributes<SVGSVGElement> {}
+interface FavoritesProps extends SVGAttributes<SVGSVGElement> {
+  favoriteType: string;
+  favoriteId: string;
+}
 
-const FavoritesBtn = (props: FavoritesProps) => {
+const FavoritesBtn = ({
+  favoriteType,
+  favoriteId,
+  ...svgsProps
+}: FavoritesProps) => {
+  const { IsLogin } = useLoginStore();
   const [isFavorite, setIsFavorite] = useState<boolean>();
+
+  // 즐겨찾기 상태 확인
+  const checkFavorite = async () => {
+    try {
+      const response = await checkFavoriteAPI(favoriteType, favoriteId);
+      setIsFavorite(response.isFavorite);
+    } catch (error) {
+      alert("즐겨찾기 상태 확인 실패");
+    }
+  };
+
+  // 즐겨찾기 추가
+  const addFavorite = async () => {
+    try {
+      await addFavoriteAPI(favoriteType, favoriteId);
+      setIsFavorite(true);
+    } catch (error) {
+      alert("즐겨찾기 추가 실패");
+    }
+  };
+
+  // 즐겨찾기 삭제
+  const removeFavorite = async () => {
+    try {
+      await removeFavoriteAPI(favoriteType, favoriteId);
+      setIsFavorite(false);
+    } catch (error) {
+      alert("즐겨찾기 삭제가 실패");
+    }
+  };
   // 좋아요 상태 토글 함수
   const toggleFavorite = (e: React.MouseEvent) => {
-    e.stopPropagation(); /* 버튼 눌러도 페이지 이동안하게 */
-    /* if (!userId) {
-      toast.error("로그인이 필요합니다.");
+    e.stopPropagation(); // 버튼 눌러도 페이지 이동안하게
+    if (!IsLogin) {
+      alert("로그인이 필요합니다.");
       return;
-    } */
-    setIsFavorite(!isFavorite);
+    }
+    // 현재 상태에 따라 추가 또는 삭제
+    isFavorite ? removeFavorite() : addFavorite();
   };
-  const { ...svgsProps } = props;
+
+  useEffect(() => {
+    if (IsLogin) {
+      checkFavorite();
+    }
+  }, [IsLogin]);
+
   return (
     <svg
       onClick={toggleFavorite}

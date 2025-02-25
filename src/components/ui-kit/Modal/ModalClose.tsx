@@ -28,14 +28,20 @@ const ModalClose = (props: ModalCloseProps) => {
     <>
       {children ? (
         isValidElement(children) ? (
-          cloneElement(children as ReactElement, {
-            onClick: onCloseModal,
-          })
+          cloneElement(
+            children as ReactElement,
+            {
+              onClick: onCloseModal,
+            } as Partial<ReactElement>
+          )
         ) : (
           Children.map(children, (child) =>
-            cloneElement(child as ReactElement, {
-              onClick: onCloseModal,
-            })
+            cloneElement(
+              child as ReactElement,
+              {
+                onClick: onCloseModal,
+              } as Partial<ReactElement>
+            )
           )
         )
       ) : (

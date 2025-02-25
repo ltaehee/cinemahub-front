@@ -1,6 +1,5 @@
 import CarouselXscroll from '@ui/CarouselXscroll';
 import { useEffect, useRef, useState } from 'react';
-import { Outlet } from 'react-router-dom';
 import ChevronIcon from '../icons/ChevronIcon';
 import MainCard from '../components/mainpage/MainCard';
 import Carousel from '@ui/CarouselInfinite';
@@ -12,25 +11,12 @@ import { trendingMovies } from '../apis/movie';
 import MovieCard from '../components/mainpage/MovieCard';
 import { popularActors } from '../apis/person';
 import PersonCard from '../components/mainpage/PersonCard';
-
-interface trendingDayMovie {
-  movieId: string;
-  title: string;
-  releaseDate: string;
-  backdropPath: string;
-  genreIds: [];
-  trailer: string | null;
-  logoPath: string | null;
-  koreanRating: string;
-}
-
-interface trendingWeekMovie {
-  movieId: string;
-  title: string;
-  releaseDate: string;
-  posterPath: string;
-  genreIds: [];
-}
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import CinemaDetailPage from './CinemaDetailPage';
+import PersonDetailPage from './PersonDetailPage';
+import Modal from '@ui/Modal';
+import XIcon from '../icons/XIcon';
+import { useTrendingMoviesStore } from '../store/useTrendingMovieStore';
 
 interface PopularActors {
   personId: number;
@@ -39,34 +25,22 @@ interface PopularActors {
 }
 
 const MainPage = () => {
+  const navigate = useNavigate();
+  const [isMovieOpen, setIsMovieOpen] = useState<boolean>(false);
+  const [isPersonOpen, setIsPersonOpen] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const baseRef = useRef<HTMLDivElement>(null);
   const genreRef = useRef<HTMLDivElement>(null);
   const weekCardRef = useRef<HTMLDivElement>(null);
   const personRef = useRef<HTMLDivElement>(null);
   const [baseRect, setBaseRect] = useState(new DOMRect());
-  const [trendingDayMovie, setTrendingDayMovie] = useState<trendingDayMovie[]>([
-    {
-      movieId: '',
-      title: '',
-      releaseDate: '',
-      backdropPath: '',
-      genreIds: [],
-      trailer: '',
-      logoPath: null,
-      koreanRating: '',
-    },
-  ]);
-  const [trendingWeekMovie, setTrendingWeekMovie] = useState<
-    trendingWeekMovie[]
-  >([
-    {
-      movieId: '',
-      title: '',
-      releaseDate: '',
-      posterPath: '',
-      genreIds: [],
-    },
-  ]);
+  const {
+    trendingDayMovies,
+    trendingWeekMovies,
+    setTrendingDayMovie,
+    setTrendingWeekMovie,
+  } = useTrendingMoviesStore();
+
   const [popularPeople, setPopularPeople] = useState<PopularActors[]>([
     {
       personId: 0,
@@ -75,20 +49,42 @@ const MainPage = () => {
     },
   ]);
 
-  // const fetchData = async () => {
-  //   try {
-  //     const [movieResponse, actorResponse] = await Promise.all([
-  //       trendingMovies(),
-  //       popularActors(),
-  //     ]);
+  const [searchParams] = useSearchParams();
+  const movieId = searchParams.get('movie');
+  const personId = searchParams.get('person');
 
-  //     setTrendingDayMovie(movieResponse.trending_day);
-  //     setTrendingWeekMovie(movieResponse.trending_week);
-  //     setPopularPeople(actorResponse);
-  //   } catch (err) {
-  //     console.error('데이터를 가져오는데 실패했습니다.', err);
-  //   }
-  // };
+  const [selectedMovie, setSelectedMovie] = useState<number | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<number | null>(null);
+
+  const closeModal = () => {
+    setSelectedMovie(null);
+    setSelectedPerson(null);
+    setIsMovieOpen(false);
+    setIsPersonOpen(false);
+    navigate('/', { replace: true });
+  };
+
+  useEffect(() => {
+    if (movieId) setSelectedMovie(Number(movieId));
+    if (personId) setSelectedPerson(Number(personId));
+  }, [movieId, personId]);
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const [movieResponse, actorResponse] = await Promise.all([
+        trendingMovies(),
+        popularActors(),
+      ]);
+      setTrendingDayMovie(movieResponse.trending_day);
+      setTrendingWeekMovie(movieResponse.trending_week);
+      setPopularPeople(actorResponse);
+    } catch (err) {
+      console.error('데이터를 가져오는데 실패했습니다.', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // useEffect(() => {
   //   fetchData();
@@ -113,37 +109,58 @@ const MainPage = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (selectedMovie) {
+      setIsMovieOpen(true);
+    } else {
+      setIsMovieOpen(false);
+    }
+  }, [selectedMovie]);
+
+  useEffect(() => {
+    if (selectedPerson) {
+      setIsPersonOpen(true);
+    } else {
+      setIsPersonOpen(false);
+    }
+  }, [selectedPerson]);
+
   return (
     <>
-      <Outlet />
       <main>
         <Carousel className="relative px-16 pt-8">
           <Carousel.ItemContainer>
             <CarouselItemList>
-              {trendingDayMovie.map((movie, index) => {
-                return (
-                  <CarouselItem
-                    key={movie.movieId}
-                    className="px-4"
-                    index={index}
-                  >
-                    {(carouselIndex) => (
-                      <MainCard
-                        movieId={movie.movieId}
-                        title={movie.title}
-                        releaseDate={movie.releaseDate}
-                        backdropPath={movie.backdropPath}
-                        genreIds={movie.genreIds}
-                        trailer={movie.trailer}
-                        logoPath={movie.logoPath}
-                        koreanRating={movie.koreanRating}
-                        carouselIndex={carouselIndex}
-                        index={index + 1}
-                      />
-                    )}
-                  </CarouselItem>
-                );
-              })}
+              {isLoading ? (
+                <div>로딩 중...</div>
+              ) : trendingDayMovies.length > 0 ? (
+                trendingDayMovies.map((movie, index) => {
+                  return (
+                    <CarouselItem
+                      key={movie.movieId}
+                      className="px-4"
+                      index={index}
+                    >
+                      {(carouselIndex) => (
+                        <MainCard
+                          movieId={movie.movieId}
+                          title={movie.title}
+                          releaseDate={movie.releaseDate}
+                          backdropPath={movie.backdropPath}
+                          genreIds={movie.genreIds}
+                          trailer={movie.trailer}
+                          logoPath={movie.logoPath}
+                          koreanRating={movie.koreanRating}
+                          carouselIndex={carouselIndex}
+                          index={index + 1}
+                        />
+                      )}
+                    </CarouselItem>
+                  );
+                })
+              ) : (
+                <div>트렌딩 영화가 없습니다.</div>
+              )}
             </CarouselItemList>
           </Carousel.ItemContainer>
           <Carousel.Navigator className=" absolute right-[calc(2vw+80px)] bottom-[2vw] flex items-center">
@@ -187,7 +204,7 @@ const MainPage = () => {
         <section className="pt-8">
           <div className="px-8">
             <h3 ref={baseRef} className="pb-2 font-medium text-xl">
-              카테고리
+              영화 카테고리
             </h3>
           </div>
           <CarouselXscroll
@@ -235,7 +252,7 @@ const MainPage = () => {
         <section className="pt-8">
           <div className="px-8">
             <h3 ref={baseRef} className="pb-2 font-medium text-xl">
-              이번주 트렌드
+              이번주 트렌드 영화
             </h3>
           </div>
           <CarouselXscroll
@@ -246,7 +263,7 @@ const MainPage = () => {
           >
             <CarouselXscroll.ItemContainer className="h-full">
               <CarouselXscroll.Items className="flex gap-4">
-                {trendingWeekMovie.map((movie) => {
+                {trendingWeekMovies.map((movie) => {
                   return (
                     <MovieCard
                       key={movie.movieId}
@@ -285,14 +302,14 @@ const MainPage = () => {
         <section className="pt-8">
           <div className="px-8">
             <h3 ref={baseRef} className="pb-2 font-medium text-xl">
-              이번주 트렌드
+              이번주 인기 배우
             </h3>
           </div>
           <CarouselXscroll
             baseRect={baseRect}
             pixelMove={window.outerWidth}
             itemListRef={personRef}
-            className="group"
+            className="group pb-16"
           >
             <CarouselXscroll.ItemContainer className="h-full">
               <CarouselXscroll.Items className="flex gap-4">
@@ -331,6 +348,30 @@ const MainPage = () => {
           </CarouselXscroll>
         </section>
       </main>
+
+      <Modal onCloseModal={closeModal} open={isMovieOpen}>
+        <Modal.Backdrop className="z-1 bg-black/50 backdrop-blur-lg" />
+        <Modal.Content className="z-2 my-[64px]">
+          <Modal.Close>
+            <XIcon fill="#000" className="fixed top-4 right-4 w-6" />
+          </Modal.Close>
+          {selectedMovie !== null && (
+            <CinemaDetailPage movieId={selectedMovie} />
+          )}
+        </Modal.Content>
+      </Modal>
+
+      <Modal onCloseModal={closeModal} open={isPersonOpen}>
+        <Modal.Backdrop className="z-1 bg-black/50 backdrop-blur-lg" />
+        <Modal.Content className="z-2 my-[64px]">
+          <Modal.Close>
+            <XIcon fill="#000" className="fixed top-4 right-4 w-6" />
+          </Modal.Close>
+          {selectedPerson !== null && (
+            <PersonDetailPage personId={selectedPerson} />
+          )}
+        </Modal.Content>
+      </Modal>
     </>
   );
 };

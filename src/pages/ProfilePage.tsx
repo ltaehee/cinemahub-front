@@ -4,129 +4,231 @@ import profileImg from "/images/profileImg.png";
 import profileEdit from "/images/profileEdit.png";
 import profileEdit2 from "/images/profileEdit2.png";
 import { useEffect, useState } from "react";
-import { baseInstance } from "../apis/axios.config";
-import Modal from "@ui/Modal";
 import FollowSection from "../components/profilepage/FollowSection";
+import TabContainer from "../components/profilepage/TabContainer";
+import useLoginStore from "../store/useStore";
+import {
+  followUser,
+  getFetchNicknameCheck,
+  getLoggedInUserInfo,
+  getPresignedUrl,
+  getProfileData,
+  unfollowUser,
+  updateProfileData,
+  uploadImageToS3,
+} from "../apis/profile";
+import { profileSchema } from "../schemas/ProfileSchema";
 
-interface UserProfile {
+export interface UserProfile {
   userId: string;
   email: string;
   nickname: string;
   introduce: string;
-  profileImg?: string;
-  followers: { nickname: string; email: string; profileImg?: string }[];
-  following: { nickname: string; email: string; profileImg?: string }[];
-  favorites: { favoriteType: string; favoriteId: string }[];
+  profile?: string;
+  followers: {
+    nickname: string;
+    email: string;
+    profile?: string;
+    deletedAt?: string | null;
+  }[];
+  following: {
+    nickname: string;
+    email: string;
+    profile?: string;
+    deletedAt?: string | null;
+  }[];
+  favorites: {
+    favoriteType: string;
+    favoriteId: string;
+  }[];
+  favoriteMovies?: {
+    movieId: number;
+    title: string;
+    releaseDate: string;
+    posterPath: string;
+    genreIds: [];
+  }[];
+
+  favoritePersons?: {
+    personId: number;
+    name: string;
+    profilePath: string;
+  }[];
 }
 
 const ProfilePage = () => {
   const { nickname } = useParams();
   const [isEditing, setIsEditing] = useState(false);
+
+  // url 기준 프로필 정보
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [originalProfile, setOriginalProfile] = useState<UserProfile | null>(
-    null
-  );
+
+  // 이미지 상태 추가
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+  // originalNickname 프로필 수정 전 닉네임
+  const [originalNickname, setOriginalNickname] = useState<string>("");
+  const [loggedInUserProfile, setLoggedInUserProfile] =
+    useState<UserProfile | null>(null);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [isDebouncing, setIsDebouncing] = useState(false);
   const navigate = useNavigate();
+  const { IsLogin } = useLoginStore();
 
-  /* 모달 */
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-
-  const handleOpenModal = () => {
-    setIsOpen(true);
-  };
-  const handleCloseModal = () => {
-    setIsOpen(false);
+  /* 로그인한 유저 프로필 조회 */
+  const fetchLoggedInUserInfo = async () => {
+    const userInfo = await getLoggedInUserInfo();
+    setLoggedInUserProfile(userInfo);
+    setOriginalNickname(userInfo.nickname);
   };
 
-  /* 프로필 조회 */
-  const getProfileData = async () => {
-    try {
-      const response = await baseInstance.get(`/profile/${nickname}`);
+  /* url에 나온 닉네임 기준 프로필 조회 */
+  const fetchProfileData = async () => {
+    const profileData = await getProfileData(nickname as string);
 
-      if (response.status === 200) {
-        setProfile(response.data);
-        setOriginalProfile(response.data);
-        setIsOwnProfile(response.data.isOwnProfile);
-        setIsFollowing(response.data.isFollowing);
-      }
-    } catch (err) {
-      console.error("프로필 조회 실패:", err);
+    setProfile(profileData);
+    setIsOwnProfile(profileData.isOwnProfile);
+    setIsFollowing(profileData.isFollowing);
+  };
+
+  /* 이미지 미리보기 */
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
-  /* 프로필 수정 */
-  const updateProfileData = async () => {
-    if (!profile || !originalProfile || !isOwnProfile) return;
-    if (
-      profile.nickname === originalProfile.nickname &&
-      profile.introduce === originalProfile.introduce
-    ) {
-      console.log("변경된 내용 없음, API 요청 생략");
-      return;
-    }
-
+  /* 이미지 업로드 */
+  const handleImageUpload = async () => {
+    if (!selectedImage) return;
     try {
-      const response = await baseInstance.patch("/profile/profile-update", {
-        name: profile.nickname,
-        intro: profile.introduce,
-      });
-      setOriginalProfile({ ...profile });
-      if (profile.nickname !== originalProfile.nickname) {
-        navigate(`/profile/${profile.nickname}`);
+      // Presigned URL 요청
+      const presignedUrl = await getPresignedUrl(selectedImage.name);
+
+      // S3에 이미지 업로드
+      await uploadImageToS3(presignedUrl, selectedImage);
+      const imageUrl = presignedUrl.split("?")[0];
+
+      if (!profile) {
+        return;
       }
-      console.log("프로필 업데이트 성공", response.data);
+      await updateProfileData(profile.nickname, profile.introduce, imageUrl);
+      setProfile({ ...profile, profile: imageUrl });
+
+      setSelectedImage(null);
+      setPreviewImage(null);
     } catch (error) {
-      console.error("프로필 업데이트 오류", error);
+      setPreviewImage(null);
+      console.error("이미지 업로드 오류:", error);
+      alert("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
     }
   };
 
-  /* 프로필 수정 버튼 */
-  const handleEditClick = () => {
-    if (isEditing) {
-      updateProfileData();
+  /* 닉네임 중복 체크 */
+  const checkNicknameCheck = async (
+    nickname: string,
+    currentNickname: string
+  ) => {
+    try {
+      const { result } = await getFetchNicknameCheck(nickname, currentNickname);
+      return result;
+    } catch (error) {
+      console.error("닉네임 중복 체크 오류:", error);
+      return false;
     }
-    setIsEditing(!isEditing);
+  };
+  /* 프로필 수정 */
+  const handleEditClick = async () => {
+    try {
+      if (isEditing && originalNickname) {
+        const result = profileSchema.safeParse({
+          nickname: profile?.nickname || "",
+          introduce: profile?.introduce || "",
+        });
+
+        // 유효성 검사 실패 시 에러 메시지 나오게
+        if (!result.success) {
+          const errorMessages = result.error.errors.map((err) => err.message);
+          alert(errorMessages);
+          return;
+        }
+
+        // 닉네임 중복 체크
+        const isUnique = await checkNicknameCheck(
+          profile?.nickname || "",
+          originalNickname
+        );
+        if (!isUnique) {
+          alert("이미 사용 중인 닉네임입니다. 다른 닉네임을 입력하세요.");
+          return;
+        }
+        if (!profile) {
+          return;
+        }
+
+        // 이미지 업로드
+        if (selectedImage) {
+          await handleImageUpload();
+        }
+
+        // 프로필 데이터 업데이트
+        await updateProfileData(profile.nickname, profile.introduce);
+
+        alert("프로필 수정 완료");
+
+        // 닉네임이 변경된 경우 URL도 수정
+        if (originalNickname && profile.nickname !== originalNickname) {
+          navigate(`/profile/${profile.nickname}`);
+        }
+      }
+    } catch (error) {
+      alert("프로필 수정 실패");
+    } finally {
+      setIsEditing(!isEditing);
+    }
   };
 
   /* 팔로우 요청 */
-  const handleFollow = async () => {
-    try {
-      await baseInstance.post(`/follow/${nickname}`);
-      getProfileData();
-      console.log("팔로우 성공", isFollowing);
-    } catch (error) {
-      console.error("팔로우 요청 오류:", error);
-    }
+  const handleFollow = async (targetNickname: string) => {
+    if (isDebouncing) return;
+    setIsDebouncing(true);
+    await followUser(targetNickname);
+    fetchProfileData();
+    setTimeout(() => setIsDebouncing(false), 1000);
   };
+
   /* 언팔로우 요청 */
-  const handleUnfollow = async () => {
-    try {
-      await baseInstance.delete(`/follow/${nickname}`);
-      getProfileData();
-      handleCloseModal();
-    } catch (error) {
-      console.error("언팔로우 요청 오류:", error);
-    }
+  const handleUnfollow = async (targetNickname: string) => {
+    if (isDebouncing) return;
+    setIsDebouncing(true);
+    await unfollowUser(targetNickname);
+    fetchProfileData();
+    setTimeout(() => setIsDebouncing(false), 1000);
   };
   useEffect(() => {
-    getProfileData();
-    console.log("profile", profile);
-    console.log("isOwnProfile", isOwnProfile);
+    fetchProfileData();
   }, [nickname]);
 
-  /* useEffect(() => {
-    checkFollowingStatus();
-  }, [nickname]); */
+  useEffect(() => {
+    fetchLoggedInUserInfo();
+  }, [nickname]);
 
   if (!profile) {
     return;
   }
-
+  console.log("로그인 기준 프로필", loggedInUserProfile);
+  console.log("url기준 프로필", profile);
   return (
     <div className="w-full flex flex-col items-center justify-center">
-      <div className="w-full max-w-[1280px] flex gap-2 mt-10 mb-20">
+      <div className="w-full max-w-[1280px] flex gap-2 mt-10 mb-20 px-8 max-h-[440px]">
         <div className="w-full  border border-[#DFDFDF] rounded-2xl">
           <div className="w-full relative flex flex-col gap-2 items-center p-2">
             <div className="w-full flex justify-end mb-4">
@@ -140,13 +242,18 @@ const ProfilePage = () => {
               ) : null}
             </div>
             <img
-              src={profile.profileImg || profileImg}
+              src={previewImage || profile.profile || profileImg}
               alt="프로필 사진"
-              className="w-30"
+              className="w-35 h-35 object-cover rounded-full "
             />
+            {isEditing && (
+              <div className="w-[90%]">
+                <input type="file" onChange={handleImageChange} />
+              </div>
+            )}
             {isEditing ? (
               <div className="w-[90%]">
-                <p>이름</p>
+                <p className="font-semibold">닉네임</p>
                 <input
                   type="text"
                   value={profile.nickname}
@@ -154,7 +261,11 @@ const ProfilePage = () => {
                     setProfile({ ...profile, nickname: e.target.value })
                   }
                   className="border border-gray-400 w-full p-1 rounded"
+                  maxLength={10}
                 />
+                <p className="text-sm text-gray-500">
+                  최소 2글자, 최대 10글자까지 가능합니다.
+                </p>
               </div>
             ) : (
               <p>{profile.nickname}</p>
@@ -162,47 +273,71 @@ const ProfilePage = () => {
             {!isEditing && <p className="text-gray-500">{profile.email}</p>}
             {isEditing ? (
               <div className="w-[90%]">
-                <p>자기소개</p>
+                <p className="font-semibold mt-2">자기소개</p>
                 <textarea
                   value={profile.introduce}
                   onChange={(e) =>
                     setProfile({ ...profile, introduce: e.target.value })
                   }
-                  className="border border-gray-400 w-full p-1 rounded resize-none"
+                  className="border border-gray-400 w-full p-1 pb-10  rounded resize-none relative"
+                  maxLength={50}
                 />
+                <div className="text-sm text-gray-500 ">
+                  <span>최대 50글자까지 가능합니다.</span>
+                  <span className=" pl-2">{profile.introduce.length} / 50</span>
+                </div>
               </div>
             ) : (
-              <p className="text-gray-500">
-                {profile.introduce || "자기소개를 해주세요"}
-              </p>
+              <p>{profile.introduce || "자기소개를 해주세요"}</p>
             )}
-            {!isOwnProfile && !isFollowing && (
-              <div className="w-full px-12">
-                <Button onClick={handleFollow}>팔로우</Button>
-              </div>
-            )}
-            {!isOwnProfile && isFollowing && (
-              <div className="w-full px-12">
+
+            <div className="w-full px-12">
+              {!IsLogin && (
                 <Button
-                  onClick={handleUnfollow}
+                  onClick={() => {
+                    alert("로그인이 필요합니다.");
+                  }}
+                >
+                  팔로우
+                </Button>
+              )}
+              {!isOwnProfile && !isFollowing && IsLogin && (
+                <Button onClick={() => handleFollow(profile.nickname)}>
+                  {isDebouncing ? (
+                    <div className="flex justify-center items-center">
+                      <div className="w-6 h-6 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
+                    </div>
+                  ) : (
+                    "팔로우"
+                  )}
+                </Button>
+              )}
+              {!isOwnProfile && isFollowing && (
+                <Button
+                  onClick={() => handleUnfollow(profile.nickname)}
                   className="bg-gray-500 hover:bg-gray-400"
                 >
-                  언팔로우
+                  {isDebouncing ? (
+                    <div className="flex justify-center items-center">
+                      <div className="w-6 h-6 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
+                    </div>
+                  ) : (
+                    "언팔로우"
+                  )}
                 </Button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
-
         <FollowSection
-          followerCount={profile.followers.length}
-          followingCount={profile.following.length}
-          followerList={profile.followers}
-          followingList={profile.following}
+          profile={profile}
+          loggedInUserProfile={loggedInUserProfile}
+          handleFollow={handleFollow}
+          handleUnfollow={handleUnfollow}
         />
       </div>
 
-      {/* <TabContainer /> */}
+      <TabContainer profile={profile} />
     </div>
   );
 };

@@ -13,3 +13,60 @@ export const trendingMovies = async () => {
     throw err;
   }
 };
+
+export const movieDetail = async (movieId: number) => {
+  try {
+    const response = await baseInstance.get(`/movie/${movieId}`);
+
+    return response.data;
+  } catch (err) {
+    if (err instanceof AxiosError && err.response) {
+      console.log(err.response.data.message);
+    }
+    throw err;
+  }
+};
+
+export const movieImages = async (
+  movieId: number,
+  page: number,
+  limit: number
+) => {
+  try {
+    const response = await baseInstance.get(`/movie/${movieId}/images`, {
+      params: {
+        page,
+        limit,
+      },
+    });
+
+    return response.data;
+  } catch (err) {
+    if (err instanceof AxiosError && err.response) {
+      console.log(err.response.data.message);
+    }
+    throw err;
+  }
+};
+
+export const moviePosters = async (
+  movieId: number,
+  page: number,
+  limit: number
+) => {
+  try {
+    const response = await baseInstance.get(`/movie/${movieId}/posters`, {
+      params: {
+        page,
+        limit,
+      },
+    });
+
+    return response.data;
+  } catch (err) {
+    if (err instanceof AxiosError && err.response) {
+      console.log(err.response.data.message);
+    }
+    throw err;
+  }
+};
