@@ -23,12 +23,14 @@ interface ModalContextProps {
   onCloseModal: () => void;
   onOpenModal: () => void;
   open: boolean;
+  portalref: HTMLElement | null;
 }
 
 export const ModalContext = createContext<ModalContextProps>({
   onCloseModal: () => {},
   onOpenModal: () => {},
   open: false,
+  portalref: null,
 });
 
 interface ModalProps {
@@ -37,16 +39,19 @@ interface ModalProps {
   onCloseModal: () => void;
   onOpenModal?: () => void;
   open: boolean;
+  portalref?: HTMLElement | null;
 }
 
 const Modal: FC<ModalProps> & ModalCompoundProps = (props) => {
-  const { children, className, onCloseModal, onOpenModal, open } = props;
+  const { children, className, onCloseModal, onOpenModal, open, portalref } =
+    props;
   const [scrollY, setScrollY] = useState(0);
 
   const contextValue = {
     onCloseModal,
     onOpenModal: onOpenModal || (() => {}),
     open,
+    portalref: portalref || null,
   };
 
   useEffect(() => {

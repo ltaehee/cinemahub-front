@@ -84,6 +84,8 @@ const Pagination: FC<PagenationProps> & PaginationCompoundProps = (props) => {
     [blockLengthFromCurrent, firstPageFromCurrent]
   );
 
+  console.log("pages", pages);
+
   const contextValue = {
     onPageChange,
     currentPage,

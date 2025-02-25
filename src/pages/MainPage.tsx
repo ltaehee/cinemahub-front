@@ -351,9 +351,9 @@ const MainPage = () => {
 
       <Modal onCloseModal={closeModal} open={isMovieOpen}>
         <Modal.Backdrop className="z-1 bg-black/50 backdrop-blur-lg" />
-        <Modal.Content className="z-2 my-[64px]">
+        <Modal.Content className="z-2 my-[128px] top-0">
           <Modal.Close>
-            <XIcon fill="#000" className="fixed top-4 right-4 w-6" />
+            <XIcon fill="#fff" className="fixed top-4 right-4 w-6 z-1" />
           </Modal.Close>
           {selectedMovie !== null && (
             <CinemaDetailPage movieId={selectedMovie} />
@@ -363,7 +363,7 @@ const MainPage = () => {
 
       <Modal onCloseModal={closeModal} open={isPersonOpen}>
         <Modal.Backdrop className="z-1 bg-black/50 backdrop-blur-lg" />
-        <Modal.Content className="z-2 my-[64px]">
+        <Modal.Content className="z-2 my-[128px] top-0">
           <Modal.Close>
             <XIcon fill="#000" className="fixed top-4 right-4 w-6" />
           </Modal.Close>

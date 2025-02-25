@@ -16,6 +16,7 @@ interface Director {
 interface TrendingDayMovie {
   movieId: number;
   title: string;
+  posterPath: string;
   overview: string;
   releaseDate: string;
   backdropPath: string;

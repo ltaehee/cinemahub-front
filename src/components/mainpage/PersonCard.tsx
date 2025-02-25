@@ -20,6 +20,7 @@ const PersonCard: FC<PopularPerson> = ({ personId, name, profilePath }) => {
           src={`https://image.tmdb.org/t/p/w500${profilePath}`}
           alt={name}
           className="object-cover  w-full h-full border border-gray-200 shadow-md hover:scale-110 duration-300 ease-in-out "
+          onDragStart={(e) => e.preventDefault()}
         />
       </div>
       <FavoritesBtn
