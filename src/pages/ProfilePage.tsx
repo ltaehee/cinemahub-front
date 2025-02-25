@@ -87,6 +87,7 @@ const ProfilePage = () => {
   /* url에 나온 닉네임 기준 프로필 조회 */
   const fetchProfileData = async () => {
     const profileData = await getProfileData(nickname as string);
+
     setProfile(profileData);
     setIsOwnProfile(profileData.isOwnProfile);
     setIsFollowing(profileData.isFollowing);
@@ -160,11 +161,6 @@ const ProfilePage = () => {
           return;
         }
 
-        // 이미지 업로드
-        if (selectedImage) {
-          await handleImageUpload();
-        }
-
         // 닉네임 중복 체크
         const isUnique = await checkNicknameCheck(
           profile?.nickname || "",
@@ -176,6 +172,11 @@ const ProfilePage = () => {
         }
         if (!profile) {
           return;
+        }
+
+        // 이미지 업로드
+        if (selectedImage) {
+          await handleImageUpload();
         }
 
         // 프로필 데이터 업데이트
@@ -243,7 +244,7 @@ const ProfilePage = () => {
             <img
               src={previewImage || profile.profile || profileImg}
               alt="프로필 사진"
-              className="w-30"
+              className="w-35 h-35 object-cover rounded-full "
             />
             {isEditing && (
               <div className="w-[90%]">

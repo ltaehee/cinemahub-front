@@ -188,7 +188,7 @@ const FollowSection = ({
                     <img
                       src={user.profile || profileImg}
                       alt="프로필"
-                      className="w-10 h-10 rounded-full"
+                      className="w-10 h-10 object-cover rounded-full"
                     />
                     <div>
                       <p className="font-bold">{user.nickname}</p>
