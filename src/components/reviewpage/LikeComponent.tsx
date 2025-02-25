@@ -1,35 +1,106 @@
 import { useEffect, useState } from 'react';
 import LikeIcon from '../../icons/LikeIcon';
 import UnlikeIcon from '../../icons/UnlikeIcon';
+import { useCommentContext } from './comment';
+import { emptyChecker } from '../../util/emptyCheck';
+import { getLikesFetch } from '../../apis/review';
+
+type CommentType = {
+  _id: string;
+  userId: UserType;
+  content: string;
+  createdAt: string;
+  image: string;
+  starpoint: number;
+  like: boolean;
+  dislike: boolean;
+  totalLike: number;
+  totalDisLike: number;
+};
+
+type UserType = {
+  nickname: string;
+  profile: string;
+  _id: string;
+};
 
 type likesType = {
   like: boolean;
-  unlike: boolean;
+  dislike: boolean;
 };
 
 const defaultLikes = {
   like: false,
-  unlike: false,
+  dislike: false,
 };
 
 const LikeComponent = () => {
+  const { comment } = useCommentContext();
   const [likes, setLikes] = useState<likesType>(defaultLikes);
+  const [updateComment, setUpdateComment] = useState<CommentType>(comment);
 
-  const handleLikeUnLike = (type: string) => {
-    switch (type) {
-      case 'like':
-        setLikes((prev) => ({ ...prev, like: true, unlike: false }));
-        return;
-      case 'unlike':
-        setLikes((prev) => ({ ...prev, like: false, unlike: true }));
-        return;
-      default:
-        return;
+  const commentId = updateComment._id;
+
+  const handleLikesFetch = async ({
+    commentId,
+    likes,
+  }: {
+    commentId: string;
+    likes: likesType;
+  }) => {
+    if (emptyChecker({ commentId })) {
+      throw new Error(
+        '리뷰를 참조할 수 없습니다. 웹 페이지를 새로고침 해주세요.'
+      );
     }
+
+    try {
+      const { result, data, message } = await getLikesFetch({
+        commentId,
+        likes,
+      });
+
+      if (!result) {
+        throw new Error('좋아요/싫어요 등록 실패');
+      }
+      alert(message);
+      console.log(data);
+
+      setUpdateComment((prev) => ({
+        ...prev,
+        totalLike: data.totalLike,
+        totalDisLike: data.totalDisLike,
+      }));
+    } catch (e) {}
+  };
+
+  const handleLike = () => {
+    //좋아요 취소
+    if (likes.like) {
+      setLikes({ like: false, dislike: false });
+      handleLikesFetch({ commentId, likes: { like: false, dislike: false } });
+      return;
+    }
+    setLikes({ like: true, dislike: false });
+    handleLikesFetch({ commentId, likes: { like: true, dislike: false } });
+  };
+
+  const handleUnLike = () => {
+    //싫어요 취소
+    if (likes.dislike) {
+      setLikes({ like: false, dislike: false });
+      handleLikesFetch({ commentId, likes: { like: false, dislike: false } });
+      return;
+    }
+    setLikes({ like: false, dislike: true });
+    handleLikesFetch({ commentId, likes: { like: false, dislike: true } });
   };
 
   useEffect(() => {
-    setLikes((prev) => ({ ...prev, like: true, unlike: false }));
+    setLikes({
+      like: updateComment.like,
+      dislike: updateComment.dislike,
+    });
   }, []);
 
   return (
@@ -37,17 +108,17 @@ const LikeComponent = () => {
       <div className="flex gap-3">
         <div
           className={`flex items-center gap-2 bg-[#D1D1D1] hover:bg-[#BDBDBD] p-[8px] rounded-[5px] transition`}
-          onClick={() => handleLikeUnLike('like')}
+          onClick={() => handleLike()}
         >
           <LikeIcon recomm={likes.like} />
-          <span>{10}</span>
+          <span>{updateComment.totalLike}</span>
         </div>
         <div
           className={`flex items-center gap-2 bg-[#D1D1D1] hover:bg-[#BDBDBD] p-[8px] rounded-[5px] transition`}
-          onClick={() => handleLikeUnLike('unlike')}
+          onClick={() => handleUnLike()}
         >
-          <UnlikeIcon recomm={likes.unlike} />
-          <span>{10}</span>
+          <UnlikeIcon recomm={likes.dislike} />
+          <span>{updateComment.totalDisLike}</span>
         </div>
       </div>
     </>

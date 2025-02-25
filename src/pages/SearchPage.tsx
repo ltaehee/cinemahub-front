@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { getFetchActorInfo, getFetchMovieInfo } from "../apis/search";
-import MovieCard from "../components/mainpage/MovieCard";
-import PersonCard from "../components/mainpage/PersonCard";
-import CarouselXscroll from "@ui/CarouselXscroll";
-import ChevronIcon from "../icons/ChevronIcon";
-import useInfinite from "../hooks/useInfinite";
+import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { getFetchActorInfo, getFetchMovieInfo } from '../apis/search';
+import MovieCard from '../components/mainpage/MovieCard';
+import PersonCard from '../components/mainpage/PersonCard';
+import CarouselXscroll from '@ui/CarouselXscroll';
+import ChevronIcon from '../icons/ChevronIcon';
+import useInfinite from '../hooks/useInfinite';
 
 const isHangulConsonantPattern = /^[\u3131-\u314e]+$/; // 한글 자음 확인
 
@@ -46,9 +46,9 @@ const SearchPage = () => {
   const [responseTotalCount, setResponseTotalCount] = useState(0);
   const personRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<HTMLDivElement>(null);
-  const category = searchParams.get("category") ?? "movie";
-  const keyword = searchParams.get("keyword") ?? "";
-  console.log("people: ", people);
+  const category = searchParams.get('category') ?? 'movie';
+  const keyword = searchParams.get('keyword') ?? '';
+  console.log('people: ', people);
   const getFetchData = async (keyword: string) => {
     setLoading(true);
     try {
@@ -56,7 +56,7 @@ const SearchPage = () => {
         setHasMore(false);
         return;
       }
-      if (category === "movie") {
+      if (category === 'movie') {
         const response = await getFetchMovieInfo(keyword, page);
         setResponseTotalCount(response.totalCount);
 
@@ -70,7 +70,7 @@ const SearchPage = () => {
         setMovies([]);
       }
     } catch (err) {
-      console.error("검색 오류: ", err);
+      console.error('검색 오류: ', err);
     } finally {
       setLoading(false);
     }
@@ -132,7 +132,7 @@ const SearchPage = () => {
           </h2>
           {loading && <p>로딩 중...</p>}
 
-          {category === "person" && (
+          {category === 'person' && (
             <>
               <CarouselXscroll
                 baseRect={baseRect}
@@ -184,7 +184,7 @@ const SearchPage = () => {
               <div
                 className="grid gap-4 w-full pb-20r justify-items-center"
                 style={{
-                  gridTemplateColumns: "repeat(auto-fill, minmax(224px, 1fr))",
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(224px, 1fr))',
                 }}
               >
                 {people &&
@@ -204,12 +204,12 @@ const SearchPage = () => {
             </>
           )}
 
-          {category === "movie" && (
+          {category === 'movie' && (
             <>
               <div
                 className="grid gap-4 w-full pb-20r justify-items-center"
                 style={{
-                  gridTemplateColumns: "repeat(auto-fill, minmax(225px, 1fr))",
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(225px, 1fr))',
                 }}
               >
                 {movies &&

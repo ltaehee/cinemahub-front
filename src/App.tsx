@@ -1,5 +1,5 @@
-import "./App.css";
-import RouteProvider from "./routes/RouteProvider";
+import './App.css';
+import RouteProvider from './routes/RouteProvider';
 
 function App() {
   return (
