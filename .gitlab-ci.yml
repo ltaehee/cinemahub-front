@@ -1,24 +1,29 @@
 stages:
+  - build_and_publish
   - deploy
+
 variables:
-  IMAGE_NAME: cinema-hub:$CI_PIPELINE_ID
+  TAG_LATEST: qkrcksgh5654/elice-test-ci:latest
+  TAG_COMMIT: qkrcksgh5654/elice-test-ci:$CI_COMMIT_SHORT_SHA
+
+build_and_publish:
+  stage: build_and_publish
+  script:
+    - docker build -t $TAG_COMMIT -t $TAG_LATEST .
+    - docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PAT
+    - docker push $TAG_COMMIT
+    - docker push $TAG_LATEST
 
 deploy:
-  tags:
-    - frontend
-  image: docker:latest
   stage: deploy
+  script:
+    - chmod og= $ID_RSA
+    - apk update && apk add openssh-client
+    - ssh -i $ID_RSA -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PAT"
+    - ssh -i $ID_RSA -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker pull $TAG_COMMIT"
+    - ssh -i $ID_RSA -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker container rm -f cinemahub-front || true"
+    - ssh -i $ID_RSA -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "docker run -d -p 3001:3001 --name cinemahub-back $TAG_COMMIT"
+  environment:
+    name: production
   only:
     - develop
-  script:
-    - docker stop cinema-hub-container || true
-    - docker rm cinema-hub-container || true
-    - docker build -t $IMAGE_NAME .
-    - docker run -d --name cinema-hub-container -p 80:80 $IMAGE_NAME
-    - LATEST_TAG=$(docker images cinema-hub --format "{{.Tag}} {{.CreatedAt}}" | sort -r -k2 | head -n 1 | awk '{print $1}')
-    - OLD_TAGS=$(docker images my-app --format "{{.Tag}}" | grep -v "$LATEST_TAG")
-    - if [ ! -z "$OLD_TAGS" ]; then
-      for TAG in $OLD_TAGS; do
-      docker rmi cinema-hub:$TAG || true;
-      done
-      fi
