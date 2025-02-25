@@ -26,8 +26,6 @@ interface PopularActors {
 
 const MainPage = () => {
   const navigate = useNavigate();
-  const [isMovieOpen, setIsMovieOpen] = useState<boolean>(false);
-  const [isPersonOpen, setIsPersonOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const baseRef = useRef<HTMLDivElement>(null);
   const genreRef = useRef<HTMLDivElement>(null);
@@ -52,7 +50,8 @@ const MainPage = () => {
   const [searchParams] = useSearchParams();
   const movieId = searchParams.get("movie");
   const personId = searchParams.get("person");
-
+  const [isMovieOpen, setIsMovieOpen] = useState<boolean>(false);
+  const [isPersonOpen, setIsPersonOpen] = useState<boolean>(false);
   const [selectedMovie, setSelectedMovie] = useState<number | null>(null);
   const [selectedPerson, setSelectedPerson] = useState<number | null>(null);
 

@@ -22,6 +22,7 @@ interface PaginationContextProps {
   setCurrentPage: Dispatch<SetStateAction<number>>;
   totalPageLength: number;
   pages: number[];
+  blockSize: number;
 }
 
 export const PaginationContext = createContext<PaginationContextProps>({
@@ -30,6 +31,7 @@ export const PaginationContext = createContext<PaginationContextProps>({
   setCurrentPage: () => {},
   totalPageLength: 0,
   pages: [],
+  blockSize: 0,
 });
 
 interface PagenationProps extends HTMLAttributes<HTMLDivElement> {
@@ -60,7 +62,7 @@ const Pagination: FC<PagenationProps> & PaginationCompoundProps = (props) => {
   );
 
   const firstPageFromCurrent = useMemo(
-    () => Math.floor(currentPage / blockSize) * 10,
+    () => Math.floor(currentPage / blockSize) * blockSize,
     [currentPage, blockSize]
   );
 
@@ -84,14 +86,13 @@ const Pagination: FC<PagenationProps> & PaginationCompoundProps = (props) => {
     [blockLengthFromCurrent, firstPageFromCurrent]
   );
 
-  console.log("pages", pages);
-
   const contextValue = {
     onPageChange,
     currentPage,
     setCurrentPage,
     totalPageLength,
     pages,
+    blockSize,
   };
 
   return (

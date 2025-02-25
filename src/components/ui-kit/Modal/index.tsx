@@ -57,7 +57,7 @@ const Modal: FC<ModalProps> & ModalCompoundProps = (props) => {
   useEffect(() => {
     const rootElement = document.getElementById("root");
 
-    if (rootElement) {
+    if (!portalref && rootElement) {
       if (open) {
         setScrollY(window.scrollY);
         rootElement.style.top = `-${scrollY}px`;

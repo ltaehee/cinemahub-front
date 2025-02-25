@@ -38,6 +38,7 @@ interface Movie {
   logoPath: string | null;
   koreanRating: string;
   runtime: number;
+  tagline: string;
   actor: Actor[];
   director: Director[];
 }
@@ -199,7 +200,7 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
               )}
               <button
                 onClick={() => {
-                  navigate(``), setIsMuted(true);
+                  navigate(`/review?movie=${movieId}`), setIsMuted(true);
                 }}
                 className="py-4 w-80 text-xl bg-red-500/80 rounded-lg hover:bg-red-500 backdrop-blur-xs transition ease-in-out"
               >
@@ -276,7 +277,6 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
         </div>
 
         <div className="flex flex-col gap-8 items-center px-8">
-          {" "}
           <hr className="w-full border border-gray-300"></hr>
           {movie?.overview && (
             <>
@@ -291,22 +291,20 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
             <h2 className="text-2xl text-slate-900">포스터</h2>
             <div className="flex flex-col gap-8 items-center w-full justify-between">
               <div className="flex gap-4 w-full justify-between">
-                {posters.map((poster, index) => {
+                {posters.map((poster) => {
                   return (
-                    <>
-                      <div
-                        key={index}
-                        onClick={() => handleModalOpen(poster)}
-                        className="w-[220px] h-[330px]"
-                      >
-                        <img
-                          src={`https://image.tmdb.org/t/p/w185${poster}`}
-                          alt="poster"
-                          className="object-cover w-full h-full"
-                          onDragStart={(e) => e.preventDefault()}
-                        />
-                      </div>
-                    </>
+                    <div
+                      key={poster}
+                      onClick={() => handleModalOpen(poster)}
+                      className="w-[220px] h-[330px]"
+                    >
+                      <img
+                        src={`https://image.tmdb.org/t/p/w185${poster}`}
+                        alt="poster"
+                        className="object-cover w-full h-full"
+                        onDragStart={(e) => e.preventDefault()}
+                      />
+                    </div>
                   );
                 })}
               </div>
@@ -328,11 +326,13 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
             <h2 className="text-2xl text-slate-900">스틸이미지</h2>
             <div className="flex flex-col gap-8 items-center w-full justify-between">
               <div className="flex gap-4 w-full justify-between flex-wrap">
-                {images.map((image, index) => {
+                {images.map((image) => {
                   return (
                     <div
-                      key={index}
-                      onClick={() => handleModalOpen(image)}
+                      key={image}
+                      onClick={() => {
+                        handleModalOpen(image), window.scrollTo(0, scrollY);
+                      }}
                       className="w-[292px] h-[170px]"
                     >
                       <img
@@ -365,8 +365,7 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
         open={isModalOpen}
         portalref={portalref.current}
       >
-        <Modal.Backdrop className="z-3 bg-black/50 backdrop-blur-lg" />
-        <Modal.Content className="z-4 top-[50%] transform -translate-y-1/2 ">
+        <Modal.Content className="z-4 top-[50%] transform -translate-y-1/2 shadow-2xl">
           <Modal.Close>
             <XIcon fill="#fff" className="fixed top-4 right-4 w-6" />
           </Modal.Close>

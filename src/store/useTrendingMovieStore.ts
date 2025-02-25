@@ -25,6 +25,7 @@ interface TrendingDayMovie {
   logoPath: string | null;
   koreanRating: string;
   runtime: number;
+  tagline: string;
   actor: Actor[];
   director: Director[];
 }

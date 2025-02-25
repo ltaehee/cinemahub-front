@@ -20,7 +20,10 @@ const PaginationButtons = (props: PaginationButtonsProps) => {
           onClick={() => handleChangePageIndex(pageIndex)}
           disabled={currentPage === pageIndex}
           style={{
-            color: currentPage === pageIndex ? "#5B21B6" : "#CBD5E1",
+            color:
+              currentPage === pageIndex
+                ? "oklch(0.637 0.237 25.331)"
+                : "#CBD5E1",
           }}
         >
           {pageIndex + 1}
