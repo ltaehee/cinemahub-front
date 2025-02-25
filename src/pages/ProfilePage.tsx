@@ -1,9 +1,10 @@
 import { useNavigate, useParams } from "react-router-dom";
 import Button from "../components/Button";
 import profileImg from "/images/profileImg.png";
+import profileCamera from "/images/camera.png";
 import profileEdit from "/images/profileEdit.png";
 import profileEdit2 from "/images/profileEdit2.png";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import FollowSection from "../components/profilepage/FollowSection";
 import TabContainer from "../components/profilepage/TabContainer";
 import useLoginStore from "../store/useStore";
@@ -66,6 +67,8 @@ const ProfilePage = () => {
   // 이미지 상태 추가
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // originalNickname 프로필 수정 전 닉네임
   const [originalNickname, setOriginalNickname] = useState<string>("");
@@ -110,6 +113,7 @@ const ProfilePage = () => {
   const handleImageUpload = async () => {
     if (!selectedImage) return;
     try {
+      setIsUploading(true);
       // Presigned URL 요청
       const presignedUrl = await getPresignedUrl(selectedImage.name);
 
@@ -129,6 +133,8 @@ const ProfilePage = () => {
       setPreviewImage(null);
       console.error("이미지 업로드 오류:", error);
       alert("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsUploading(false); // 이미지 업로드 완료 후 스피너 제거
     }
   };
 
@@ -241,19 +247,44 @@ const ProfilePage = () => {
                 />
               ) : null}
             </div>
-            <img
-              src={previewImage || profile.profile || profileImg}
-              alt="프로필 사진"
-              className="w-35 h-35 object-cover rounded-full "
+            <div className="relative">
+              <img
+                src={previewImage || profile.profile || profileImg}
+                alt="프로필 사진"
+                className="w-35 h-35 object-cover rounded-full"
+              />
+              {isEditing && (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute cursor-pointer top-0 left-0 w-full h-full flex justify-center items-center bg-[rgba(0,0,0,0.3)] rounded-full"
+                >
+                  <img
+                    src={profileCamera}
+                    alt="프로필 카메라 아이콘"
+                    className="w-8"
+                  />
+                </div>
+              )}
+              {isUploading && (
+                <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-[rgba(0,0,0,0.3)] rounded-full">
+                  <div className="w-6 h-6 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
+                </div>
+              )}
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              className="hidden"
+              onChange={handleImageChange}
             />
-            {isEditing && (
-              <div className="w-[90%]">
-                <input type="file" onChange={handleImageChange} />
-              </div>
-            )}
             {isEditing ? (
               <div className="w-[90%]">
-                <p className="font-semibold">닉네임</p>
+                <div className="flex justify-between">
+                  <p className="font-semibold">닉네임</p>
+                  <p className="text-sm text-gray-500 pl-8">
+                    최소 2글자, 최대 10글자까지 가능합니다.
+                  </p>
+                </div>
                 <input
                   type="text"
                   value={profile.nickname}
@@ -263,9 +294,6 @@ const ProfilePage = () => {
                   className="border border-gray-400 w-full p-1 rounded"
                   maxLength={10}
                 />
-                <p className="text-sm text-gray-500">
-                  최소 2글자, 최대 10글자까지 가능합니다.
-                </p>
               </div>
             ) : (
               <p>{profile.nickname}</p>
@@ -273,7 +301,17 @@ const ProfilePage = () => {
             {!isEditing && <p className="text-gray-500">{profile.email}</p>}
             {isEditing ? (
               <div className="w-[90%]">
-                <p className="font-semibold mt-2">자기소개</p>
+                <div className="flex items-center justify-between">
+                  <p className="font-semibold">자기소개</p>
+                  <div className="flex">
+                    <p className="text-gray-500 text-sm pl-4">
+                      최대 50글자까지 가능합니다.
+                    </p>
+                    <p className="pl-2 text-gray-500 text-sm">
+                      {profile.introduce.length} / 50
+                    </p>
+                  </div>
+                </div>
                 <textarea
                   value={profile.introduce}
                   onChange={(e) =>
@@ -282,10 +320,6 @@ const ProfilePage = () => {
                   className="border border-gray-400 w-full p-1 pb-10  rounded resize-none relative"
                   maxLength={50}
                 />
-                <div className="text-sm text-gray-500 ">
-                  <span>최대 50글자까지 가능합니다.</span>
-                  <span className=" pl-2">{profile.introduce.length} / 50</span>
-                </div>
               </div>
             ) : (
               <p>{profile.introduce || "자기소개를 해주세요"}</p>
