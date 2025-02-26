@@ -28,12 +28,23 @@ type CommentType = {
   dislike: boolean;
   totalLike: number;
   totalDisLike: number;
+  IsOwner: boolean;
 };
 
 type UserType = {
   nickname: string;
   profile: string;
   _id: string;
+};
+
+type MovieType = {
+  title: string;
+  posterPath: string;
+};
+
+const defaultMovie = {
+  title: '',
+  posterPath: '',
 };
 
 const CinemaReviewPage = () => {
@@ -44,7 +55,7 @@ const CinemaReviewPage = () => {
 
   const navigator = useNavigate();
 
-  const [movieTitle, setMovieTitle] = useState<string>('');
+  const [movieData, setMovieData] = useState<MovieType>(defaultMovie);
   const [comments, setComments] = useState<CommentType[]>([]);
   const [starRate, setStarRate] = useState(0);
   const [review, setReview] = useState<string>('');
@@ -52,12 +63,18 @@ const CinemaReviewPage = () => {
   const [imageSrcs, setImageSrcs] = useState<string[]>([]);
   const [_, setimgUrls] = useState<string[]>([]);
   const [totalStarPoint, setTotalStarPoint] = useState<number>(0);
+  // const [loading, setLoading] = useState<boolean>(false);
+
+  /**
+   *
+   * 1. 동일한 파일 올리면 업로드 안됌
+   * 2. 등록 시 loading 넣기
+   */
 
   const SingleFileReader = async (file: File) => {
     return new Promise((resolve, reject) => {
       const fileReader = new FileReader();
       fileReader.readAsDataURL(file);
-
       fileReader.onload = () => {
         try {
           resolve(fileReader.result);
@@ -70,19 +87,22 @@ const CinemaReviewPage = () => {
     });
   };
 
-  const handleFilePreview = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFilePreview = async (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
+    console.log(files);
     if (typeof files === 'object' && files !== null && files.length <= 2) {
       const filesArr = Array.from(files);
       setFiles((prev) => [...prev, ...filesArr]);
-      filesArr.forEach(async (file) => {
+
+      for (const file of filesArr) {
         const src = await SingleFileReader(file);
         setImageSrcs((prev) => [...prev, `${src}`]);
-      });
+      }
     }
   };
 
   const handleRemovePreview = (targetIndex: number) => {
+    console.log(files);
     setImageSrcs((prev) => prev.filter((_, index) => index !== targetIndex));
     setFiles((prev) => prev.filter((_, index) => index !== targetIndex));
   };
@@ -160,7 +180,7 @@ const CinemaReviewPage = () => {
     } catch (e) {}
   };
 
-  const getMovieTitle = async (movieId: string) => {
+  const getMovieData = async (movieId: string) => {
     try {
       const castingMovieId = Number(movieId);
       const response = await movieDetail(castingMovieId);
@@ -172,7 +192,7 @@ const CinemaReviewPage = () => {
         navigator('/', { replace: true });
         return;
       }
-      setMovieTitle(response.title);
+      setMovieData({ posterPath: response.posterPath, title: response.title });
       handleGetComments();
     } catch (e) {}
   };
@@ -185,7 +205,7 @@ const CinemaReviewPage = () => {
       navigator('/', { replace: true });
       return;
     } else {
-      getMovieTitle(movieId);
+      getMovieData(movieId);
     }
   }, []);
 
@@ -193,73 +213,88 @@ const CinemaReviewPage = () => {
     <>
       <div className="p-10 min-w-[480px] max-w-5xl mx-auto">
         <div className="p-10 bg-[#FBFBFB]">
-          <div>
-            <p className="text-3xl">{movieTitle}</p>
-            <div className="flex gap-5 mt-5 items-center justify-between">
-              <div className="flex gap-5">
+          <div className=" flex justify-between">
+            <div>
+              <p className="text-3xl font-bold">{movieData.title}</p>
+
+              <div className="flex gap-5 mt-5 items-center @max-[380px]:flex-col">
                 {IsLogin ? (
-                  <StarContainer
-                    starRate={starRate}
-                    handleRating={handleRating}
-                    defaultStar={0}
-                  />
+                  <div className="flex gap-2">
+                    <p>나의 평점 : </p>
+                    <StarContainer
+                      starRate={starRate}
+                      handleRating={handleRating}
+                      defaultStar={0}
+                    />
+                  </div>
                 ) : null}
 
-                <p className="">{comments.length}개 리뷰</p>
+                <p className="">{comments.length} 개 리뷰</p>
+                <p>관람객 평점 : {totalStarPoint}</p>
               </div>
-
-              <p className="text-3xl font-bold">평점 {totalStarPoint}</p>
             </div>
 
-            {IsLogin ? (
-              <div className="mt-5 w-full h-full">
-                <div className="flex gap-5">
-                  {imageSrcs.map((src, index) => (
-                    <div
-                      key={`image-src-${index}`}
-                      className="relative w-[180px] h-full rounded-[5px] border border-[#DDDDDD]"
-                    >
-                      <AspectRatio ratio={1 / 1}>
-                        <AspectRatio.Image
-                          className="w-full h-full"
-                          src={src}
-                          alt={'리뷰 사진'}
-                        />
-                      </AspectRatio>
-
-                      <div
-                        onClick={() => handleRemovePreview(index)}
-                        className="absolute w-[12px] top-1 right-1"
-                      >
-                        <CloseIcon width={'100%'} height={'100%'} />
-                      </div>
-
-                      <div className="absolute top-0 right-0 z-1" />
-                    </div>
-                  ))}
-
-                  {imageSrcs.length < 2 ? (
-                    <label
-                      htmlFor="fileInput"
-                      className="block border border-[#DDDDDD] w-[180px] h-full p-[50px] rounded-[5px] hover:bg-[#BDBDBD] cursor-pointer"
-                    >
-                      <CameraIcon width={'100%'} height={'100%'} />
-                    </label>
-                  ) : null}
-                </div>
-
-                <input
-                  style={{ display: 'none' }}
-                  type="file"
-                  name="fileInput"
-                  id="fileInput"
-                  accept="image/*"
-                  onChange={handleFilePreview}
-                  multiple
+            <div className="w-[180px] h-full">
+              <AspectRatio ratio={1 / 1}>
+                <AspectRatio.Image
+                  className="w-full h-full rounded-[18px] border border-[#DDDDDD]"
+                  src={`https://image.tmdb.org/t/p/original${movieData.posterPath}`}
+                  alt={'리뷰 사진'}
                 />
-              </div>
-            ) : null}
+              </AspectRatio>
+            </div>
           </div>
+
+          <p className="text-xl">리뷰 사진 등록하기</p>
+
+          {IsLogin ? (
+            <div className="mt-5 w-full h-full">
+              <div className="flex gap-5">
+                {imageSrcs.map((src, index) => (
+                  <div
+                    key={`image-src-${index}`}
+                    className="relative w-[180px] h-full rounded-[5px] border border-[#DDDDDD]"
+                  >
+                    <AspectRatio ratio={1 / 1}>
+                      <AspectRatio.Image
+                        className="w-full h-full"
+                        src={src}
+                        alt={'리뷰 사진'}
+                      />
+                    </AspectRatio>
+
+                    <div
+                      onClick={() => handleRemovePreview(index)}
+                      className="absolute w-[12px] top-1 right-1"
+                    >
+                      <CloseIcon width={'100%'} height={'100%'} />
+                    </div>
+
+                    <div className="absolute top-0 right-0 z-1" />
+                  </div>
+                ))}
+
+                {imageSrcs.length < 2 ? (
+                  <label
+                    htmlFor="fileInput"
+                    className="block border border-[#DDDDDD] w-[180px] h-full rounded-[5px] hover:bg-[#BDBDBD] cursor-pointer"
+                  >
+                    <CameraIcon width={'100%'} height={'100%'} />
+                  </label>
+                ) : null}
+              </div>
+
+              <input
+                style={{ display: 'none' }}
+                type="file"
+                name="fileInput"
+                id="fileInput"
+                accept="image/*"
+                onChange={handleFilePreview}
+                multiple
+              />
+            </div>
+          ) : null}
 
           <div className="h-[1px] bg-slate-200 my-5"></div>
 
@@ -292,6 +327,8 @@ const CinemaReviewPage = () => {
           ) : null}
 
           <div className="mt-5">
+            {/* <p>최신순 / 등록순 보기</p> */}
+
             {comments.length ? (
               <Comments comments={comments} />
             ) : (

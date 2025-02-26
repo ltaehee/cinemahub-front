@@ -104,3 +104,34 @@ export const getLikesFetch = async ({
     throw err;
   }
 };
+
+export const RegisterReportFetch = async ({
+  commentId,
+  reason,
+}: {
+  commentId: string;
+  reason: string;
+}) => {
+  if (emptyChecker({ commentId })) {
+    throw new Error('댓글을 참조할 수 없습니다. 새로고침 해주세요.');
+  }
+
+  try {
+    const response = await baseInstance.post(`/review/report`, {
+      commentId,
+      reason,
+    });
+
+    if (response.data.isError) {
+      throw new Error(response.data.message);
+    }
+
+    return response.data;
+  } catch (err) {
+    if (err instanceof AxiosError && err.response) {
+      console.log(err.response.data.message);
+      alert(err.response.data.message);
+    }
+    throw err;
+  }
+};

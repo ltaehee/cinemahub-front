@@ -1,21 +1,21 @@
-import CarouselXscroll from "@ui/CarouselXscroll";
-import { useEffect, useRef, useState } from "react";
-import ChevronIcon from "../icons/ChevronIcon";
-import MainCard from "../components/mainpage/MainCard";
-import Carousel from "@ui/CarouselInfinite";
-import CarouselItem from "@ui/CarouselInfinite/CarouselInfiniteItem";
-import CarouselItemList from "@ui/CarouselInfinite/CarouselInfiniteItemList";
-import { genres } from "@consts/genres";
-import Button from "../components/Button";
-import { trendingMovies } from "../apis/movie";
-import MovieCard from "../components/mainpage/MovieCard";
-import { popularActors } from "../apis/person";
-import PersonCard from "../components/mainpage/PersonCard";
-import CinemaDetailPage from "./CinemaDetailPage";
-import PersonDetailPage from "./PersonDetailPage";
-import { useTrendingMoviesStore } from "../store/useTrendingMovieStore";
-import { useModalOpenStore } from "../store/useModalOpenStore";
-import ModalPage from "@ui/ModalPage";
+import CarouselXscroll from '@ui/CarouselXscroll';
+import { useEffect, useRef, useState } from 'react';
+import ChevronIcon from '../icons/ChevronIcon';
+import MainCard from '../components/mainpage/MainCard';
+import Carousel from '@ui/CarouselInfinite';
+import CarouselItem from '@ui/CarouselInfinite/CarouselInfiniteItem';
+import CarouselItemList from '@ui/CarouselInfinite/CarouselInfiniteItemList';
+import { genres } from '@consts/genres';
+import Button from '../components/Button';
+import { trendingMovies } from '../apis/movie';
+import MovieCard from '../components/mainpage/MovieCard';
+import { popularActors } from '../apis/person';
+import PersonCard from '../components/mainpage/PersonCard';
+import CinemaDetailPage from './CinemaDetailPage';
+import PersonDetailPage from './PersonDetailPage';
+import { useTrendingMoviesStore } from '../store/useTrendingMovieStore';
+import { useModalOpenStore } from '../store/useModalOpenStore';
+import ModalPage from '@ui/ModalPage';
 
 interface PopularActors {
   personId: string;
@@ -49,9 +49,9 @@ const MainPage = () => {
 
   const [popularPeople, setPopularPeople] = useState<PopularActors[]>([
     {
-      personId: "",
-      name: "",
-      profilePath: "",
+      personId: '',
+      name: '',
+      profilePath: '',
     },
   ]);
 
@@ -66,7 +66,7 @@ const MainPage = () => {
       setTrendingWeekMovie(movieResponse.trending_week);
       setPopularPeople(actorResponse);
     } catch (err) {
-      console.error("데이터를 가져오는데 실패했습니다.", err);
+      console.error('데이터를 가져오는데 실패했습니다.', err);
     } finally {
       setIsLoading(false);
     }
@@ -88,10 +88,10 @@ const MainPage = () => {
       calculateBaseDivRect();
     };
 
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
@@ -150,7 +150,7 @@ const MainPage = () => {
                   <ChevronIcon height="40px" color="#fff" thickness="3" />
                 </button>
                 <div
-                  style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)" }}
+                  style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)' }}
                   className="text-white text-xl px-2"
                 >
                   {displayIndex}/{itemLength}
