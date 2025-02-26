@@ -3,6 +3,7 @@ import StarIcon from '../../icons/StarIcon';
 import FavoritesBtn from './FavoritesBtn';
 import { genres } from '@consts/genres';
 import { FC } from 'react';
+import { useModalOpenStore } from '../../store/useModalOpenStore';
 
 interface MovieProps {
   title: string;
@@ -20,18 +21,30 @@ const MovieCard: FC<MovieProps> = ({
   genreIds,
 }) => {
   const navigate = useNavigate();
+  const {
+    setIsMovieOpen,
+    setSelectedMovie,
+    setIsPersonOpen,
+    setSelectedPerson,
+  } = useModalOpenStore();
 
   return (
     <div
-      onClick={() => navigate(`?movie=${movieId}`)}
-      className="cursor-pointer shadow-md w-56 h-full rounded-md bg-white border border-gray-200"
+      onClick={() => {
+        setIsMovieOpen(true),
+          setSelectedMovie(movieId),
+          setIsPersonOpen(false),
+          setSelectedPerson(null);
+        navigate(`?movie=${movieId}`);
+      }}
+      className="cursor-pointer shadow-md w-[240px] h-full rounded-md bg-white border border-gray-200"
     >
       <div className="relative overflow-hidden rounded-tl-md rounded-tr-md">
         <div className="h-[340px]">
           <img
             src={`https://image.tmdb.org/t/p/w500${posterPath}`}
             alt={title}
-            className="h-full object-cover select-none duration-300 ease-in-out hover:scale-110"
+            className="h-full w-full object-cover select-none duration-300 ease-in-out hover:scale-110"
             onDragStart={(e) => e.preventDefault()}
           />
         </div>
@@ -54,7 +67,7 @@ const MovieCard: FC<MovieProps> = ({
         </div>
         <div className="text-sm font-medium text-gray-500">
           {genreIds.map((genreId) => (
-            <span key={genreId} className="pr-1">
+            <span key={genreId} className="pr-1 truncate">
               {genres.find((genre) => genre.id === genreId)?.name}
             </span>
           ))}

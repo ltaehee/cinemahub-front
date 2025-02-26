@@ -20,13 +20,13 @@ const PaginationNavigator = (props: PaginationNavigatorProps) => {
 
   const handleClickPrev = () => {
     if (currentPage === 0) return;
-    const changedPageIndex = currentPage - 1;
+    const changedPageIndex = currentPage - blockSize;
     setCurrentPage(changedPageIndex);
     onPageChange(changedPageIndex);
   };
 
   const handleClickNext = () => {
-    const changedPageIndex = currentPage + 1;
+    const changedPageIndex = currentPage + blockSize;
     if (totalPageLength <= changedPageIndex) return;
     setCurrentPage(changedPageIndex);
     onPageChange(changedPageIndex);
@@ -47,14 +47,16 @@ const PaginationNavigator = (props: PaginationNavigatorProps) => {
 
   return (
     <div {...props}>
-      <button disabled={blockSize > currentPage} onClick={handleClickFirst}>
-        <NavigatorButtonFirstLast
-          height="16px"
-          stroke={
-            blockSize > currentPage ? "#cbd5e1" : "oklch(0.637 0.237 25.331)"
-          }
-        />
-      </button>
+      {blockSize < totalPageLength && (
+        <button disabled={blockSize > currentPage} onClick={handleClickFirst}>
+          <NavigatorButtonFirstLast
+            height="16px"
+            stroke={
+              blockSize > currentPage ? "#cbd5e1" : "oklch(0.637 0.237 25.331)"
+            }
+          />
+        </button>
+      )}
       <button disabled={currentPage === 0} onClick={handleClickPrev}>
         <NavigatorButton
           height="16px"
@@ -76,15 +78,19 @@ const PaginationNavigator = (props: PaginationNavigatorProps) => {
           }
         />
       </button>
-      <button disabled={currentBlock === lastBlock} onClick={handleClickLast}>
-        <NavigatorButtonFirstLast
-          height="16px"
-          transform="rotate(180)"
-          stroke={
-            currentBlock === lastBlock ? "#cbd5e1" : "oklch(0.637 0.237 25.331)"
-          }
-        />
-      </button>
+      {blockSize < totalPageLength && (
+        <button disabled={currentBlock === lastBlock} onClick={handleClickLast}>
+          <NavigatorButtonFirstLast
+            height="16px"
+            transform="rotate(180)"
+            stroke={
+              currentBlock === lastBlock
+                ? "#cbd5e1"
+                : "oklch(0.637 0.237 25.331)"
+            }
+          />
+        </button>
+      )}
     </div>
   );
 };

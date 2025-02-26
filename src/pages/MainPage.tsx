@@ -17,6 +17,7 @@ import PersonDetailPage from "./PersonDetailPage";
 import Modal from "@ui/Modal";
 import XIcon from "../icons/XIcon";
 import { useTrendingMoviesStore } from "../store/useTrendingMovieStore";
+import { useModalOpenStore } from "../store/useModalOpenStore";
 
 interface PopularActors {
   personId: number;
@@ -38,6 +39,16 @@ const MainPage = () => {
     setTrendingDayMovie,
     setTrendingWeekMovie,
   } = useTrendingMoviesStore();
+  const {
+    isMovieOpen,
+    isPersonOpen,
+    setIsMovieOpen,
+    setIsPersonOpen,
+    selectedMovie,
+    setSelectedMovie,
+    selectedPerson,
+    setSelectedPerson,
+  } = useModalOpenStore();
 
   const [popularPeople, setPopularPeople] = useState<PopularActors[]>([
     {
@@ -50,10 +61,6 @@ const MainPage = () => {
   const [searchParams] = useSearchParams();
   const movieId = searchParams.get("movie");
   const personId = searchParams.get("person");
-  const [isMovieOpen, setIsMovieOpen] = useState<boolean>(false);
-  const [isPersonOpen, setIsPersonOpen] = useState<boolean>(false);
-  const [selectedMovie, setSelectedMovie] = useState<number | null>(null);
-  const [selectedPerson, setSelectedPerson] = useState<number | null>(null);
 
   const closeModal = () => {
     setSelectedMovie(null);

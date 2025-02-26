@@ -8,6 +8,8 @@ import MuteIcon from "../icons/MuteIcon";
 import UnMuteIcon from "../icons/UnMuteIcon";
 import { useNavigate } from "react-router-dom";
 import { genres } from "@consts/genres";
+import { Helmet } from "react-helmet-async";
+import { useModalOpenStore } from "../store/useModalOpenStore";
 
 interface CinemaDetailPageProps {
   movieId: number;
@@ -59,40 +61,54 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
   const [content, setContent] = useState("");
   const [isMuted, setIsMuted] = useState(true);
   const portalref = useRef<HTMLDivElement>(null);
-  const [movie, setMovie] = useState<Movie | null>(
-    trendingDayMovies.find((m) => m.movieId === movieId) || null
-  );
   const navigate = useNavigate();
+  const {
+    setIsMovieOpen,
+    setSelectedMovie,
+    setIsPersonOpen,
+    setSelectedPerson,
+  } = useModalOpenStore();
+
+  const [movie, setMovie] = useState<Movie | null>(null);
 
   const fetchData = async () => {
-    const [posters, images] = await Promise.all([
-      moviePosters(movieId, 0, posterPageSize),
-      movieImages(movieId, 0, imagePageSize),
-    ]);
-    setPosters(posters.posters);
-    setPosterCount(posters.totalCount);
-    setImages(images.images);
-    setImageCount(images.totalCount);
+    try {
+      const [posters, images] = await Promise.all([
+        moviePosters(movieId, 0, posterPageSize),
+        movieImages(movieId, 0, imagePageSize),
+      ]);
+      setPosters(posters.posters);
+      setPosterCount(posters.totalCount);
+      setImages(images.images);
+      setImageCount(images.totalCount);
+    } catch (err) {
+      console.error("fetchData 에러 ", err);
+    }
   };
 
   const fetchMovie = async () => {
     try {
       const response = await movieDetail(movieId);
       setMovie(response);
+      console.log("fetchMovie 작동");
     } catch (err) {
-      console.log(err);
+      console.error("fetchMovie 에러 ", err);
     }
   };
+
+  const foundMovie = trendingDayMovies.find((m) => m.movieId === movieId);
+
+  useEffect(() => {
+    if (foundMovie) {
+      setMovie(foundMovie);
+    } else {
+      fetchMovie();
+    }
+  }, [movieId, trendingDayMovies]);
 
   useEffect(() => {
     fetchData();
   }, []);
-
-  useEffect(() => {
-    if (!movie) {
-      fetchMovie();
-    }
-  }, [movieId, movie]);
 
   const posterPageMove = async () => {
     const posters = await moviePosters(
@@ -137,6 +153,15 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
   console.log(movie);
   return (
     <>
+      {movie && (
+        <Helmet>
+          <title>{`${movie.title} - 영화 상세정보`}</title>
+          <meta
+            name="description"
+            content={movie.tagline || movie.overview || "설명이 없습니다."}
+          />
+        </Helmet>
+      )}
       <main
         ref={portalref}
         className="flex flex-col gap-8 items-center bg-white w-[1280px] rounded-2xl pb-16"
@@ -167,7 +192,7 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
               </button>
             </>
           ) : (
-            <div className="w-full h-[692px] rounded-t-2xl bg-emerald-600">
+            <div className="w-full h-[692px] rounded-t-2xl">
               <div
                 className="w-full h-full bg-cover bg-center"
                 style={{
@@ -244,7 +269,13 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
                 {movie?.actor.map((actor) => (
                   <span
                     key={actor.id}
-                    onClick={() => navigate("")}
+                    onClick={() => {
+                      setIsMovieOpen(false),
+                        setSelectedMovie(null),
+                        setIsPersonOpen(true),
+                        setSelectedPerson(actor.id);
+                      navigate(`/?person=${actor.id}`);
+                    }}
                     className="cursor-pointer"
                   >
                     {actor.name}
@@ -259,7 +290,13 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
                 {movie?.director.map((director) => (
                   <span
                     key={director.id}
-                    onClick={() => navigate("")}
+                    onClick={() => {
+                      setIsMovieOpen(false),
+                        setSelectedMovie(null),
+                        setIsPersonOpen(true),
+                        setSelectedPerson(director.id);
+                      navigate(`/?person=${director.id}`);
+                    }}
                     className="cursor-pointer"
                   >
                     {director.name}
@@ -278,15 +315,13 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
 
         <div className="flex flex-col gap-8 items-center px-8">
           <hr className="w-full border border-gray-300"></hr>
-          {movie?.overview && (
-            <>
-              <section className="flex flex-col gap-4 w-full">
-                <h2 className="text-2xl text-slate-900">줄거리</h2>
-                <p className="text-lg text-slate-500">{movie.overview}</p>
-              </section>
-              <hr className="w-full border border-gray-300"></hr>
-            </>
-          )}
+
+          <section className="flex flex-col gap-4 w-full">
+            <h2 className="text-2xl text-slate-900">줄거리</h2>
+            <p className="text-lg text-slate-500">{movie?.overview}</p>
+          </section>
+          <hr className="w-full border border-gray-300"></hr>
+
           <section className="flex flex-col gap-4 w-full">
             <h2 className="text-2xl text-slate-900">포스터</h2>
             <div className="flex flex-col gap-8 items-center w-full justify-between">
