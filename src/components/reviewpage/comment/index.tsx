@@ -1,12 +1,12 @@
-import { createContext, useContext } from "react";
-import Comment from "./Comment";
+import { createContext, useContext } from 'react';
+import Comment from './Comment';
 
 type CommentType = {
   _id: string;
   userId: UserType;
   content: string;
   createdAt: string;
-  image: string;
+  imgUrls: string[];
   starpoint: number;
   like: boolean;
   dislike: boolean;
@@ -30,15 +30,15 @@ interface CommentProps {
 
 const CommentContext = createContext<CommentContextType>({
   comment: {
-    _id: "",
+    _id: '',
     userId: {
-      nickname: "",
-      profile: "",
-      _id: "",
+      nickname: '',
+      profile: '',
+      _id: '',
     },
-    content: "",
-    createdAt: "",
-    image: "",
+    content: '',
+    createdAt: '',
+    imgUrls: [],
     starpoint: 0,
     like: false,
     dislike: false,
@@ -50,7 +50,7 @@ const CommentContext = createContext<CommentContextType>({
 export const useCommentContext = () => {
   const context = useContext(CommentContext);
   if (!context) {
-    throw new Error("CommentContext에서 호출 가능");
+    throw new Error('CommentContext에서 호출 가능');
   }
   return context;
 };
@@ -63,6 +63,7 @@ const Comments = (props: CommentProps) => {
       {comments.map((comment, index) => (
         <CommentContext.Provider key={index} value={{ comment }}>
           <Comment />
+          <div className="h-[1px] bg-slate-200 my-5"></div>
         </CommentContext.Provider>
       ))}
     </>

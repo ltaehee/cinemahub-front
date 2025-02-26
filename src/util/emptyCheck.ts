@@ -4,6 +4,7 @@ type Param = {
 
 export const emptyChecker = (param: Param) => {
   // [[]] , [{}];
+
   const objectValues = Object.values({ ...param });
 
   return (

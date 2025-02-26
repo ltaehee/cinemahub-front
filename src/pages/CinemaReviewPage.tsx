@@ -12,25 +12,18 @@ import useLoginStore from '../store/useStore';
 import { emptyChecker } from '../util/emptyCheck';
 import CloseIcon from '../icons/CloseIcon';
 import CameraIcon from '../icons/CameraIcon';
-import Comments, { CommentContext } from '../components/reviewpage/comment';
+import Comments from '../components/reviewpage/comment';
+import { getPresignedUrl, uploadImageToS3 } from '../apis/profile';
 
-const movieTitle = '영화제목';
 const movieId = '1';
-const image = 'image';
-
-type Review = {
-  movieId: string;
-  image: string;
-  content: string;
-  starpoint: number;
-};
+const movieTitle = '영화제목';
 
 type CommentType = {
   _id: string;
   userId: UserType;
   content: string;
   createdAt: string;
-  image: string;
+  imgUrls: string[];
   starpoint: number;
   like: boolean;
   dislike: boolean;
@@ -47,15 +40,15 @@ type UserType = {
 const CinemaReviewPage = () => {
   const IsLogin = useLoginStore((set) => set.IsLogin);
 
-  const [comments, setComments] = useState<
-    Omit<CommentType, 'totalstarpoint'>[]
-  >([]);
+  // const [searchParams] = useSearchParams();
+  // const movieId = searchParams.get('movie') || '';
 
+  const [comments, setComments] = useState<CommentType[]>([]);
   const [starRate, setStarRate] = useState(0);
   const [review, setReview] = useState<string>('');
   const [files, setFiles] = useState<File[]>([]);
   const [imageSrcs, setImageSrcs] = useState<string[]>([]);
-  const [imageUrl, setImageUrl] = useState<string[]>([]);
+  const [_, setimgUrls] = useState<string[]>([]);
   const [totalStarPoint, setTotalStarPoint] = useState<number>(0);
 
   const SingleFileReader = async (file: File) => {
@@ -77,9 +70,9 @@ const CinemaReviewPage = () => {
 
   const handleFilePreview = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (typeof files === 'object' && files !== null && files.length <= 1) {
+    if (typeof files === 'object' && files !== null && files.length <= 2) {
       const filesArr = Array.from(files);
-      setFiles(filesArr);
+      setFiles((prev) => [...prev, ...filesArr]);
       filesArr.forEach(async (file) => {
         const src = await SingleFileReader(file);
         setImageSrcs((prev) => [...prev, `${src}`]);
@@ -91,15 +84,6 @@ const CinemaReviewPage = () => {
     setImageSrcs((prev) => prev.filter((_, index) => index !== targetIndex));
     setFiles((prev) => prev.filter((_, index) => index !== targetIndex));
   };
-
-  // const handleFileUpload = () => {
-  //   if (files.length !== 0) {
-  //     files.forEach(async (file) => {
-  //       const imgUrl = await S3FileUploadInstance(file);
-  //       setImageUrl((prev) => [...prev, imgUrl]);
-  //     });
-  //   }
-  // };
 
   const handleReviewInput: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
     const { value } = e.target;
@@ -113,27 +97,44 @@ const CinemaReviewPage = () => {
     setStarRate(index);
   };
 
-  const handleRegisterReview = async ({
-    movieId,
-    image,
-    content,
-    starpoint,
-  }: Review) => {
-    if (emptyChecker({ movieId, image, content, starpoint })) {
+  const handleFileUpload = async () => {
+    let imgUrls = [];
+
+    if (files.length !== 0) {
+      for (const file of files) {
+        const presignedUrl = await getPresignedUrl(file.name);
+        await uploadImageToS3(presignedUrl, file);
+        const imgUrl = presignedUrl.split('?')[0];
+        imgUrls.push(imgUrl);
+      }
+    }
+    return imgUrls;
+  };
+
+  const handleRegisterReview = async () => {
+    console.log(emptyChecker({ movieId, review, starRate }));
+
+    if (emptyChecker({ movieId, review, starRate })) {
       alert('별점과 리뷰 내용을 적어주세요.');
       return;
     }
+
     try {
+      const imgUrls = await handleFileUpload();
+      setimgUrls(imgUrls);
+
       const { result, message } = await RegisterReviewFetch({
         movieId,
-        image,
-        content,
-        starpoint,
+        imgUrls,
+        content: review,
+        starpoint: starRate,
       });
 
       if (!result) {
-        throw new Error(message);
+        alert(message);
+        return;
       }
+
       alert(message);
       setReview(''); // 글 초기화
       setStarRate(0); // 별점 초기화
@@ -146,13 +147,11 @@ const CinemaReviewPage = () => {
       const { result, data, message } = await getMovieidCommentArrayFetch({
         movieId,
       });
-
       if (!result) {
-        throw new Error(message);
+        alert(message);
+        return;
       }
-
       const { totalstarpoint, reviews } = data;
-
       setComments(reviews);
       setTotalStarPoint(totalstarpoint);
     } catch (e) {}
@@ -185,12 +184,12 @@ const CinemaReviewPage = () => {
             </div>
 
             {IsLogin ? (
-              <div className="mt-5 w-[480px]">
+              <div className="mt-5 w-full h-full">
                 <div className="flex gap-5">
                   {imageSrcs.map((src, index) => (
                     <div
                       key={`image-src-${index}`}
-                      className="relative w-[198px] h-[198px] rounded-[5px] border border-[#DDDDDD]"
+                      className="relative w-[180px] h-full rounded-[5px] border border-[#DDDDDD]"
                     >
                       <AspectRatio ratio={1 / 1}>
                         <AspectRatio.Image
@@ -211,14 +210,12 @@ const CinemaReviewPage = () => {
                     </div>
                   ))}
 
-                  {imageSrcs.length < 1 ? (
+                  {imageSrcs.length < 2 ? (
                     <label
                       htmlFor="fileInput"
-                      className="block border border-[#DDDDDD] px-[80px] py-[80px] rounded-[5px] hover:bg-[#BDBDBD] cursor-pointer"
+                      className="block border border-[#DDDDDD] w-[180px] h-full p-[50px] rounded-[5px] hover:bg-[#BDBDBD] cursor-pointer"
                     >
-                      <div className="w-[36px] h-[36px]">
-                        <CameraIcon width={'100%'} height={'100%'} />
-                      </div>
+                      <CameraIcon width={'100%'} height={'100%'} />
                     </label>
                   ) : null}
                 </div>
@@ -259,17 +256,7 @@ const CinemaReviewPage = () => {
                   </p>
                 </div>
 
-                <Button
-                  className="mt-2 h-10"
-                  onClick={() =>
-                    handleRegisterReview({
-                      movieId,
-                      image,
-                      content: review,
-                      starpoint: starRate,
-                    })
-                  }
-                >
+                <Button className="mt-2 h-10" onClick={handleRegisterReview}>
                   등록하기
                 </Button>
               </div>
@@ -277,7 +264,15 @@ const CinemaReviewPage = () => {
           ) : null}
 
           <div className="mt-5">
-            <Comments comments={comments} />
+            {comments.length ? (
+              <Comments comments={comments} />
+            ) : (
+              <>
+                <div className="text-center border border-slate-300 p-5">
+                  <p>리뷰 조회 내역이 없습니다.</p>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
