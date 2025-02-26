@@ -2,7 +2,7 @@ import { FC, useEffect, useRef, useState } from 'react';
 import Pagination from '@ui/Pagination';
 import Modal from '@ui/Modal';
 import XIcon from '../icons/XIcon';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 // import { genres } from "@consts/genres";
 import { personCredits, personImages } from '../apis/person';
 import MovieCard from '../components/mainpage/MovieCard';
