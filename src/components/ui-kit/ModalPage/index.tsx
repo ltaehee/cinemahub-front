@@ -59,7 +59,7 @@ const ModalPage: FC<ModalPageProps> = (props) => {
       setSelectedPage(null);
       setPageOpen(false);
     }
-  }, [currentPage]);
+  }, [currentPage, pageFrom]);
 
   useEffect(() => {
     if (pageId) setSelectedPage(pageId);
@@ -78,7 +78,7 @@ const ModalPage: FC<ModalPageProps> = (props) => {
       <Modal.Backdrop className="z-1 bg-black/50 backdrop-blur-lg" />
       <Modal.Content className="z-2 my-[128px] top-0">
         <Modal.Close>
-          <XIcon fill="#000" className="fixed top-4 right-4 w-6" />
+          <XIcon fill="#000" className="z-3 fixed top-4 right-4 w-6" />
         </Modal.Close>
         {children}
       </Modal.Content>

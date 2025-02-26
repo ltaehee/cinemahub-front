@@ -192,7 +192,7 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
           ) : (
             <div className="w-full h-[692px] rounded-t-2xl">
               <div
-                className="w-full h-full bg-cover bg-center"
+                className="w-full h-full bg-cover bg-center rounded-t-2xl"
                 style={{
                   backgroundImage: `url(https://image.tmdb.org/t/p/original${movie?.backdropPath})`,
                 }}
