@@ -157,7 +157,7 @@ const ProfilePage = () => {
       const { result } = await getFetchNicknameCheck(nickname, currentNickname);
       return result;
     } catch (error) {
-      console.error('닉네임 중복 체크 오류:', error);
+      console.error('닉네임 중복 체크 오류dd:', error);
       return false;
     }
   };
