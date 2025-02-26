@@ -10,11 +10,13 @@ import Modal from "@ui/Modal";
 import XIcon from "../icons/XIcon";
 import CinemaDetailPage from "./CinemaDetailPage";
 import PersonDetailPage from "./PersonDetailPage";
+import ModalPage from "@ui/ModalPage";
+import { useModalOpenStore } from "../store/useModalOpenStore";
 
 const isHangulConsonantPattern = /^[\u3131-\u314e]+$/; // 한글 자음 확인
 
 interface People {
-  id: number;
+  id: string;
   name: string;
   known_for_department: string;
   profile_path: string;
@@ -22,7 +24,7 @@ interface People {
 
 interface PeopleWithMovie {
   poster_path: string;
-  id: number;
+  id: string;
   name: string;
   popularity: number;
   title: string;
@@ -31,7 +33,7 @@ interface PeopleWithMovie {
 }
 
 interface Movie {
-  movieId: number;
+  movieId: string;
   posterPath: string;
   title: string;
   releaseDate: string;
@@ -52,6 +54,12 @@ const SearchPage = () => {
   const observerRef = useRef<HTMLDivElement>(null);
   const category = searchParams.get("category") ?? "movie";
   const keyword = searchParams.get("keyword") ?? "";
+
+  // (영화,배우)상세페이지 들어갔다 나올 때 검색결과페이지 그대로 나오게
+  // const [modalCategory, setModalCategory] = useState("");
+  // const [modalKeyword, setModalKeyword] = useState("");
+  // setModalCategory(category);
+  // setModalKeyword(keyword);
   console.log("page: ", page);
   console.log("people: ", people);
   console.log("responseTotalCount: ", responseTotalCount);
@@ -146,42 +154,18 @@ const SearchPage = () => {
 
   // people.forEach((person) => console.log(person.id));
 
-  const [isMovieOpen, setIsMovieOpen] = useState<boolean>(false);
-  const [isPersonOpen, setIsPersonOpen] = useState<boolean>(false);
-  const movieId = searchParams.get("movie");
-  const personId = searchParams.get("person");
-  const navigate = useNavigate();
-  const [selectedMovie, setSelectedMovie] = useState<number | null>(null);
-  const [selectedPerson, setSelectedPerson] = useState<number | null>(null);
+  const {
+    isMovieOpen,
+    isPersonOpen,
+    setIsMovieOpen,
+    setIsPersonOpen,
+    selectedMovie,
+    setSelectedMovie,
+    selectedPerson,
+    setSelectedPerson,
+  } = useModalOpenStore();
 
-  const closeModal = () => {
-    setSelectedMovie(null);
-    setSelectedPerson(null);
-    setIsMovieOpen(false);
-    setIsPersonOpen(false);
-    navigate("/", { replace: true });
-  };
-
-  useEffect(() => {
-    if (movieId) setSelectedMovie(Number(movieId));
-    if (personId) setSelectedPerson(Number(personId));
-  }, [movieId, personId]);
-
-  useEffect(() => {
-    if (selectedMovie) {
-      setIsMovieOpen(true);
-    } else {
-      setIsMovieOpen(false);
-    }
-  }, [selectedMovie]);
-
-  useEffect(() => {
-    if (selectedPerson) {
-      setIsPersonOpen(true);
-    } else {
-      setIsPersonOpen(false);
-    }
-  }, [selectedPerson]);
+  console.log("window.location.pathname: ", window.location.pathname);
   return (
     <>
       <div>
@@ -284,29 +268,31 @@ const SearchPage = () => {
             </>
           )}
           <>
-            <Modal onCloseModal={closeModal} open={isMovieOpen}>
-              <Modal.Backdrop className="z-1 bg-black/50 backdrop-blur-lg" />
-              <Modal.Content className="z-2 my-[128px] top-0">
-                <Modal.Close>
-                  <XIcon fill="#fff" className="fixed top-4 right-4 w-6 z-1" />
-                </Modal.Close>
-                {selectedMovie !== null && (
-                  <CinemaDetailPage movieId={selectedMovie} />
-                )}
-              </Modal.Content>
-            </Modal>
+            <ModalPage
+              pageParams="movie"
+              setPageOpen={setIsMovieOpen}
+              setSelectedPage={setSelectedMovie}
+              selectedPage={selectedMovie}
+              isPageOpen={isMovieOpen}
+              currentPage={window.location.pathname}
+            >
+              {selectedMovie !== null && (
+                <CinemaDetailPage movieId={selectedMovie} />
+              )}
+            </ModalPage>
 
-            <Modal onCloseModal={closeModal} open={isPersonOpen}>
-              <Modal.Backdrop className="z-1 bg-black/50 backdrop-blur-lg" />
-              <Modal.Content className="z-2 my-[128px] top-0">
-                <Modal.Close>
-                  <XIcon fill="#000" className="fixed top-4 right-4 w-6" />
-                </Modal.Close>
-                {selectedPerson !== null && (
-                  <PersonDetailPage personId={selectedPerson} />
-                )}
-              </Modal.Content>
-            </Modal>
+            <ModalPage
+              pageParams="person"
+              setPageOpen={setIsPersonOpen}
+              setSelectedPage={setSelectedPerson}
+              selectedPage={selectedPerson}
+              isPageOpen={isPersonOpen}
+              currentPage={window.location.pathname}
+            >
+              {selectedPerson !== null && (
+                <PersonDetailPage personId={selectedPerson} />
+              )}
+            </ModalPage>
           </>
 
           {hasMore && !loading && <div ref={observerRef}></div>}
