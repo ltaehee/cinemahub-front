@@ -106,7 +106,7 @@ const Header = () => {
   }, [IsLogin]);
 
   return (
-    <header className="top-0 z-3 bg-white sticky">
+    <header className="top-0 z-99 bg-white sticky">
       <div className="flex justify-center items-center border-b border-slate-300 px-8">
         <div className="flex justify-between items-center gap-8 px-8 py-2 h-16 w-[1280px]">
           <div className="flex items-center">
@@ -123,7 +123,7 @@ const Header = () => {
               onChange={setCategory}
               item={selectedItem}
               setItem={setSelectedItem}
-              className="z-4 p-1 border-r border-gray-300 hover:cursor-pointer sticky"
+              className="z-100 p-1 border-r border-gray-300 hover:cursor-pointer sticky"
             >
               <Select.Trigger className="w-full px-3 py-1 text-gray-700 hover:text-gray-950 focus:ring-2 focus:outline-none cursor-pointer" />
               <Select.Content className="p-3 mt-2 bg-white border border-gray-300 rounded-md z-5 cursor-pointer">

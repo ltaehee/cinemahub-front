@@ -1,11 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { getFetchActorInfo, getFetchMovieInfo } from '../apis/search';
-import MovieCard from '../components/mainpage/MovieCard';
-import PersonCard from '../components/mainpage/PersonCard';
-import CarouselXscroll from '@ui/CarouselXscroll';
-import ChevronIcon from '../icons/ChevronIcon';
-import useInfinite from '../hooks/useInfinite';
+import { useEffect, useRef, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { getFetchMovieInfo, getFetchPeopleInfo } from "../apis/search";
+import MovieCard from "../components/mainpage/MovieCard";
+import PersonCard from "../components/mainpage/PersonCard";
+import CarouselXscroll from "@ui/CarouselXscroll";
+import ChevronIcon from "../icons/ChevronIcon";
+import useInfinite from "../hooks/useInfinite";
+import Modal from "@ui/Modal";
+import XIcon from "../icons/XIcon";
+import CinemaDetailPage from "./CinemaDetailPage";
+import PersonDetailPage from "./PersonDetailPage";
 
 const isHangulConsonantPattern = /^[\u3131-\u314e]+$/; // 한글 자음 확인
 
@@ -14,20 +18,19 @@ interface People {
   name: string;
   known_for_department: string;
   profile_path: string;
-  known_for: [
-    {
-      poster_path: string;
-      id: number;
-      name: string;
-      popularity: number;
-      title: string;
-      release_date: string;
-      genre_ids: [];
-    }
-  ];
 }
 
-export interface Movie {
+interface PeopleWithMovie {
+  poster_path: string;
+  id: number;
+  name: string;
+  popularity: number;
+  title: string;
+  release_date: string;
+  genre_ids: [];
+}
+
+interface Movie {
   movieId: number;
   posterPath: string;
   title: string;
@@ -38,6 +41,7 @@ export interface Movie {
 const SearchPage = () => {
   const [searchParams] = useSearchParams();
   const [people, setPeople] = useState<People[]>([]);
+  const [peopleWithMovie, setPeopleWithMovie] = useState<PeopleWithMovie[]>([]);
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [baseRect, _] = useState(new DOMRect());
@@ -46,9 +50,11 @@ const SearchPage = () => {
   const [responseTotalCount, setResponseTotalCount] = useState(0);
   const personRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<HTMLDivElement>(null);
-  const category = searchParams.get('category') ?? 'movie';
-  const keyword = searchParams.get('keyword') ?? '';
-  console.log('people: ', people);
+  const category = searchParams.get("category") ?? "movie";
+  const keyword = searchParams.get("keyword") ?? "";
+  console.log("page: ", page);
+  console.log("people: ", people);
+  console.log("responseTotalCount: ", responseTotalCount);
   const getFetchData = async (keyword: string) => {
     setLoading(true);
     try {
@@ -56,21 +62,31 @@ const SearchPage = () => {
         setHasMore(false);
         return;
       }
-      if (category === 'movie') {
+      if (category === "movie") {
         const response = await getFetchMovieInfo(keyword, page);
         setResponseTotalCount(response.totalCount);
-
+        // console.log("response: ", response);
         if (response.movies.length > 0) {
           setMovies((prevMovies) => [...prevMovies, ...response.movies]);
         }
         setPeople([]);
       } else {
-        const response = await getFetchActorInfo(keyword);
-        setPeople(response);
+        const response = await getFetchPeopleInfo(keyword, page);
+        setResponseTotalCount(response.totalPages);
+        console.log("response: ", response);
+        if (response.people.length > 0) {
+          setPeople((prevPeople) => [...prevPeople, ...response.people]);
+        }
+        if (response.movies.length > 0) {
+          setPeopleWithMovie((prevMovies) => [
+            ...prevMovies,
+            ...response.movies,
+          ]);
+        }
         setMovies([]);
       }
     } catch (err) {
-      console.error('검색 오류: ', err);
+      console.error("검색 오류: ", err);
     } finally {
       setLoading(false);
     }
@@ -80,7 +96,7 @@ const SearchPage = () => {
     if (
       hasMore &&
       !loading &&
-      movies.length > 0 // 영화데이터가 있을 경우에만 페이지 증가
+      (movies.length > 0 || people.length > 0) // 데이터가 있을 경우에만 페이지 증가
     ) {
       setPage((prevPage) => prevPage + 1);
     }
@@ -93,6 +109,8 @@ const SearchPage = () => {
     if (keyword && !isHangulConsonantPattern.test(keyword)) {
       setPage(1);
       setMovies([]);
+      setPeople([]);
+      setPeopleWithMovie([]);
       setHasMore(true);
       getFetchData(keyword);
     }
@@ -112,10 +130,13 @@ const SearchPage = () => {
 
   // 검색한 전체 데이터 다 가져오면 api 호출 못하게
   useEffect(() => {
-    if (movies.length > 0 && responseTotalCount === movies.length) {
+    if (
+      (movies.length > 0 && responseTotalCount === movies.length) ||
+      (people.length > 0 && responseTotalCount === page)
+    ) {
       setHasMore(false);
     }
-  }, [movies, responseTotalCount]);
+  }, [movies, people, responseTotalCount, page]);
 
   useEffect(() => {
     if (observerRef) {
@@ -123,6 +144,44 @@ const SearchPage = () => {
     }
   }, [observerRef]);
 
+  // people.forEach((person) => console.log(person.id));
+
+  const [isMovieOpen, setIsMovieOpen] = useState<boolean>(false);
+  const [isPersonOpen, setIsPersonOpen] = useState<boolean>(false);
+  const movieId = searchParams.get("movie");
+  const personId = searchParams.get("person");
+  const navigate = useNavigate();
+  const [selectedMovie, setSelectedMovie] = useState<number | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<number | null>(null);
+
+  const closeModal = () => {
+    setSelectedMovie(null);
+    setSelectedPerson(null);
+    setIsMovieOpen(false);
+    setIsPersonOpen(false);
+    navigate("/", { replace: true });
+  };
+
+  useEffect(() => {
+    if (movieId) setSelectedMovie(Number(movieId));
+    if (personId) setSelectedPerson(Number(personId));
+  }, [movieId, personId]);
+
+  useEffect(() => {
+    if (selectedMovie) {
+      setIsMovieOpen(true);
+    } else {
+      setIsMovieOpen(false);
+    }
+  }, [selectedMovie]);
+
+  useEffect(() => {
+    if (selectedPerson) {
+      setIsPersonOpen(true);
+    } else {
+      setIsPersonOpen(false);
+    }
+  }, [selectedPerson]);
   return (
     <>
       <div>
@@ -132,7 +191,7 @@ const SearchPage = () => {
           </h2>
           {loading && <p>로딩 중...</p>}
 
-          {category === 'person' && (
+          {category === "person" && (
             <>
               <CarouselXscroll
                 baseRect={baseRect}
@@ -184,38 +243,36 @@ const SearchPage = () => {
               <div
                 className="grid gap-4 w-full pb-20r justify-items-center"
                 style={{
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(224px, 1fr))',
+                  gridTemplateColumns: "repeat(auto-fill, minmax(224px, 1fr))",
                 }}
               >
-                {people &&
-                  people.flatMap((person) =>
-                    person.known_for.map((movie) => (
-                      <MovieCard
-                        key={movie.id}
-                        movieId={movie.id}
-                        title={movie.title}
-                        releaseDate={movie.release_date}
-                        posterPath={movie.poster_path}
-                        genreIds={movie.genre_ids}
-                      ></MovieCard>
-                    ))
-                  )}
+                {peopleWithMovie &&
+                  peopleWithMovie.map((movie) => (
+                    <MovieCard
+                      key={movie.id}
+                      movieId={movie.id}
+                      title={movie.title}
+                      releaseDate={movie.release_date}
+                      posterPath={movie.poster_path}
+                      genreIds={movie.genre_ids}
+                    ></MovieCard>
+                  ))}
               </div>
             </>
           )}
 
-          {category === 'movie' && (
+          {category === "movie" && (
             <>
               <div
                 className="grid gap-4 w-full pb-20r justify-items-center"
                 style={{
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(225px, 1fr))',
+                  gridTemplateColumns: "repeat(auto-fill, minmax(225px, 1fr))",
                 }}
               >
                 {movies &&
-                  movies.map((movie) => (
+                  movies.map((movie, index) => (
                     <MovieCard
-                      key={movie.movieId}
+                      key={`${movie.movieId}-${index}`}
                       movieId={movie.movieId}
                       title={movie.title}
                       posterPath={movie.posterPath}
@@ -226,6 +283,31 @@ const SearchPage = () => {
               </div>
             </>
           )}
+          <>
+            <Modal onCloseModal={closeModal} open={isMovieOpen}>
+              <Modal.Backdrop className="z-1 bg-black/50 backdrop-blur-lg" />
+              <Modal.Content className="z-2 my-[128px] top-0">
+                <Modal.Close>
+                  <XIcon fill="#fff" className="fixed top-4 right-4 w-6 z-1" />
+                </Modal.Close>
+                {selectedMovie !== null && (
+                  <CinemaDetailPage movieId={selectedMovie} />
+                )}
+              </Modal.Content>
+            </Modal>
+
+            <Modal onCloseModal={closeModal} open={isPersonOpen}>
+              <Modal.Backdrop className="z-1 bg-black/50 backdrop-blur-lg" />
+              <Modal.Content className="z-2 my-[128px] top-0">
+                <Modal.Close>
+                  <XIcon fill="#000" className="fixed top-4 right-4 w-6" />
+                </Modal.Close>
+                {selectedPerson !== null && (
+                  <PersonDetailPage personId={selectedPerson} />
+                )}
+              </Modal.Content>
+            </Modal>
+          </>
 
           {hasMore && !loading && <div ref={observerRef}></div>}
         </div>

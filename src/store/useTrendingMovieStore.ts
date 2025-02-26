@@ -16,6 +16,7 @@ interface Director {
 interface TrendingDayMovie {
   movieId: number;
   title: string;
+  posterPath: string;
   overview: string;
   releaseDate: string;
   backdropPath: string;
@@ -24,6 +25,7 @@ interface TrendingDayMovie {
   logoPath: string | null;
   koreanRating: string;
   runtime: number;
+  tagline: string;
   actor: Actor[];
   director: Director[];
 }

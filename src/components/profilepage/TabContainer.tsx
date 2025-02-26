@@ -1,19 +1,91 @@
 import Tabs from "@ui/Tabs";
 import MovieCard from "../mainpage/MovieCard";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import PersonCard from "../mainpage/PersonCard";
 import { UserProfile } from "../../pages/ProfilePage";
+import { baseInstance } from "../../apis/axios.config";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import Modal from "@ui/Modal";
+import XIcon from "../../icons/XIcon";
+import CinemaDetailPage from "../../pages/CinemaDetailPage";
+import PersonDetailPage from "../../pages/PersonDetailPage";
 
 interface TabContainerProps {
   profile: UserProfile;
 }
 
 const TabContainer: FC<TabContainerProps> = ({ profile }) => {
+  /* 상세 페이지 모달 시작 */
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const movieId = searchParams.get("movie");
+  const personId = searchParams.get("person");
+  const [isMovieOpen, setIsMovieOpen] = useState<boolean>(false);
+  const [isPersonOpen, setIsPersonOpen] = useState<boolean>(false);
+  const [selectedMovie, setSelectedMovie] = useState<number | null>(null);
+  const [selectedPerson, setSelectedPerson] = useState<number | null>(null);
+
+  const closeModal = () => {
+    setSelectedMovie(null);
+    setSelectedPerson(null);
+    setIsMovieOpen(false);
+    setIsPersonOpen(false);
+    navigate(
+      {
+        pathname: window.location.pathname, // 현재 경로 유지
+        search: "",
+      },
+      { replace: true }
+    );
+  };
+
+  useEffect(() => {
+    if (movieId) setSelectedMovie(Number(movieId));
+    if (personId) setSelectedPerson(Number(personId));
+  }, [movieId, personId]);
+
+  useEffect(() => {
+    if (selectedMovie) {
+      setIsMovieOpen(true);
+    } else {
+      setIsMovieOpen(false);
+    }
+  }, [selectedMovie]);
+
+  useEffect(() => {
+    if (selectedPerson) {
+      setIsPersonOpen(true);
+    } else {
+      setIsPersonOpen(false);
+    }
+  }, [selectedPerson]);
+  /* 상세 페이지 모달 끝 */
+
   const [activeTab, setActiveTab] = useState(1);
+  const [reviews, setReviews] = useState<any[]>([]); // 리뷰 데이터를 저장할 상태
+
   const handleChangeTab = (index: number) => {
     setActiveTab(index);
   };
-  console.log("profile 찐찐", { profile });
+
+  // 리뷰 조회
+  const fetchReviews = async (nickname: string) => {
+    try {
+      const response = await baseInstance.get(
+        `/review/user-reviews/${nickname}`
+      );
+      console.log(response.data);
+      setReviews(response.data.data);
+    } catch (error) {
+      console.error("리뷰 데이터를 가져오는 데 실패했습니다.", error);
+    }
+  };
+
+  useEffect(() => {
+    if (profile.nickname) {
+      fetchReviews(profile.nickname);
+    }
+  }, [profile.nickname]);
 
   return (
     <div className="w-full max-w-[1280px] flex px-8">
@@ -84,8 +156,49 @@ const TabContainer: FC<TabContainerProps> = ({ profile }) => {
             )}
           </div>
         </Tabs.Pannel>
-        <Tabs.Pannel index={3}>평점 내역 컴포넌트</Tabs.Pannel>
+        <Tabs.Pannel index={3}>
+          {/* 평점 내역 콘솔 출력 */}
+          <div>
+            <h2>리뷰 내역:</h2>
+            {reviews.length ? (
+              reviews.map((review, index) => (
+                <div key={index}>
+                  <p>{review.content}</p>
+                  <p>별점: {review.starpoint}</p>
+                </div>
+              ))
+            ) : (
+              <p>리뷰가 없습니다.</p>
+            )}
+          </div>
+        </Tabs.Pannel>
       </Tabs>
+
+      {/* 상세 페이지 모달 시작 */}
+      <Modal onCloseModal={closeModal} open={isMovieOpen}>
+        <Modal.Backdrop className="z-1 bg-black/50 backdrop-blur-lg" />
+        <Modal.Content className="z-2 my-[128px] top-0">
+          <Modal.Close>
+            <XIcon fill="#fff" className="fixed top-4 right-4 w-6 z-1" />
+          </Modal.Close>
+          {selectedMovie !== null && (
+            <CinemaDetailPage movieId={selectedMovie} />
+          )}
+        </Modal.Content>
+      </Modal>
+
+      <Modal onCloseModal={closeModal} open={isPersonOpen}>
+        <Modal.Backdrop className="z-1 bg-black/50 backdrop-blur-lg" />
+        <Modal.Content className="z-2 my-[128px] top-0">
+          <Modal.Close>
+            <XIcon fill="#000" className="fixed top-4 right-4 w-6" />
+          </Modal.Close>
+          {selectedPerson !== null && (
+            <PersonDetailPage personId={selectedPerson} />
+          )}
+        </Modal.Content>
+      </Modal>
+      {/* 상세 페이지 모달 끝 */}
     </div>
   );
 };

@@ -5,7 +5,6 @@ import closeImg from "/images/close.png";
 import { useNavigate } from "react-router-dom";
 import useLoginStore from "../../store/useStore";
 import SearchBar from "../adminpage/SearchBar";
-import { getFetchUserInfo } from "../../apis/search";
 import { UserProfile } from "../../pages/ProfilePage";
 
 interface FollowUser {

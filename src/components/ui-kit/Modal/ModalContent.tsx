@@ -9,7 +9,7 @@ interface ModalContentProps {
 }
 
 const ModalContent = (props: ModalContentProps) => {
-  const { open, onCloseModal } = useContext(ModalContext);
+  const { open, onCloseModal, portalref } = useContext(ModalContext);
   const { className, children } = props;
 
   const contentRef = useRef<HTMLDivElement>(null);
@@ -41,7 +41,6 @@ const ModalContent = (props: ModalContentProps) => {
           <div
             style={{
               position: "absolute",
-              top: 0,
               left: "50%",
               transform: "translateX(-50%)",
             }}
@@ -50,7 +49,7 @@ const ModalContent = (props: ModalContentProps) => {
           >
             {children}
           </div>,
-          document.body
+          portalref || document.body
         )}
     </>
   );

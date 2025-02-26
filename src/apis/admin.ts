@@ -16,3 +16,16 @@ export const deleteFetchUser = async (emails: string[]) => {
     throw new Error("유저 삭제하는 중 오류가 발생했습니다.");
   }
 };
+
+export const getFetchUser = async (page: number, limit: number) => {
+  try {
+    const response = await baseInstance.get(
+      `/admin/users?page=${page}&limit=${limit}`
+    );
+
+    return response;
+  } catch (err) {
+    console.error("유저 조회 실패", err);
+    throw new Error("유저 조회하는 중 오류가 발생했습니다.");
+  }
+};

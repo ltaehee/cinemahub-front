@@ -73,12 +73,10 @@ const MainCard: FC<MovieProps> = ({
       </div>
 
       <div
-        className="absolute inset-y-0 left-0 w-[80vw] rounded-l-3xl"
+        className="absolute inset-y-0 left-0 w-[80vw] rounded-l-3xl bg-black/50 backdrop-blur-[20px]"
         style={{
           WebkitMaskImage: "linear-gradient(to right, black, transparent)",
           maskImage: "linear-gradient(to right, black, transparent)",
-          backdropFilter: "blur(20px)",
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
         }}
       ></div>
 
@@ -105,6 +103,7 @@ const MainCard: FC<MovieProps> = ({
               src={`https://image.tmdb.org/t/p/original${logoPath}`}
               alt={title}
               className="pb-[2vw] max-w-[36vw] max-h-[25vw]"
+              onDragStart={(e) => e.preventDefault()}
             />
           ) : (
             <h1 className="pb-[2vw] text-[4vw]/[5vw] font-bold">{title}</h1>
