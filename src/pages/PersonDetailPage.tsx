@@ -2,8 +2,6 @@ import { FC, useEffect, useRef, useState } from "react";
 import Pagination from "@ui/Pagination";
 import Modal from "@ui/Modal";
 import XIcon from "../icons/XIcon";
-import { useNavigate } from "react-router-dom";
-import { genres } from "@consts/genres";
 import { personCredits, personImages } from "../apis/person";
 import MovieCard from "../components/mainpage/MovieCard";
 
@@ -33,7 +31,6 @@ const PersonDetailPage: FC<PersonDetailPageProps> = ({ personId }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [content, setContent] = useState("");
   const portalref = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
 
   const fetchData = async () => {
     try {
