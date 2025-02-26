@@ -5,7 +5,7 @@ import MuteIcon from "../../icons/MuteIcon";
 import { useNavigate } from "react-router-dom";
 
 interface MovieProps {
-  movieId: number;
+  movieId: string;
   title: string;
   releaseDate: string;
   backdropPath: string;

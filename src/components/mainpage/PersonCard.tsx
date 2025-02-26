@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import FavoritesBtn from "./FavoritesBtn";
 
 interface PopularPerson {
-  personId: number;
+  personId: string;
   name: string;
   profilePath?: string;
 }

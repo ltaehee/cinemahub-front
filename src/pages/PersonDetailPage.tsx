@@ -1,18 +1,18 @@
-import { FC, useEffect, useRef, useState } from 'react';
-import Pagination from '@ui/Pagination';
-import Modal from '@ui/Modal';
-import XIcon from '../icons/XIcon';
+import { FC, useEffect, useRef, useState } from "react";
+import Pagination from "@ui/Pagination";
+import Modal from "@ui/Modal";
+import XIcon from "../icons/XIcon";
 // import { useNavigate } from 'react-router-dom';
 // import { genres } from "@consts/genres";
-import { personCredits, personImages } from '../apis/person';
-import MovieCard from '../components/mainpage/MovieCard';
+import { personCredits, personImages } from "../apis/person";
+import MovieCard from "../components/mainpage/MovieCard";
 
 interface PersonDetailPageProps {
-  personId: number;
+  personId: string;
 }
 
 interface Credit {
-  movieId: number;
+  movieId: string;
   title: string;
   releaseDate: string;
   posterPath: string;
@@ -31,7 +31,7 @@ const PersonDetailPage: FC<PersonDetailPageProps> = ({ personId }) => {
   const [creditCount, setCreditCount] = useState(0);
   const [imageCount, setImageCount] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState("");
   const portalref = useRef<HTMLDivElement>(null);
   // const navigate = useNavigate();
 
@@ -46,7 +46,7 @@ const PersonDetailPage: FC<PersonDetailPageProps> = ({ personId }) => {
       setImages(images.images);
       setImageCount(images.totalCount);
     } catch (err) {
-      console.error('fetchData 에러 ', err);
+      console.error("fetchData 에러 ", err);
     }
   };
 
@@ -121,7 +121,7 @@ const PersonDetailPage: FC<PersonDetailPageProps> = ({ personId }) => {
                       releaseDate={movie.releaseDate}
                       posterPath={movie.posterPath}
                       genreIds={movie.genreIds}
-                    ></MovieCard>
+                    />
                   );
                 })}
               </div>
@@ -140,7 +140,7 @@ const PersonDetailPage: FC<PersonDetailPageProps> = ({ personId }) => {
           </section>
           <hr className="w-full border border-gray-300"></hr>
           <section className="flex flex-col gap-4 w-full">
-            <h2 className="text-2xl text-slate-900">스틸이미지</h2>
+            <h2 className="text-2xl text-slate-900">인물 사진</h2>
             <div className="flex flex-col gap-8 items-center w-full justify-between">
               <div className="flex gap-4 w-full justify-between flex-wrap">
                 {images.map((image) => {

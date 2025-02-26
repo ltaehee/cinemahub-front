@@ -20,13 +20,12 @@ import { useTrendingMoviesStore } from '../store/useTrendingMovieStore';
 import { useModalOpenStore } from '../store/useModalOpenStore';
 
 interface PopularActors {
-  personId: number;
+  personId: string;
   name: string;
   profilePath: string;
 }
 
 const MainPage = () => {
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const baseRef = useRef<HTMLDivElement>(null);
   const genreRef = useRef<HTMLDivElement>(null);
@@ -114,22 +113,6 @@ const MainPage = () => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
-
-  useEffect(() => {
-    if (selectedMovie) {
-      setIsMovieOpen(true);
-    } else {
-      setIsMovieOpen(false);
-    }
-  }, [selectedMovie]);
-
-  useEffect(() => {
-    if (selectedPerson) {
-      setIsPersonOpen(true);
-    } else {
-      setIsPersonOpen(false);
-    }
-  }, [selectedPerson]);
 
   return (
     <>
@@ -278,7 +261,7 @@ const MainPage = () => {
                       releaseDate={movie.releaseDate}
                       posterPath={movie.posterPath}
                       genreIds={movie.genreIds}
-                    ></MovieCard>
+                    />
                   );
                 })}
               </CarouselXscroll.Items>
@@ -355,29 +338,29 @@ const MainPage = () => {
         </section>
       </main>
 
-      <Modal onCloseModal={closeModal} open={isMovieOpen}>
-        <Modal.Backdrop className="z-1 bg-black/50 backdrop-blur-lg" />
-        <Modal.Content className="z-2 my-[128px] top-0">
-          <Modal.Close>
-            <XIcon fill="#fff" className="fixed top-4 right-4 w-6 z-1" />
-          </Modal.Close>
-          {selectedMovie !== null && (
-            <CinemaDetailPage movieId={selectedMovie} />
-          )}
-        </Modal.Content>
-      </Modal>
+      <ModalPage
+        pageParams="movie"
+        setPageOpen={setIsMovieOpen}
+        setSelectedPage={setSelectedMovie}
+        selectedPage={selectedMovie}
+        isPageOpen={isMovieOpen}
+        pageFrom="/"
+      >
+        {selectedMovie !== null && <CinemaDetailPage movieId={selectedMovie} />}
+      </ModalPage>
 
-      <Modal onCloseModal={closeModal} open={isPersonOpen}>
-        <Modal.Backdrop className="z-1 bg-black/50 backdrop-blur-lg" />
-        <Modal.Content className="z-2 my-[128px] top-0">
-          <Modal.Close>
-            <XIcon fill="#000" className="fixed top-4 right-4 w-6" />
-          </Modal.Close>
-          {selectedPerson !== null && (
-            <PersonDetailPage personId={selectedPerson} />
-          )}
-        </Modal.Content>
-      </Modal>
+      <ModalPage
+        pageParams="person"
+        setPageOpen={setIsPersonOpen}
+        setSelectedPage={setSelectedPerson}
+        selectedPage={selectedPerson}
+        isPageOpen={isPersonOpen}
+        pageFrom="/"
+      >
+        {selectedPerson !== null && (
+          <PersonDetailPage personId={selectedPerson} />
+        )}
+      </ModalPage>
     </>
   );
 };

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Button from "../Button";
 import profileImg from "/images/profileImg.png";
 import closeImg from "/images/close.png";
@@ -19,6 +19,7 @@ interface FollowSectionProps {
   loggedInUserProfile?: UserProfile | null; // 현재 로그인한 유저 정보 추가
   handleFollow: (nickname: string) => void;
   handleUnfollow: (nickname: string) => void;
+  debouncingMap: { [key: string]: boolean };
 }
 
 const FollowSection = ({
@@ -26,20 +27,27 @@ const FollowSection = ({
   handleFollow,
   handleUnfollow,
   loggedInUserProfile,
+  debouncingMap,
 }: FollowSectionProps) => {
-  const { followers, following } = profile;
-  const filteredFollowers = followers
-    ? followers.filter((user) => user.deletedAt === null)
-    : [];
+  const filteredFollowers = useMemo(
+    () =>
+      profile.followers
+        ? profile.followers.filter((user) => user.deletedAt === null)
+        : [],
+    [profile.followers]
+  );
 
-  const filteredFollowing = following
-    ? following.filter((user) => user.deletedAt === null)
-    : [];
+  const filteredFollowing = useMemo(
+    () =>
+      profile.following
+        ? profile.following.filter((user) => user.deletedAt === null)
+        : [],
+    [profile.following]
+  );
 
   const [view, setView] = useState<"follower" | "following" | null>(null);
   const navigate = useNavigate();
   const { IsLogin } = useLoginStore();
-  const [isDebouncing, setIsDebouncing] = useState(false);
   const [loggedUserProfile, setLoggedUserProfile] =
     useState<UserProfile | null>(loggedInUserProfile || null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -68,46 +76,35 @@ const FollowSection = ({
   const followingNicknames =
     loggedUserProfile?.following.map((user) => user.nickname) || [];
 
-  const handleFollowClick = async (nickname: string) => {
-    if (isDebouncing) return;
-    setIsDebouncing(true);
-
-    try {
-      handleFollow(nickname);
-      setLoggedUserProfile((prev) => {
-        if (!prev) return null;
-        return {
-          ...prev,
-          following: [...prev.following, { nickname, email: "", profile: "" }],
-        };
-      });
-    } catch (error) {
-      console.error("팔로우 요청 오류:", error);
-    } finally {
-      setTimeout(() => setIsDebouncing(false), 1000);
-    }
+  const isLoading = (nickname: string) => {
+    return debouncingMap[nickname] || false;
   };
 
-  const handleUnfollowClick = async (nickname: string) => {
-    if (isDebouncing) return;
-    setIsDebouncing(true);
+  // 팔로우 상태 업데이트 함수
+  const updateFollowingState = (nickname: string, isFollowing: boolean) => {
+    setLoggedUserProfile((prev) => {
+      if (!prev) return null;
+      const updatedFollowing = isFollowing
+        ? [...prev.following, { nickname, email: "", profile: "" }]
+        : prev.following.filter((user) => user.nickname !== nickname);
 
-    try {
-      handleUnfollow(nickname);
-      setLoggedUserProfile((prev) => {
-        if (!prev) return null;
-        return {
-          ...prev,
-          following: prev.following.filter(
-            (following) => following.nickname !== nickname
-          ),
-        };
-      });
-    } catch (error) {
-      console.error("언팔로우 요청 오류:", error);
-    } finally {
-      setTimeout(() => setIsDebouncing(false), 1000);
-    }
+      return {
+        ...prev,
+        following: updatedFollowing,
+      };
+    });
+  };
+
+  // 팔로우 클릭 시 실행되는 함수
+  const handleFollowClick = async (nickname: string) => {
+    await handleFollow(nickname);
+    updateFollowingState(nickname, true);
+  };
+
+  // 언팔로우 클릭 시 실행되는 함수
+  const handleUnfollowClick = async (nickname: string) => {
+    await handleUnfollow(nickname);
+    updateFollowingState(nickname, false);
   };
 
   useEffect(() => {
@@ -215,14 +212,14 @@ const FollowSection = ({
                             ? handleUnfollowClick(user.nickname)
                             : handleFollowClick(user.nickname)
                         }
-                        disabled={isDebouncing}
+                        disabled={isLoading(user.nickname)}
                         className={`${
                           isFollowing ? "bg-gray-500 hover:bg-gray-400" : ""
                         }`}
                       >
-                        {isDebouncing ? (
+                        {isLoading(user.nickname) ? (
                           <div className="flex justify-center items-center">
-                            <div className="w-6 h-6  border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
+                            <div className="w-6 h-6 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
                           </div>
                         ) : isFollowing ? (
                           "언팔로우"
