@@ -13,3 +13,47 @@ export const popularActors = async () => {
     throw err;
   }
 };
+
+export const personImages = async (
+  personId: number,
+  page: number,
+  limit: number
+) => {
+  try {
+    const response = await baseInstance.get(`/person/${personId}/images`, {
+      params: {
+        page,
+        limit,
+      },
+    });
+
+    return response.data;
+  } catch (err) {
+    if (err instanceof AxiosError && err.response) {
+      console.log(err.response.data.message);
+    }
+    throw err;
+  }
+};
+
+export const personCredits = async (
+  personId: number,
+  page: number,
+  limit: number
+) => {
+  try {
+    const response = await baseInstance.get(`/person/${personId}/credits`, {
+      params: {
+        page,
+        limit,
+      },
+    });
+
+    return response.data;
+  } catch (err) {
+    if (err instanceof AxiosError && err.response) {
+      console.log(err.response.data.message);
+    }
+    throw err;
+  }
+};
