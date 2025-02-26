@@ -1,23 +1,23 @@
-import CarouselXscroll from "@ui/CarouselXscroll";
-import { useEffect, useRef, useState } from "react";
-import ChevronIcon from "../icons/ChevronIcon";
-import MainCard from "../components/mainpage/MainCard";
-import Carousel from "@ui/CarouselInfinite";
-import CarouselItem from "@ui/CarouselInfinite/CarouselInfiniteItem";
-import CarouselItemList from "@ui/CarouselInfinite/CarouselInfiniteItemList";
-import { genres } from "@consts/genres";
-import Button from "../components/Button";
-import { trendingMovies } from "../apis/movie";
-import MovieCard from "../components/mainpage/MovieCard";
-import { popularActors } from "../apis/person";
-import PersonCard from "../components/mainpage/PersonCard";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import CinemaDetailPage from "./CinemaDetailPage";
-import PersonDetailPage from "./PersonDetailPage";
-import Modal from "@ui/Modal";
-import XIcon from "../icons/XIcon";
-import { useTrendingMoviesStore } from "../store/useTrendingMovieStore";
-import { useModalOpenStore } from "../store/useModalOpenStore";
+import CarouselXscroll from '@ui/CarouselXscroll';
+import { useEffect, useRef, useState } from 'react';
+import ChevronIcon from '../icons/ChevronIcon';
+import MainCard from '../components/mainpage/MainCard';
+import Carousel from '@ui/CarouselInfinite';
+import CarouselItem from '@ui/CarouselInfinite/CarouselInfiniteItem';
+import CarouselItemList from '@ui/CarouselInfinite/CarouselInfiniteItemList';
+import { genres } from '@consts/genres';
+import Button from '../components/Button';
+import { trendingMovies } from '../apis/movie';
+import MovieCard from '../components/mainpage/MovieCard';
+import { popularActors } from '../apis/person';
+import PersonCard from '../components/mainpage/PersonCard';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import CinemaDetailPage from './CinemaDetailPage';
+import PersonDetailPage from './PersonDetailPage';
+import Modal from '@ui/Modal';
+import XIcon from '../icons/XIcon';
+import { useTrendingMoviesStore } from '../store/useTrendingMovieStore';
+import { useModalOpenStore } from '../store/useModalOpenStore';
 
 interface PopularActors {
   personId: number;
@@ -53,21 +53,21 @@ const MainPage = () => {
   const [popularPeople, setPopularPeople] = useState<PopularActors[]>([
     {
       personId: 0,
-      name: "",
-      profilePath: "",
+      name: '',
+      profilePath: '',
     },
   ]);
 
   const [searchParams] = useSearchParams();
-  const movieId = searchParams.get("movie");
-  const personId = searchParams.get("person");
+  const movieId = searchParams.get('movie');
+  const personId = searchParams.get('person');
 
   const closeModal = () => {
     setSelectedMovie(null);
     setSelectedPerson(null);
     setIsMovieOpen(false);
     setIsPersonOpen(false);
-    navigate("/", { replace: true });
+    navigate('/', { replace: true });
   };
 
   useEffect(() => {
@@ -86,7 +86,7 @@ const MainPage = () => {
       setTrendingWeekMovie(movieResponse.trending_week);
       setPopularPeople(actorResponse);
     } catch (err) {
-      console.error("데이터를 가져오는데 실패했습니다.", err);
+      console.error('데이터를 가져오는데 실패했습니다.', err);
     } finally {
       setIsLoading(false);
     }
@@ -108,10 +108,10 @@ const MainPage = () => {
       calculateBaseDivRect();
     };
 
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
@@ -186,7 +186,7 @@ const MainPage = () => {
                   <ChevronIcon height="40px" color="#fff" thickness="3" />
                 </button>
                 <div
-                  style={{ textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)" }}
+                  style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)' }}
                   className="text-white text-xl px-2"
                 >
                   {displayIndex}/{itemLength}

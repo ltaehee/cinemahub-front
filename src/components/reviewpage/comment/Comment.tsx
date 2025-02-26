@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useCommentContext } from '.';
-import ListIcon from '../../../icons/ListIcon';
 import AspectRatio from '../AspectRatio';
 import StarContainer from '../StarContainer';
 import LikeComponent from '../LikeComponent';
+import ListBarComponent from '../ListComponent';
 
 const Comment = () => {
   const { comment } = useCommentContext();
@@ -20,7 +20,7 @@ const Comment = () => {
           handleRating={handleRating}
           defaultStar={comment.starpoint}
         />
-        <ListIcon className="mr-2" />
+        <ListBarComponent />
       </div>
 
       <div className="mt-2 flex gap-2">

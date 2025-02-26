@@ -12,6 +12,7 @@ type CommentType = {
   dislike: boolean;
   totalLike: number;
   totalDisLike: number;
+  IsOwner: boolean;
 };
 
 type UserType = {
@@ -44,6 +45,7 @@ const CommentContext = createContext<CommentContextType>({
     dislike: false,
     totalLike: 0,
     totalDisLike: 0,
+    IsOwner: false,
   },
 });
 

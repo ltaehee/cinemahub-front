@@ -16,6 +16,7 @@ type CommentType = {
   dislike: boolean;
   totalLike: number;
   totalDisLike: number;
+  IsOwner: boolean;
 };
 
 type UserType = {
@@ -64,7 +65,6 @@ const LikeComponent = () => {
         throw new Error('좋아요/싫어요 등록 실패');
       }
       alert(message);
-      console.log(data);
 
       setUpdateComment((prev) => ({
         ...prev,
