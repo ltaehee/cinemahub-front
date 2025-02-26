@@ -2,11 +2,9 @@ import { FC, useEffect, useRef, useState } from "react";
 import Pagination from "@ui/Pagination";
 import Modal from "@ui/Modal";
 import XIcon from "../icons/XIcon";
-// import { useNavigate } from 'react-router-dom';
 // import { genres } from "@consts/genres";
 import { personCredits, personImages } from "../apis/person";
 import MovieCard from "../components/mainpage/MovieCard";
-
 interface PersonDetailPageProps {
   personId: string;
 }
@@ -33,10 +31,11 @@ const PersonDetailPage: FC<PersonDetailPageProps> = ({ personId }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [content, setContent] = useState("");
   const portalref = useRef<HTMLDivElement>(null);
-  // const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchData = async () => {
     try {
+      setIsLoading(true);
       const [credits, images] = await Promise.all([
         personCredits(personId, 0, creditPageSize),
         personImages(personId, 0, imagePageSize),
@@ -47,6 +46,8 @@ const PersonDetailPage: FC<PersonDetailPageProps> = ({ personId }) => {
       setImageCount(images.totalCount);
     } catch (err) {
       console.error("fetchData 에러 ", err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -97,8 +98,6 @@ const PersonDetailPage: FC<PersonDetailPageProps> = ({ personId }) => {
     setIsModalOpen(false);
   };
 
-  console.log(credits);
-
   return (
     <>
       <main
@@ -112,18 +111,26 @@ const PersonDetailPage: FC<PersonDetailPageProps> = ({ personId }) => {
             <h2 className="text-2xl text-slate-900">참여 작품</h2>
             <div className="flex flex-col gap-8 items-center w-full justify-between">
               <div className="flex gap-4 w-full justify-around flex-wrap">
-                {credits.map((movie) => {
-                  return (
-                    <MovieCard
-                      key={movie.movieId}
-                      movieId={movie.movieId}
-                      title={movie.title}
-                      releaseDate={movie.releaseDate}
-                      posterPath={movie.posterPath}
-                      genreIds={movie.genreIds}
-                    />
-                  );
-                })}
+                {isLoading ? (
+                  <div className="flex justify-center items-center w-full h-[980px] text-5xl text-gray-400">
+                    로딩중
+                  </div>
+                ) : (
+                  <>
+                    {credits.map((movie) => {
+                      return (
+                        <MovieCard
+                          key={movie.movieId}
+                          movieId={movie.movieId}
+                          title={movie.title}
+                          releaseDate={movie.releaseDate}
+                          posterPath={movie.posterPath}
+                          genreIds={movie.genreIds}
+                        />
+                      );
+                    })}
+                  </>
+                )}
               </div>
               <Pagination
                 total={creditCount}

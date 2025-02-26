@@ -1,5 +1,5 @@
 import Modal from "@ui/Modal";
-import { FC, ReactNode, use, useEffect } from "react";
+import { FC, ReactNode, useEffect, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import XIcon from "../../../icons/XIcon";
 
@@ -28,6 +28,7 @@ const ModalPage: FC<ModalPageProps> = (props) => {
   const location = useLocation();
   const pageId = searchParams.get(`${pageParams}`);
   const currentPage = location.pathname + location.search;
+  const [scrollY, setScrollY] = useState(0);
 
   const closeModal = () => {
     setSelectedPage(null);
@@ -36,6 +37,24 @@ const ModalPage: FC<ModalPageProps> = (props) => {
   };
 
   useEffect(() => {
+    const rootElement = document.getElementById("root");
+
+    if (rootElement) {
+      if (isPageOpen) {
+        setScrollY(window.scrollY);
+        rootElement.style.top = `-${scrollY}px`;
+        rootElement.style.position = "fixed";
+        window.scrollTo(0, 0);
+      } else {
+        rootElement.style.position = "";
+        rootElement.style.top = "";
+        window.scrollTo(0, scrollY);
+      }
+    }
+  }, [isPageOpen]);
+
+  useEffect(() => {
+    setSelectedPage(pageId);
     if (currentPage === pageFrom) {
       setSelectedPage(null);
       setPageOpen(false);

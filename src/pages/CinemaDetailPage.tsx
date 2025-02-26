@@ -90,7 +90,6 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
     try {
       const response = await movieDetail(movieId);
       setMovie(response);
-      console.log("fetchMovie 작동");
     } catch (err) {
       console.error("fetchMovie 에러 ", err);
     }
@@ -150,7 +149,6 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
   };
 
   const toggleMute = () => setIsMuted((prev) => !prev);
-  console.log(movie);
   return (
     <>
       {movie && (
