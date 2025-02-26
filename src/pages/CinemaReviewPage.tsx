@@ -63,7 +63,7 @@ const CinemaReviewPage = () => {
   const [imageSrcs, setImageSrcs] = useState<string[]>([]);
   const [_, setimgUrls] = useState<string[]>([]);
   const [totalStarPoint, setTotalStarPoint] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(false);
+  // const [loading, setLoading] = useState<boolean>(false);
 
   /**
    *

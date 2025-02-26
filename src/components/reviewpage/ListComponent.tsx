@@ -14,7 +14,6 @@ const ListBarComponent = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [reason, setReason] = useState<string>('');
   const portalref = useRef(null);
-  const IsLogin = useLoginStore((set) => set.IsLogin);
 
   const IsOwner = comment.IsOwner;
 
