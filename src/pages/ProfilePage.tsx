@@ -43,7 +43,7 @@ export interface UserProfile {
     favoriteId: string;
   }[];
   favoriteMovies?: {
-    movieId: number;
+    movieId: string;
     title: string;
     releaseDate: string;
     posterPath: string;
@@ -51,7 +51,7 @@ export interface UserProfile {
   }[];
 
   favoritePersons?: {
-    personId: number;
+    personId: string;
     name: string;
     profilePath: string;
   }[];
@@ -259,8 +259,8 @@ const ProfilePage = () => {
   if (!profile) {
     return;
   }
-  console.log('로그인 기준 프로필', loggedInUserProfile);
-  console.log('url기준 프로필', profile);
+  /* console.log('로그인 기준 프로필', loggedInUserProfile);
+  console.log('url기준 프로필', profile); */
   return (
     <div className='w-full flex flex-col items-center justify-center'>
       <div className='w-full max-w-[1280px] flex gap-2 mt-10 mb-20 px-8 max-h-[440px]'>
