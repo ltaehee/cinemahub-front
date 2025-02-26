@@ -182,8 +182,7 @@ const CinemaReviewPage = () => {
 
   const getMovieData = async (movieId: string) => {
     try {
-      const castingMovieId = Number(movieId);
-      const response = await movieDetail(castingMovieId);
+      const response = await movieDetail(movieId);
 
       if (emptyChecker({ response })) {
         alert(
@@ -327,7 +326,7 @@ const CinemaReviewPage = () => {
           ) : null}
 
           <div className="mt-5">
-            {/* <p>최신순 / 등록순 보기</p> */}
+            <p className="text-xl">리뷰 내역 보기</p>
 
             {comments.length ? (
               <Comments comments={comments} />

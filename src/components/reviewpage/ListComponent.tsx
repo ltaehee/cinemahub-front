@@ -7,7 +7,13 @@ import Textarea from '../Textarea';
 import Button from '../Button';
 import { RegisterReportFetch } from '../../apis/review';
 
-const ListBarComponent = () => {
+interface ListBarComponentProps {
+  handleEdit: (edit: boolean) => void;
+}
+
+const ListBarComponent = (props: ListBarComponentProps) => {
+  const { handleEdit } = props;
+
   const { comment } = useCommentContext();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -17,7 +23,11 @@ const ListBarComponent = () => {
   const IsOwner = comment.IsOwner;
 
   const handleReport = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setReason(e.target.value);
+    const { value } = e.target;
+    if (value.length > 2000) {
+      return;
+    }
+    setReason(value);
   };
 
   const handleModalOpen = () => {
@@ -42,6 +52,10 @@ const ListBarComponent = () => {
 
       alert(message);
     } catch (e) {}
+  };
+
+  const handleEditReview = () => {
+    handleEdit(true);
   };
 
   return (
@@ -91,7 +105,9 @@ const ListBarComponent = () => {
         <div className="absolute">
           {IsOwner ? (
             <div className="border">
-              <button className="block">수정하기</button>
+              <button className="block" onClick={handleEditReview}>
+                수정하기
+              </button>
               <button className="block">삭제하기</button>
             </div>
           ) : (
