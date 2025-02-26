@@ -48,7 +48,7 @@ const CinemaReviewPage = () => {
   const [review, setReview] = useState<string>('');
   const [files, setFiles] = useState<File[]>([]);
   const [imageSrcs, setImageSrcs] = useState<string[]>([]);
-  const [imgUrls, setimgUrls] = useState<string[]>([]);
+  const [_, setimgUrls] = useState<string[]>([]);
   const [totalStarPoint, setTotalStarPoint] = useState<number>(0);
 
   const SingleFileReader = async (file: File) => {
@@ -122,8 +122,6 @@ const CinemaReviewPage = () => {
     try {
       const imgUrls = await handleFileUpload();
       setimgUrls(imgUrls);
-
-      console.log(imgUrls);
 
       const { result, message } = await RegisterReviewFetch({
         movieId,
