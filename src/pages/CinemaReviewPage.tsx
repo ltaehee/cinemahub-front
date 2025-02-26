@@ -14,9 +14,8 @@ import CloseIcon from '../icons/CloseIcon';
 import CameraIcon from '../icons/CameraIcon';
 import Comments from '../components/reviewpage/comment';
 import { getPresignedUrl, uploadImageToS3 } from '../apis/profile';
-
-const movieId = '1';
-const movieTitle = '영화제목';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { movieDetail } from '../apis/movie';
 
 type CommentType = {
   _id: string;
@@ -40,9 +39,12 @@ type UserType = {
 const CinemaReviewPage = () => {
   const IsLogin = useLoginStore((set) => set.IsLogin);
 
-  // const [searchParams] = useSearchParams();
-  // const movieId = searchParams.get('movie') || '';
+  const [searchParams] = useSearchParams();
+  const movieId = searchParams.get('movie') || '';
 
+  const navigator = useNavigate();
+
+  const [movieTitle, setMovieTitle] = useState<string>('');
   const [comments, setComments] = useState<CommentType[]>([]);
   const [starRate, setStarRate] = useState(0);
   const [review, setReview] = useState<string>('');
@@ -138,6 +140,7 @@ const CinemaReviewPage = () => {
       alert(message);
       setReview(''); // 글 초기화
       setStarRate(0); // 별점 초기화
+      setImageSrcs([]);
       handleGetComments(); // 목록 갱신
     } catch (e) {}
   };
@@ -157,8 +160,33 @@ const CinemaReviewPage = () => {
     } catch (e) {}
   };
 
+  const getMovieTitle = async (movieId: string) => {
+    try {
+      const castingMovieId = Number(movieId);
+      const response = await movieDetail(castingMovieId);
+
+      if (emptyChecker({ response })) {
+        alert(
+          '영화 정보를 참조하지 못했어요. 리뷰 상세보기를 눌러 다시 진행해주세요.'
+        );
+        navigator('/', { replace: true });
+        return;
+      }
+      setMovieTitle(response.title);
+      handleGetComments();
+    } catch (e) {}
+  };
+
   useEffect(() => {
-    handleGetComments();
+    if (emptyChecker({ movieId })) {
+      alert(
+        '영화 정보를 참조하지 못했어요. 리뷰 상세보기를 눌러 다시 진행해주세요.'
+      );
+      navigator('/', { replace: true });
+      return;
+    } else {
+      getMovieTitle(movieId);
+    }
   }, []);
 
   return (
