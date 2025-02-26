@@ -11,13 +11,11 @@ import { trendingMovies } from '../apis/movie';
 import MovieCard from '../components/mainpage/MovieCard';
 import { popularActors } from '../apis/person';
 import PersonCard from '../components/mainpage/PersonCard';
-import { useNavigate, useSearchParams } from 'react-router-dom';
 import CinemaDetailPage from './CinemaDetailPage';
 import PersonDetailPage from './PersonDetailPage';
-import Modal from '@ui/Modal';
-import XIcon from '../icons/XIcon';
 import { useTrendingMoviesStore } from '../store/useTrendingMovieStore';
 import { useModalOpenStore } from '../store/useModalOpenStore';
+import ModalPage from '@ui/ModalPage';
 
 interface PopularActors {
   personId: string;
@@ -51,28 +49,11 @@ const MainPage = () => {
 
   const [popularPeople, setPopularPeople] = useState<PopularActors[]>([
     {
-      personId: 0,
+      personId: '',
       name: '',
       profilePath: '',
     },
   ]);
-
-  const [searchParams] = useSearchParams();
-  const movieId = searchParams.get('movie');
-  const personId = searchParams.get('person');
-
-  const closeModal = () => {
-    setSelectedMovie(null);
-    setSelectedPerson(null);
-    setIsMovieOpen(false);
-    setIsPersonOpen(false);
-    navigate('/', { replace: true });
-  };
-
-  useEffect(() => {
-    if (movieId) setSelectedMovie(Number(movieId));
-    if (personId) setSelectedPerson(Number(personId));
-  }, [movieId, personId]);
 
   const fetchData = async () => {
     setIsLoading(true);
