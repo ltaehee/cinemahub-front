@@ -86,9 +86,9 @@ const MainPage = () => {
     }
   };
 
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const calculateBaseDivRect = () => {
     if (!baseRef.current) return;

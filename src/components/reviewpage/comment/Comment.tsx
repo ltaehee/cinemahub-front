@@ -23,10 +23,31 @@ const Comment = () => {
         <ListIcon className="mr-2" />
       </div>
 
+      <div className="mt-2 flex gap-2">
+        {comment.imgUrls.map((src, index) => (
+          <div
+            key={`image-src-${index}`}
+            className="relative w-[150px] h-full rounded-[5px] border border-[#DDDDDD]"
+          >
+            <AspectRatio ratio={1 / 1}>
+              <AspectRatio.Image
+                className="w-full h-full"
+                src={src}
+                alt={'리뷰 사진'}
+              />
+            </AspectRatio>
+          </div>
+        ))}
+      </div>
+
       <div className="mt-2 flex items-center gap-3">
-        <div style={{ width: '60px' }}>
+        <div className="w-[36px]">
           <AspectRatio ratio={1 / 1}>
-            <AspectRatio.Image src={comment.image} alt={'프로필 사진'} />
+            <AspectRatio.Image
+              className="rounded-[18px]"
+              src={comment.userId.profile}
+              alt={'리뷰 사진'}
+            />
           </AspectRatio>
         </div>
 

@@ -1,12 +1,12 @@
 import { createContext, useContext } from 'react';
-import Comment from './comment';
+import Comment from './Comment';
 
 type CommentType = {
   _id: string;
   userId: UserType;
   content: string;
   createdAt: string;
-  image: string;
+  imgUrls: string[];
   starpoint: number;
   like: boolean;
   dislike: boolean;
@@ -38,7 +38,7 @@ const CommentContext = createContext<CommentContextType>({
     },
     content: '',
     createdAt: '',
-    image: '',
+    imgUrls: [],
     starpoint: 0,
     like: false,
     dislike: false,
@@ -63,6 +63,7 @@ const Comments = (props: CommentProps) => {
       {comments.map((comment, index) => (
         <CommentContext.Provider key={index} value={{ comment }}>
           <Comment />
+          <div className="h-[1px] bg-slate-200 my-5"></div>
         </CommentContext.Provider>
       ))}
     </>

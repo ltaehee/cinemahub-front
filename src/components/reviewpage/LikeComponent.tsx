@@ -10,7 +10,7 @@ type CommentType = {
   userId: UserType;
   content: string;
   createdAt: string;
-  image: string;
+  imgUrls: string[];
   starpoint: number;
   like: boolean;
   dislike: boolean;
