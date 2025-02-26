@@ -140,7 +140,7 @@ const PersonDetailPage: FC<PersonDetailPageProps> = ({ personId }) => {
           </section>
           <hr className="w-full border border-gray-300"></hr>
           <section className="flex flex-col gap-4 w-full">
-            <h2 className="text-2xl text-slate-900">스틸이미지</h2>
+            <h2 className="text-2xl text-slate-900">인물 사진</h2>
             <div className="flex flex-col gap-8 items-center w-full justify-between">
               <div className="flex gap-4 w-full justify-between flex-wrap">
                 {images.map((image) => {
