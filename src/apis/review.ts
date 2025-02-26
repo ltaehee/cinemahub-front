@@ -4,7 +4,7 @@ import { emptyChecker } from '../util/emptyCheck';
 
 type Review = {
   movieId: string;
-  image: string;
+  imgUrls: string[];
   content: string;
   starpoint: number;
 };
@@ -16,11 +16,11 @@ type likesType = {
 
 export const RegisterReviewFetch = async ({
   movieId,
-  image,
+  imgUrls,
   content,
   starpoint,
 }: Review) => {
-  if (emptyChecker({ movieId, image, content, starpoint })) {
+  if (emptyChecker({ movieId, imgUrls, content, starpoint })) {
     alert('별점과 리뷰 내용을 적어주세요.');
     return;
   }
@@ -28,7 +28,7 @@ export const RegisterReviewFetch = async ({
   try {
     const response = await baseInstance.post('/review/register', {
       movieId,
-      image,
+      imgUrls,
       content,
       starpoint,
     });
@@ -57,6 +57,10 @@ export const getMovieidCommentArrayFetch = async ({
     const response = await baseInstance.post(`/review/totalcomments`, {
       movieId,
     });
+
+    if (response.status === 404) {
+      return response.data;
+    }
 
     if (response.data.isError) {
       throw new Error(response.data.message);

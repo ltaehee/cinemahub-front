@@ -1,9 +1,9 @@
-import { useNavigate } from "react-router-dom";
-import StarIcon from "../../icons/StarIcon";
-import FavoritesBtn from "./FavoritesBtn";
-import { genres } from "@consts/genres";
-import { FC } from "react";
-import { useModalOpenStore } from "../../store/useModalOpenStore";
+import { useNavigate } from 'react-router-dom';
+import StarIcon from '../../icons/StarIcon';
+import FavoritesBtn from './FavoritesBtn';
+import { genres } from '@consts/genres';
+import { FC } from 'react';
+import { useModalOpenStore } from '../../store/useModalOpenStore';
 
 interface MovieProps {
   title: string;
