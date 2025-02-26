@@ -325,7 +325,7 @@ const MainPage = () => {
         setSelectedPage={setSelectedMovie}
         selectedPage={selectedMovie}
         isPageOpen={isMovieOpen}
-        currentPage="/"
+        pageFrom="/"
       >
         {selectedMovie !== null && <CinemaDetailPage movieId={selectedMovie} />}
       </ModalPage>
@@ -336,7 +336,7 @@ const MainPage = () => {
         setSelectedPage={setSelectedPerson}
         selectedPage={selectedPerson}
         isPageOpen={isPersonOpen}
-        currentPage="/"
+        pageFrom="/"
       >
         {selectedPerson !== null && (
           <PersonDetailPage personId={selectedPerson} />

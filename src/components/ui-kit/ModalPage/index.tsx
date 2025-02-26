@@ -1,6 +1,6 @@
 import Modal from "@ui/Modal";
-import { FC, ReactNode, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { FC, ReactNode, use, useEffect } from "react";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import XIcon from "../../../icons/XIcon";
 
 interface ModalPageProps {
@@ -10,7 +10,7 @@ interface ModalPageProps {
   selectedPage: string | null;
   isPageOpen: boolean;
   children: ReactNode;
-  currentPage: string;
+  pageFrom: string;
 }
 
 const ModalPage: FC<ModalPageProps> = (props) => {
@@ -21,17 +21,26 @@ const ModalPage: FC<ModalPageProps> = (props) => {
     selectedPage,
     isPageOpen,
     children,
-    currentPage,
+    pageFrom,
   } = props;
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const pageId = searchParams.get(`${pageParams}`);
+  const currentPage = location.pathname + location.search;
 
   const closeModal = () => {
     setSelectedPage(null);
     setPageOpen(false);
-    navigate(`${currentPage}`);
+    navigate(`${pageFrom}`);
   };
+
+  useEffect(() => {
+    if (currentPage === pageFrom) {
+      setSelectedPage(null);
+      setPageOpen(false);
+    }
+  }, [currentPage]);
 
   useEffect(() => {
     if (pageId) setSelectedPage(pageId);

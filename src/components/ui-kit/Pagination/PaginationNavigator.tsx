@@ -20,13 +20,13 @@ const PaginationNavigator = (props: PaginationNavigatorProps) => {
 
   const handleClickPrev = () => {
     if (currentPage === 0) return;
-    const changedPageIndex = currentPage - blockSize;
+    const changedPageIndex = currentPage - 1;
     setCurrentPage(changedPageIndex);
     onPageChange(changedPageIndex);
   };
 
   const handleClickNext = () => {
-    const changedPageIndex = currentPage + blockSize;
+    const changedPageIndex = currentPage + 1;
     if (totalPageLength <= changedPageIndex) return;
     setCurrentPage(changedPageIndex);
     onPageChange(changedPageIndex);
