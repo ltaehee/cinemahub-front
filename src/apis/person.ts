@@ -15,7 +15,7 @@ export const popularActors = async () => {
 };
 
 export const personImages = async (
-  personId: number,
+  personId: string,
   page: number,
   limit: number
 ) => {
@@ -37,7 +37,7 @@ export const personImages = async (
 };
 
 export const personCredits = async (
-  personId: number,
+  personId: string,
   page: number,
   limit: number
 ) => {

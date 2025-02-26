@@ -14,7 +14,7 @@ export const trendingMovies = async () => {
   }
 };
 
-export const movieDetail = async (movieId: number) => {
+export const movieDetail = async (movieId: string) => {
   try {
     const response = await baseInstance.get(`/movie/${movieId}`);
 
@@ -28,7 +28,7 @@ export const movieDetail = async (movieId: number) => {
 };
 
 export const movieImages = async (
-  movieId: number,
+  movieId: string,
   page: number,
   limit: number
 ) => {
@@ -50,7 +50,7 @@ export const movieImages = async (
 };
 
 export const moviePosters = async (
-  movieId: number,
+  movieId: string,
   page: number,
   limit: number
 ) => {

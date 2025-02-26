@@ -1,13 +1,13 @@
-import { useNavigate } from 'react-router-dom';
-import StarIcon from '../../icons/StarIcon';
-import FavoritesBtn from './FavoritesBtn';
-import { genres } from '@consts/genres';
-import { FC } from 'react';
-import { useModalOpenStore } from '../../store/useModalOpenStore';
+import { useNavigate } from "react-router-dom";
+import StarIcon from "../../icons/StarIcon";
+import FavoritesBtn from "./FavoritesBtn";
+import { genres } from "@consts/genres";
+import { FC } from "react";
+import { useModalOpenStore } from "../../store/useModalOpenStore";
 
 interface MovieProps {
   title: string;
-  movieId: number;
+  movieId: string;
   releaseDate: string;
   posterPath: string;
   genreIds: number[];
@@ -50,7 +50,7 @@ const MovieCard: FC<MovieProps> = ({
         </div>
         <FavoritesBtn
           favoriteType="Movie"
-          favoriteId={movieId.toString()}
+          favoriteId={movieId}
           className="absolute top-2 left-2 border border-gray-200 rounded-full"
         />
       </div>
@@ -65,11 +65,9 @@ const MovieCard: FC<MovieProps> = ({
             {releaseDate}
           </span>
         </div>
-        <div className="text-sm font-medium text-gray-500">
+        <div className="text-sm font-medium text-gray-500 truncate">
           {genreIds.map((genreId) => (
-            <span key={genreId} className="pr-1 truncate">
-              {genres.find((genre) => genre.id === genreId)?.name}
-            </span>
+            <>{genres.find((genre) => genre.id === genreId)?.name} </>
           ))}
         </div>
       </div>

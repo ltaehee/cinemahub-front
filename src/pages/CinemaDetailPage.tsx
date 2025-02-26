@@ -12,24 +12,24 @@ import { Helmet } from "react-helmet-async";
 import { useModalOpenStore } from "../store/useModalOpenStore";
 
 interface CinemaDetailPageProps {
-  movieId: number;
+  movieId: string;
 }
 
 interface Actor {
-  id: number;
+  id: string;
   name: string;
   character: string;
   profilePath: string;
 }
 
 interface Director {
-  id: number;
+  id: string;
   name: string;
   profilePath: string;
 }
 
 interface Movie {
-  movieId: number;
+  movieId: string;
   title: string;
   overview: string;
   releaseDate: string;

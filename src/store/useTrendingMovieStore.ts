@@ -1,20 +1,20 @@
 import { create } from "zustand";
 
 interface Actor {
-  id: number;
+  id: string;
   name: string;
   character: string;
   profilePath: string;
 }
 
 interface Director {
-  id: number;
+  id: string;
   name: string;
   profilePath: string;
 }
 
 interface TrendingDayMovie {
-  movieId: number;
+  movieId: string;
   title: string;
   posterPath: string;
   overview: string;
@@ -31,7 +31,7 @@ interface TrendingDayMovie {
 }
 
 interface TrendingWeekMovie {
-  movieId: number;
+  movieId: string;
   title: string;
   releaseDate: string;
   posterPath: string;

@@ -11,22 +11,19 @@ import { trendingMovies } from "../apis/movie";
 import MovieCard from "../components/mainpage/MovieCard";
 import { popularActors } from "../apis/person";
 import PersonCard from "../components/mainpage/PersonCard";
-import { useNavigate, useSearchParams } from "react-router-dom";
 import CinemaDetailPage from "./CinemaDetailPage";
 import PersonDetailPage from "./PersonDetailPage";
-import Modal from "@ui/Modal";
-import XIcon from "../icons/XIcon";
 import { useTrendingMoviesStore } from "../store/useTrendingMovieStore";
 import { useModalOpenStore } from "../store/useModalOpenStore";
+import ModalPage from "@ui/ModalPage";
 
 interface PopularActors {
-  personId: number;
+  personId: string;
   name: string;
   profilePath: string;
 }
 
 const MainPage = () => {
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const baseRef = useRef<HTMLDivElement>(null);
   const genreRef = useRef<HTMLDivElement>(null);
@@ -52,28 +49,11 @@ const MainPage = () => {
 
   const [popularPeople, setPopularPeople] = useState<PopularActors[]>([
     {
-      personId: 0,
+      personId: "",
       name: "",
       profilePath: "",
     },
   ]);
-
-  const [searchParams] = useSearchParams();
-  const movieId = searchParams.get("movie");
-  const personId = searchParams.get("person");
-
-  const closeModal = () => {
-    setSelectedMovie(null);
-    setSelectedPerson(null);
-    setIsMovieOpen(false);
-    setIsPersonOpen(false);
-    navigate("/", { replace: true });
-  };
-
-  useEffect(() => {
-    if (movieId) setSelectedMovie(Number(movieId));
-    if (personId) setSelectedPerson(Number(personId));
-  }, [movieId, personId]);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -114,22 +94,6 @@ const MainPage = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
-  useEffect(() => {
-    if (selectedMovie) {
-      setIsMovieOpen(true);
-    } else {
-      setIsMovieOpen(false);
-    }
-  }, [selectedMovie]);
-
-  useEffect(() => {
-    if (selectedPerson) {
-      setIsPersonOpen(true);
-    } else {
-      setIsPersonOpen(false);
-    }
-  }, [selectedPerson]);
 
   return (
     <>
@@ -278,7 +242,7 @@ const MainPage = () => {
                       releaseDate={movie.releaseDate}
                       posterPath={movie.posterPath}
                       genreIds={movie.genreIds}
-                    ></MovieCard>
+                    />
                   );
                 })}
               </CarouselXscroll.Items>
@@ -355,29 +319,29 @@ const MainPage = () => {
         </section>
       </main>
 
-      <Modal onCloseModal={closeModal} open={isMovieOpen}>
-        <Modal.Backdrop className="z-1 bg-black/50 backdrop-blur-lg" />
-        <Modal.Content className="z-2 my-[128px] top-0">
-          <Modal.Close>
-            <XIcon fill="#fff" className="fixed top-4 right-4 w-6 z-1" />
-          </Modal.Close>
-          {selectedMovie !== null && (
-            <CinemaDetailPage movieId={selectedMovie} />
-          )}
-        </Modal.Content>
-      </Modal>
+      <ModalPage
+        pageParams="movie"
+        setPageOpen={setIsMovieOpen}
+        setSelectedPage={setSelectedMovie}
+        selectedPage={selectedMovie}
+        isPageOpen={isMovieOpen}
+        currentPage="/"
+      >
+        {selectedMovie !== null && <CinemaDetailPage movieId={selectedMovie} />}
+      </ModalPage>
 
-      <Modal onCloseModal={closeModal} open={isPersonOpen}>
-        <Modal.Backdrop className="z-1 bg-black/50 backdrop-blur-lg" />
-        <Modal.Content className="z-2 my-[128px] top-0">
-          <Modal.Close>
-            <XIcon fill="#000" className="fixed top-4 right-4 w-6" />
-          </Modal.Close>
-          {selectedPerson !== null && (
-            <PersonDetailPage personId={selectedPerson} />
-          )}
-        </Modal.Content>
-      </Modal>
+      <ModalPage
+        pageParams="person"
+        setPageOpen={setIsPersonOpen}
+        setSelectedPage={setSelectedPerson}
+        selectedPage={selectedPerson}
+        isPageOpen={isPersonOpen}
+        currentPage="/"
+      >
+        {selectedPerson !== null && (
+          <PersonDetailPage personId={selectedPerson} />
+        )}
+      </ModalPage>
     </>
   );
 };
