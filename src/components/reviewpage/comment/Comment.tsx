@@ -10,6 +10,7 @@ import useLoginStore from '../../../store/useStore';
 import CloseIcon from '../../../icons/CloseIcon';
 import CameraIcon from '../../../icons/CameraIcon';
 import { getPresignedUrl, uploadImageToS3 } from '../../../apis/profile';
+import { updateReviewFetch } from '../../../apis/review';
 
 interface CommentProps {
   index: number;
@@ -19,7 +20,7 @@ const Comment = (props: CommentProps) => {
   const { index } = props;
   const IsLogin = useLoginStore((set) => set.IsLogin);
 
-  const { comment } = useCommentContext();
+  const { comment, setCommentsState } = useCommentContext();
   const [editMode, setEditMode] = useState<boolean>(false);
   const [editReview, setEditReview] = useState<string>(comment.content);
   const [editStarpoint, setEditStarpoint] = useState<number>(comment.starpoint);
@@ -108,19 +109,38 @@ const Comment = (props: CommentProps) => {
       const imgUrls = await handleFileUpload();
       setimgUrls(imgUrls);
 
-      //   const { result, message } = await editReviewFetch({
-      //     commentId: comment._id,
-      //     imgUrls: editImgUrls,
-      //     content: editReview,
-      //     starpoint: editStarpoint,
-      //   });
-      //   if (!result) {
-      //     alert(message);
-      //     return;
-      //   }
-      //   alert(message);
+      const { result, message } = await updateReviewFetch({
+        commentId: comment._id,
+        imgUrls: editImgUrls,
+        content: editReview,
+        starpoint: editStarpoint,
+      });
+      if (!result) {
+        alert(message);
+        return;
+      }
+      alert(message);
+
+      setCommentsState((prev) => {
+        return prev.map((review) =>
+          JSON.stringify(review._id) === JSON.stringify(comment._id)
+            ? {
+                ...review,
+                imgUrls: editImgUrls,
+                content: editReview,
+                starpoint: editStarpoint,
+              }
+            : review
+        );
+      });
+      setEditMode(false);
     } catch (e) {}
   };
+
+  // ...review,
+  // imgUrls: editImgUrls,
+  // content: editReview,
+  // starpoint: editStarpoint,
 
   useEffect(() => {
     if (!uploadRef.current) {

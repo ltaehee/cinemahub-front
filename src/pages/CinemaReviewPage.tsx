@@ -180,13 +180,10 @@ const CinemaReviewPage = () => {
   const handleGetComments = async () => {
     try {
       setLoading(true);
-      const { result, data, message } = await getMovieidCommentArrayFetch({
+      const { data } = await getMovieidCommentArrayFetch({
         movieId,
       });
-      if (!result) {
-        alert(message);
-        return;
-      }
+
       const { totalstarpoint, reviews } = data;
       setComments(reviews);
       setTotalStarPoint(totalstarpoint);
@@ -360,13 +357,7 @@ const CinemaReviewPage = () => {
           ) : null}
           <div className="mt-5">
             <p className="text-xl">리뷰 내역 보기</p>
-            {comments.length ? (
-              <Comments comments={comments} />
-            ) : (
-              <div className="text-center border border-slate-300 p-5">
-                <p>리뷰 조회 내역이 없습니다.</p>
-              </div>
-            )}
+            <Comments comments={comments} />
           </div>
         </div>
       </div>

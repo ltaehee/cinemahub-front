@@ -1,4 +1,11 @@
-import { createContext, useContext } from 'react';
+import {
+  createContext,
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import Comment from './Comment';
 
 type CommentType = {
@@ -24,6 +31,7 @@ type UserType = {
 
 export interface CommentContextType {
   comment: CommentType;
+  setCommentsState: Dispatch<SetStateAction<CommentType[]>>;
 }
 
 interface CommentProps {
@@ -49,6 +57,7 @@ const CommentContext = createContext<CommentContextType>({
     IsOwner: false,
     deletedAt: '',
   },
+  setCommentsState: () => {},
 });
 
 export const useCommentContext = () => {
@@ -61,17 +70,31 @@ export const useCommentContext = () => {
 
 const Comments = (props: CommentProps) => {
   const { comments } = props;
+  const [commentsState, setCommentsState] = useState<CommentType[]>([]);
+
+  useEffect(() => {
+    setCommentsState(comments);
+  }, [comments]);
 
   return (
     <>
-      {comments
-        .filter(({ deletedAt }) => deletedAt !== null)
-        .map((comment, index) => (
-          <CommentContext.Provider key={index} value={{ comment }}>
-            <Comment index={index} />
-            <div className="h-[1px] bg-slate-200 my-5"></div>
-          </CommentContext.Provider>
-        ))}
+      {commentsState.length ? (
+        commentsState
+          .filter(({ deletedAt }) => deletedAt === null)
+          .map((comment, index) => (
+            <CommentContext.Provider
+              key={index}
+              value={{ comment, setCommentsState }}
+            >
+              <Comment index={index} />
+              <div className="h-[1px] bg-slate-200 my-5"></div>
+            </CommentContext.Provider>
+          ))
+      ) : (
+        <div className="text-center border border-slate-300 p-5">
+          <p>리뷰 조회 내역이 없습니다.</p>
+        </div>
+      )}
     </>
   );
 };

@@ -136,6 +136,43 @@ export const RegisterReportFetch = async ({
   }
 };
 
+export const updateReviewFetch = async ({
+  commentId,
+  imgUrls,
+  content,
+  starpoint,
+}: {
+  commentId: string;
+  imgUrls: string[];
+  content: string;
+  starpoint: number;
+}) => {
+  if (emptyChecker({ commentId })) {
+    throw new Error('댓글을 참조할 수 없습니다. 새로고침 해주세요.');
+  }
+
+  try {
+    const response = await baseInstance.post(`/review/update`, {
+      commentId,
+      imgUrls,
+      content,
+      starpoint,
+    });
+
+    if (response.data.isError) {
+      throw new Error(response.data.message);
+    }
+
+    return response.data;
+  } catch (err) {
+    if (err instanceof AxiosError && err.response) {
+      console.log(err.response.data.message);
+      alert(err.response.data.message);
+    }
+    throw err;
+  }
+};
+
 export const deleteReviewFetch = async ({
   commentId,
 }: {
