@@ -267,9 +267,9 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
             <dl>
               <dt className="text-xl pb-2">장르</dt>
               <dd className="flex gap-4 text-lg text-gray-500">
-                {movie?.genreIds.map((genreId, index) => (
+                {movie?.genreIds.map((genreId) => (
                   <span
-                    key={`cinema detail genre ${index}`}
+                    key={`cinema detail genre ${genreId}`}
                     className="bg-[rgba(0,0,0,0.4)] py-2 px-4 rounded-md text-white text-base"
                   >
                     {genres.find((genre) => genre.id === genreId)?.name}
@@ -281,9 +281,9 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
             <dl>
               <dt className="text-xl pb-2">출연</dt>
               <dd className="flex gap-4 text-lg text-gray-500">
-                {movie?.actor.map((actor, index) => (
+                {movie?.actor.map((actor) => (
                   <span
-                    key={`cinema detail actor ${index}`}
+                    key={`cinema detail actor ${actor.id}`}
                     onClick={() => {
                       setIsMovieOpen(false),
                         setSelectedMovie(null),
@@ -302,9 +302,9 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
             <dl>
               <dt className="text-xl pb-2">감독</dt>
               <dd className="flex gap-4 text-lg text-gray-500">
-                {movie?.director.map((director, index) => (
+                {movie?.director.map((director) => (
                   <span
-                    key={`cinema-detail-director-${index}`}
+                    key={`cinema-detail-director-${director.id}`}
                     onClick={() => {
                       setIsMovieOpen(false),
                         setSelectedMovie(null),
@@ -341,10 +341,10 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
             <h2 className="text-2xl text-slate-900">포스터</h2>
             <div className="flex flex-col gap-8 items-center w-full justify-between">
               <div className="flex gap-4 w-full">
-                {posters.map((poster, index) => {
+                {posters.map((poster) => {
                   return (
                     <div
-                      key={`cinema-detail-poster-${index}`}
+                      key={`cinema-detail-poster-${poster}`}
                       onClick={() => handleModalOpen(poster)}
                       className="w-[230px] h-[350px]"
                     >
@@ -376,10 +376,10 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
             <h2 className="text-2xl text-slate-900">스틸이미지</h2>
             <div className="flex flex-col gap-8 items-center w-full justify-between">
               <div className="flex gap-4 w-full flex-wrap">
-                {images.map((image, index) => {
+                {images.map((image) => {
                   return (
                     <div
-                      key={`cinema-detail-image-${index}`}
+                      key={`cinema-detail-image-${image}`}
                       onClick={() => {
                         handleModalOpen(image);
                       }}

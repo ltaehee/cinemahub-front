@@ -222,10 +222,10 @@ const PersonDetailPage: FC<PersonDetailPageProps> = ({ personId }) => {
                   </div>
                 ) : (
                   <>
-                    {credits.map((movie, index) => {
+                    {credits.map((movie) => {
                       return (
                         <div
-                          key={`person-detail-movie-${index}`}
+                          key={`person-detail-movie-${movie.movieId}`}
                           className="w-[292px]"
                         >
                           <MovieCard
@@ -259,10 +259,10 @@ const PersonDetailPage: FC<PersonDetailPageProps> = ({ personId }) => {
             <h2 className="text-2xl text-slate-900">인물 사진</h2>
             <div className="flex flex-col gap-8 items-center w-full">
               <div className="flex gap-4 w-full flex-wrap">
-                {images.map((image, index) => {
+                {images.map((image) => {
                   return (
                     <div
-                      key={`person-detail-image-${index}`}
+                      key={`person-detail-image-${image}`}
                       onClick={() => {
                         handleModalOpen(image), window.scrollTo(0, scrollY);
                       }}
