@@ -155,7 +155,7 @@ const ListBarComponent = (props: ListBarComponentProps) => {
               </button>
             </div>
           ) : (
-            <div className="absolute bg-[#EFEFEF]">
+            <div>
               <button
                 className="text-black
                 p-2

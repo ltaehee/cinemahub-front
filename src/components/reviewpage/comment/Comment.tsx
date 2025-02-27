@@ -11,7 +11,9 @@ const Comment = () => {
   const { comment } = useCommentContext();
   const [_, setStarRate] = useState(0);
   const [editMode, setEditMode] = useState<boolean>(false);
-  const [editreview, setEditReview] = useState<string>(comment.content);
+  const [editReview, setEditReview] = useState<string>(comment.content);
+  // const [editImgUrls, setEditImgUrls] = useState<string[]>([]);
+  // const [editStarpoint, setEditStarpoint] = useState<number>(comment.starpoint);
 
   const handleRating = (index: number) => {
     setStarRate(index);
@@ -29,7 +31,21 @@ const Comment = () => {
     setEditReview(value);
   };
 
-  const handleEditReview = () => {};
+  const handleEditReview = () => {
+    // try {
+    //   const { result, message } = await editReviewFetch({
+    //     commentId: comment._id,
+    //     imgUrls: editImgUrls,
+    //     content: editReview,
+    //     starpoint: editStarpoint,
+    //   });
+    //   if (!result) {
+    //     alert(message);
+    //     return;
+    //   }
+    //   alert(message);
+    // } catch (e) {}
+  };
 
   return (
     <div className="mt-6">
@@ -78,12 +94,12 @@ const Comment = () => {
               id="editreview"
               placeholder="이 콘텐츠의 어떤 점이 좋거나 싫었는지 다른 사용자들에게 알려주세요. 고객님의 리뷰는 다른 사용자들에게 큰 도움이 됩니다."
               className="w-full h-40 text-md resize-none focus:outline-none"
-              value={editreview}
+              value={editReview}
               onChange={handleEditReviewInput}
             />
 
             <p className="text-slate-400 text-sm float-right">
-              {editreview.length}/2000
+              {editReview.length}/2000
             </p>
           </div>
 
