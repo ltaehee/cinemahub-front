@@ -68,7 +68,7 @@ const Comments = (props: CommentProps) => {
         .filter(({ deletedAt }) => deletedAt !== null)
         .map((comment, index) => (
           <CommentContext.Provider key={index} value={{ comment }}>
-            <Comment />
+            <Comment index={index} />
             <div className="h-[1px] bg-slate-200 my-5"></div>
           </CommentContext.Provider>
         ))}

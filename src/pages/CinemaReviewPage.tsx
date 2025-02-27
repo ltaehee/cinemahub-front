@@ -150,6 +150,7 @@ const CinemaReviewPage = () => {
 
     try {
       setLoading(true);
+
       const imgUrls = await handleFileUpload();
       setimgUrls(imgUrls);
 

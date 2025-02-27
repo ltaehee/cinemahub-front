@@ -11,7 +11,12 @@ import CloseIcon from '../../../icons/CloseIcon';
 import CameraIcon from '../../../icons/CameraIcon';
 import { getPresignedUrl, uploadImageToS3 } from '../../../apis/profile';
 
-const Comment = () => {
+interface CommentProps {
+  index: number;
+}
+
+const Comment = (props: CommentProps) => {
+  const { index } = props;
   const IsLogin = useLoginStore((set) => set.IsLogin);
 
   const { comment } = useCommentContext();
@@ -191,7 +196,7 @@ const Comment = () => {
 
                   {editImgUrls.length < 2 ? (
                     <label
-                      htmlFor="fileupdate"
+                      htmlFor={`fileupdate${index}`}
                       className="block border border-[#DDDDDD] w-[180px] h-full rounded-[5px] hover:bg-[#BDBDBD] cursor-pointer"
                     >
                       <CameraIcon width={'100%'} height={'100%'} />
@@ -203,8 +208,8 @@ const Comment = () => {
                   ref={uploadRef}
                   style={{ display: 'none' }}
                   type="file"
-                  name="fileupdate"
-                  id="fileupdate"
+                  name={`fileupdate${index}`}
+                  id={`fileupdate${index}`}
                   accept="image/*"
                   onChange={handleFilePreview}
                   onClick={handleResetFileValue}
