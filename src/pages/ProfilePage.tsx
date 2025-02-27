@@ -19,43 +19,7 @@ import {
   uploadImageToS3,
 } from '../apis/profile';
 import { profileSchema } from '../schemas/ProfileSchema';
-
-export interface UserProfile {
-  userId: string;
-  email: string;
-  nickname: string;
-  introduce: string;
-  profile?: string;
-  followers: {
-    nickname: string;
-    email: string;
-    profile?: string;
-    deletedAt?: string | null;
-  }[];
-  following: {
-    nickname: string;
-    email: string;
-    profile?: string;
-    deletedAt?: string | null;
-  }[];
-  favorites: {
-    favoriteType: string;
-    favoriteId: string;
-  }[];
-  favoriteMovies?: {
-    movieId: string;
-    title: string;
-    releaseDate: string;
-    posterPath: string;
-    genreIds: [];
-  }[];
-
-  favoritePersons?: {
-    personId: string;
-    name: string;
-    profilePath: string;
-  }[];
-}
+import { UserProfile } from '../store/useProfileStore';
 
 const ProfilePage = () => {
   const { nickname } = useParams();
@@ -157,7 +121,7 @@ const ProfilePage = () => {
       const { result } = await getFetchNicknameCheck(nickname, currentNickname);
       return result;
     } catch (error) {
-      console.error('닉네임 중복 체크 오류dd:', error);
+      console.error('닉네임 중복 체크 오류:', error);
       return false;
     }
   };
@@ -259,84 +223,84 @@ const ProfilePage = () => {
   if (!profile) {
     return;
   }
-  /* console.log('로그인 기준 프로필', loggedInUserProfile);
-  console.log('url기준 프로필', profile); */
+  console.log('로그인 기준 프로필', loggedInUserProfile);
+  console.log('url기준 프로필', profile);
   return (
-    <div className='w-full flex flex-col items-center justify-center'>
-      <div className='w-full max-w-[1280px] flex gap-2 mt-10 mb-20 px-8 max-h-[440px]'>
-        <div className='w-full  border border-[#DFDFDF] rounded-2xl'>
-          <div className='w-full relative flex flex-col gap-2 items-center p-2'>
-            <div className='w-full flex justify-end mb-4'>
+    <div className="w-full flex flex-col items-center justify-center">
+      <div className="w-full max-w-[1280px] flex gap-2 mt-10 mb-20 px-8 max-h-[440px]">
+        <div className="w-full  border border-[#DFDFDF] rounded-2xl">
+          <div className="w-full relative flex flex-col gap-2 items-center p-2">
+            <div className="w-full flex justify-end mb-4">
               {isOwnProfile ? (
                 <img
                   src={isEditing ? profileEdit2 : profileEdit}
-                  alt='프로필 수정 버튼'
-                  className='w-8 cursor-pointer'
+                  alt="프로필 수정 버튼"
+                  className="w-8 cursor-pointer"
                   onClick={handleEditClick}
                 />
               ) : null}
             </div>
-            <div className='relative'>
+            <div className="relative">
               <img
                 src={previewImage || profile.profile || profileImg}
-                alt='프로필 사진'
-                className='w-35 h-35 object-cover rounded-full'
+                alt="프로필 사진"
+                className="w-35 h-35 object-cover rounded-full"
               />
               {isEditing && (
                 <div
                   onClick={() => fileInputRef.current?.click()}
-                  className='absolute cursor-pointer top-0 left-0 w-full h-full flex justify-center items-center bg-[rgba(0,0,0,0.3)] rounded-full'
+                  className="absolute cursor-pointer top-0 left-0 w-full h-full flex justify-center items-center bg-[rgba(0,0,0,0.3)] rounded-full"
                 >
                   <img
                     src={profileCamera}
-                    alt='프로필 카메라 아이콘'
-                    className='w-8'
+                    alt="프로필 카메라 아이콘"
+                    className="w-8"
                   />
                 </div>
               )}
               {isUploading && (
-                <div className='absolute top-0 left-0 w-full h-full flex justify-center items-center bg-[rgba(0,0,0,0.3)] rounded-full'>
-                  <div className='w-6 h-6 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin'></div>
+                <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-[rgba(0,0,0,0.3)] rounded-full">
+                  <div className="w-6 h-6 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
                 </div>
               )}
             </div>
             <input
               ref={fileInputRef}
-              type='file'
-              className='hidden'
+              type="file"
+              className="hidden"
               onChange={handleImageChange}
             />
             {isEditing ? (
-              <div className='w-[90%]'>
-                <div className='flex justify-between'>
-                  <p className='font-semibold'>닉네임</p>
-                  <p className='text-sm text-gray-500 pl-8'>
+              <div className="w-[90%]">
+                <div className="flex justify-between">
+                  <p className="font-semibold">닉네임</p>
+                  <p className="text-sm text-gray-500 pl-8">
                     최소 2글자, 최대 10글자까지 가능합니다.
                   </p>
                 </div>
                 <input
-                  type='text'
+                  type="text"
                   value={profile.nickname}
                   onChange={(e) =>
                     setProfile({ ...profile, nickname: e.target.value })
                   }
-                  className='border border-gray-400 w-full p-1 rounded'
+                  className="border border-gray-400 w-full p-1 rounded"
                   maxLength={10}
                 />
               </div>
             ) : (
               <p>{profile.nickname}</p>
             )}
-            {!isEditing && <p className='text-gray-500'>{profile.email}</p>}
+            {!isEditing && <p className="text-gray-500">{profile.email}</p>}
             {isEditing ? (
-              <div className='w-[90%]'>
-                <div className='flex items-center justify-between'>
-                  <p className='font-semibold'>자기소개</p>
-                  <div className='flex'>
-                    <p className='text-gray-500 text-sm pl-4'>
+              <div className="w-[90%]">
+                <div className="flex items-center justify-between">
+                  <p className="font-semibold">자기소개</p>
+                  <div className="flex">
+                    <p className="text-gray-500 text-sm pl-4">
                       최대 50글자까지 가능합니다.
                     </p>
-                    <p className='pl-2 text-gray-500 text-sm'>
+                    <p className="pl-2 text-gray-500 text-sm">
                       {profile.introduce.length} / 50
                     </p>
                   </div>
@@ -346,7 +310,7 @@ const ProfilePage = () => {
                   onChange={(e) =>
                     setProfile({ ...profile, introduce: e.target.value })
                   }
-                  className='border border-gray-400 w-full p-1 pb-10  rounded resize-none relative'
+                  className="border border-gray-400 w-full p-1 pb-10  rounded resize-none relative"
                   maxLength={50}
                 />
               </div>
@@ -354,7 +318,7 @@ const ProfilePage = () => {
               <p>{profile.introduce || '자기소개를 해주세요'}</p>
             )}
 
-            <div className='w-full px-12'>
+            <div className="w-full px-12">
               {!IsLogin && (
                 <Button
                   onClick={() => {
@@ -367,8 +331,8 @@ const ProfilePage = () => {
               {!isOwnProfile && !isFollowing && IsLogin && (
                 <Button onClick={() => handleFollow(profile.nickname)}>
                   {debouncingMap[profile.nickname] ? (
-                    <div className='flex justify-center items-center'>
-                      <div className='w-6 h-6 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin'></div>
+                    <div className="flex justify-center items-center">
+                      <div className="w-6 h-6 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
                     </div>
                   ) : (
                     '팔로우'
@@ -378,11 +342,11 @@ const ProfilePage = () => {
               {!isOwnProfile && isFollowing && (
                 <Button
                   onClick={() => handleUnfollow(profile.nickname)}
-                  className='bg-gray-500 hover:bg-gray-400'
+                  className="bg-gray-500 hover:bg-gray-400"
                 >
                   {debouncingMap[profile.nickname] ? (
-                    <div className='flex justify-center items-center'>
-                      <div className='w-6 h-6 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin'></div>
+                    <div className="flex justify-center items-center">
+                      <div className="w-6 h-6 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
                     </div>
                   ) : (
                     '언팔로우'

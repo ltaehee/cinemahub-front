@@ -1,6 +1,6 @@
 // src/store/useProfileStore.ts
-import { create } from "zustand";
-import { getProfileData } from "../apis/profile";
+import { create } from 'zustand';
+import { getProfileData } from '../apis/profile';
 
 export interface UserProfile {
   userId: string;
@@ -31,16 +31,16 @@ interface ProfileStore {
 const useProfileStore = create<ProfileStore>((set) => ({
   profile: null,
 
-  // ✅ 프로필 상태 업데이트
+  //  프로필 상태 업데이트
   setProfile: (profile) => set({ profile }),
 
-  // ✅ 프로필 데이터 가져오기
+  // 프로필 데이터 가져오기
   fetchProfile: async (nickname) => {
     try {
       const profileData = await getProfileData(nickname);
       set({ profile: profileData });
     } catch (error) {
-      console.error("프로필 데이터 가져오기 오류:", error);
+      console.error('프로필 데이터 가져오기 오류:', error);
     }
   },
 }));
