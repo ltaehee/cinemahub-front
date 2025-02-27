@@ -11,6 +11,7 @@ import { genres } from "@consts/genres";
 import { Helmet } from "react-helmet-async";
 import { useModalOpenStore } from "../store/useModalOpenStore";
 import defaultImage from "../assets/images/defaultImage.jpg";
+import FavoritesBtn from "../components/mainpage/FavoritesBtn";
 interface CinemaDetailPageProps {
   movieId: string;
 }
@@ -213,7 +214,12 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
                 maskImage: "linear-gradient(to right, black, transparent)",
               }}
             ></div>
-            <div className="flex flex-col absolute inset-y-0 left-16 top-[60%] text-white">
+            <div className="flex flex-col absolute inset-y-0 left-16 top-[50%] text-white">
+              <FavoritesBtn
+                favoriteType="Movie"
+                favoriteId={movieId}
+                className="border border-gray-200 rounded-full"
+              />
               {movie?.logoPath ? (
                 <img
                   src={`https://image.tmdb.org/t/p/original${movie?.logoPath}`}
@@ -411,7 +417,7 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
       >
         <Modal.Content className="z-4 top-[50%] transform -translate-y-1/2 shadow-2xl">
           <Modal.Close>
-            <XIcon fill="#fff" className="fixed top-4 right-4 w-6" />
+            <XIcon className="fixed top-2 right-4 w-8" />
           </Modal.Close>
           <img
             src={`https://image.tmdb.org/t/p/w780${content}`}

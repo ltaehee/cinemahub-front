@@ -6,6 +6,7 @@ import { personCredits, personDetail, personImages } from "../apis/person";
 import MovieCard from "../components/mainpage/MovieCard";
 import { Helmet } from "react-helmet-async";
 import defaultImage from "../assets/images/defaultImage.jpg";
+import FavoritesBtn from "../components/mainpage/FavoritesBtn";
 
 interface PersonDetailPageProps {
   personId: string;
@@ -155,6 +156,11 @@ const PersonDetailPage: FC<PersonDetailPageProps> = ({ personId }) => {
               className="object-cover w-full h-full rounded-2xl"
               onDragStart={(e) => e.preventDefault()}
             />
+            <FavoritesBtn
+              favoriteType="Person"
+              favoriteId={personId}
+              className="absolute top-12 left-12 border border-gray-200 rounded-full"
+            />
           </div>
           <div className="flex flex-col justify-center gap-10">
             <h1 className="text-6xl text-gray-900 font-bold">
@@ -294,7 +300,7 @@ const PersonDetailPage: FC<PersonDetailPageProps> = ({ personId }) => {
       >
         <Modal.Content className="z-4 top-[50%] transform -translate-y-1/2 shadow-2xl">
           <Modal.Close>
-            <XIcon fill="#fff" className="fixed top-4 right-4 w-6" />
+            <XIcon className="fixed top-2 right-4 w-8" />
           </Modal.Close>
           <img
             src={`https://image.tmdb.org/t/p/w780${content}`}
