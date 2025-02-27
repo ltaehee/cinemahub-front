@@ -8,18 +8,6 @@ export interface UserProfile {
   nickname: string;
   introduce: string;
   profile?: string;
-  followers: {
-    nickname: string;
-    email: string;
-    profile?: string;
-    deletedAt?: string | null;
-  }[];
-  following: {
-    nickname: string;
-    email: string;
-    profile?: string;
-    deletedAt?: string | null;
-  }[];
 }
 
 interface ProfileStore {

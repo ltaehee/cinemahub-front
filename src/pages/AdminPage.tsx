@@ -1,11 +1,11 @@
-import Tabs from "@ui/Tabs";
-import { useEffect, useState } from "react";
-import Table from "../components/adminpage/Table";
-import Button from "../components/Button";
-import SearchBar from "../components/adminpage/SearchBar";
-import { getFetchUserInfo } from "../apis/search";
-import { getFetchUser, getReportedReview, updateUser } from "../apis/admin";
-import Pagination from "@ui/Pagination";
+import Tabs from '@ui/Tabs';
+import { useEffect, useState } from 'react';
+import Table from '../components/adminpage/Table';
+import Button from '../components/Button';
+import SearchBar from '../components/adminpage/SearchBar';
+import { getFetchUserInfo } from '../apis/search';
+import { getFetchUser, getReportedReview, updateUser } from '../apis/admin';
+import Pagination from '@ui/Pagination';
 
 interface UserProps {
   email: string;
@@ -26,11 +26,11 @@ const blockSize = 10;
 
 const AdminPage = () => {
   const [users, setUsers] = useState<UserProps[]>([]);
-  console.log("users: ", users);
+  console.log('users: ', users);
   const [reportedUser, setReportedUser] = useState<ReportProps[]>([]); // 신고 리뷰 유저
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
-  const [searchQuery, setSearchQuery] = useState<string>(""); // 검색어 상태
+  const [searchQuery, setSearchQuery] = useState<string>(''); // 검색어 상태
   const [isSearching, setIsSearching] = useState(false); // 검색 중인지 여부
   const handleSelectUser = (email: string) => {
     setSelectedUsers((prev) =>
@@ -46,32 +46,32 @@ const AdminPage = () => {
 
   // 유저 검색
   const handleSearch = async (query: string) => {
-    if (query.trim() === "") return;
+    if (query.trim() === '') return;
     setUsers([]);
     setSearchQuery(query);
-    setIsSearching(query.trim() !== ""); // 검색어가 있으면 true, 없으면 false
+    setIsSearching(query.trim() !== ''); // 검색어가 있으면 true, 없으면 false
     setUserPage(0);
   };
 
   // 유저 삭제
   const handleClickDeleteUser = async () => {
-    const isConfirmed = window.confirm("정말로 유저를 삭제하시겠습니까?");
+    const isConfirmed = window.confirm('정말로 유저를 삭제하시겠습니까?');
 
     if (!isConfirmed) {
       return;
     }
 
     try {
-      console.log("selectedUsers: ", selectedUsers);
+      console.log('selectedUsers: ', selectedUsers);
 
       const response = await updateUser(selectedUsers);
 
       setUsers((prevUsers) =>
         prevUsers.filter((user) => !selectedUsers.includes(user.email))
       );
-      console.log("delete result", response);
+      console.log('delete result', response);
     } catch (err) {
-      console.error("삭제 오류", err);
+      console.error('삭제 오류', err);
     }
   };
 
@@ -102,7 +102,7 @@ const AdminPage = () => {
       } else {
         response = await getFetchUser(userPage, limit);
       }
-      console.log("response: ", response);
+      console.log('response: ', response);
       // setTotalPages(response.data.totalPages); // 수정
       setTotalUsers(response.data.totalCount);
       setUsers(response.data.users);
@@ -115,7 +115,7 @@ const AdminPage = () => {
   const getReportedReviewsData = async () => {
     try {
       const response = await getReportedReview(reviewPage, limit);
-      console.log("신고리뷰 조회: ", response);
+      console.log('신고리뷰 조회: ', response);
       setReportedUser(response.data.reportResult);
       setTotalReported(response.data.totalCount);
     } catch (err) {
@@ -134,10 +134,10 @@ const AdminPage = () => {
   }, [activeindex]);
   return (
     <>
-      <div className="w-full flex items-center justify-center h-[calc(100vh-65px)] ">
+      <div className="w-full flex items-center justify-center ">
         <Tabs onChangeTab={handleChangeTab} className="">
           <div className="flex w-[1280px] px-8 h-full">
-            <div className="bg-[#D9D9D9] w-[20%] h-[calc(100vh-65px)]">
+            <div className="bg-[#D9D9D9] w-[20%] ">
               <Tabs.MenuList>
                 <Tabs.Menu
                   index={1}
@@ -170,9 +170,9 @@ const AdminPage = () => {
 
                   <Table
                     columns={[
-                      { key: "email", label: "회원아이디" },
-                      { key: "nickname", label: "이름" },
-                      { key: "createdAt", label: "가입날짜" },
+                      { key: 'email', label: '회원아이디' },
+                      { key: 'nickname', label: '이름' },
+                      { key: 'createdAt', label: '가입날짜' },
                     ]}
                     data={users}
                     onSelectAll={handleSelectAllUsers}
@@ -213,13 +213,13 @@ const AdminPage = () => {
 
                   <Table
                     columns={[
-                      { key: "reason", label: "신고 사유" },
-                      { key: "imgUrls", label: "리뷰 사진" },
-                      { key: "content", label: "리뷰 글" },
-                      { key: "email", label: "신고한 회원아이디" },
+                      { key: 'reason', label: '신고 사유' },
+                      { key: 'imgUrls', label: '리뷰 사진' },
+                      { key: 'content', label: '리뷰 글' },
+                      { key: 'email', label: '신고한 회원아이디' },
                       {
-                        key: "reviewUserId",
-                        label: "신고당한 회원아이디",
+                        key: 'reviewUserId',
+                        label: '신고당한 회원아이디',
                       },
                     ]}
                     data={reportedUser}
