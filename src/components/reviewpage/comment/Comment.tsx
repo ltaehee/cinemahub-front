@@ -126,7 +126,12 @@ const Comment = () => {
           </div>
         </div>
       ) : (
-        <p className="mt-2">{comment.content}</p>
+        <p
+          className="mt-2"
+          style={{ wordWrap: 'break-word', whiteSpace: 'pre-wrap' }}
+        >
+          {comment.content}
+        </p>
       )}
 
       <div className="mt-4">

@@ -1,11 +1,11 @@
-import { ChangeEvent, useEffect, useRef, useState } from "react";
-import ListIcon from "../../icons/ListIcon";
-import { useCommentContext } from "./comment";
-import Modal from "@ui/Modal";
-import CloseIcon from "../../icons/CloseIcon";
-import Textarea from "../Textarea";
-import Button from "../Button";
-import { RegisterReportFetch } from "../../apis/review";
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import ListIcon from '../../icons/ListIcon';
+import { useCommentContext } from './comment';
+import Modal from '@ui/Modal';
+import CloseIcon from '../../icons/CloseIcon';
+import Textarea from '../Textarea';
+import Button from '../Button';
+import { deleteReviewFetch, RegisterReportFetch } from '../../apis/review';
 
 interface ListBarComponentProps {
   handleEdit: (edit: boolean) => void;
@@ -17,7 +17,7 @@ const ListBarComponent = (props: ListBarComponentProps) => {
   const { comment } = useCommentContext();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [reason, setReason] = useState<string>("");
+  const [reason, setReason] = useState<string>('');
   const portalRef = useRef(null);
   const listRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -60,7 +60,20 @@ const ListBarComponent = (props: ListBarComponentProps) => {
     handleEdit(true);
   };
 
-  const handleDeleteReview = () => {};
+  const handleDeleteReview = async () => {
+    try {
+      const { result, message } = await deleteReviewFetch({
+        commentId: comment._id,
+      });
+
+      if (!result) {
+        alert(message);
+        return;
+      }
+
+      alert(message);
+    } catch (e) {}
+  };
 
   const handleOutSideClick = (e: MouseEvent) => {
     if (
@@ -83,11 +96,11 @@ const ListBarComponent = (props: ListBarComponentProps) => {
     }
 
     if (isOpen) {
-      window.addEventListener("click", handleOutSideClick);
+      window.addEventListener('click', handleOutSideClick);
     }
 
     return () => {
-      window.removeEventListener("click", handleOutSideClick);
+      window.removeEventListener('click', handleOutSideClick);
     };
   }, [isOpen, listRef, contentRef]);
   return (
