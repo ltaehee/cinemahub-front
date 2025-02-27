@@ -1,6 +1,6 @@
 import CarouselXscroll from "@ui/CarouselXscroll";
 import CarouselInfinite from "@ui/CarouselInfinite";
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ChevronIcon from "../icons/ChevronIcon";
 import MainCard from "../components/mainpage/MainCard";
 import { genres } from "@consts/genres";
@@ -14,6 +14,7 @@ import { useTrendingMoviesStore } from "../store/useTrendingMovieStore";
 import { useModalOpenStore } from "../store/useModalOpenStore";
 import ModalPage from "@ui/ModalPage";
 import MovieCard from "../components/mainpage/MovieCard";
+import { useNavigate } from "react-router-dom";
 // const MainCard = lazy(() => import("../components/mainpage/MainCard"));
 
 interface PopularActors {
@@ -23,6 +24,7 @@ interface PopularActors {
 }
 
 const MainPage = () => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const baseRef = useRef<HTMLDivElement>(null);
   const genreRef = useRef<HTMLDivElement>(null);
@@ -189,6 +191,9 @@ const MainPage = () => {
                     <Button
                       key={`main-genre-${index}`}
                       className="bg-gray-500 hover:bg-gray-900 text-nowrap px-8 py-4"
+                      onClick={() => {
+                        navigate(`/genre/${genre.id}`);
+                      }}
                     >
                       {genre.name}
                     </Button>

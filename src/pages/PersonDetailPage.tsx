@@ -156,8 +156,10 @@ const PersonDetailPage: FC<PersonDetailPageProps> = ({ personId }) => {
               onDragStart={(e) => e.preventDefault()}
             />
           </div>
-          <div className="flex flex-col justify-center gap-8">
-            <h1 className="text-4xl text-gray-900">{personDetails.name}</h1>
+          <div className="flex flex-col justify-center gap-10">
+            <h1 className="text-6xl text-gray-900 font-bold">
+              {personDetails.name}
+            </h1>
             <div className="flex flex-col gap-4 justify-center">
               <dl>
                 <dt className="text-xl pb-2">전문분야</dt>
