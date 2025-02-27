@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { genres } from "@consts/genres";
 import { Helmet } from "react-helmet-async";
 import { useModalOpenStore } from "../store/useModalOpenStore";
-
+import defaultImage from "../assets/images/defaultImage.jpg";
 interface CinemaDetailPageProps {
   movieId: string;
 }
@@ -149,6 +149,7 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
   };
 
   const toggleMute = () => setIsMuted((prev) => !prev);
+
   return (
     <>
       {movie && (
@@ -193,9 +194,13 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
             <div className="w-full h-[692px] rounded-t-2xl">
               <div
                 className="w-full h-full bg-cover bg-center rounded-t-2xl"
-                style={{
-                  backgroundImage: `url(https://image.tmdb.org/t/p/original${movie?.backdropPath})`,
-                }}
+                style={
+                  movie?.backdropPath
+                    ? {
+                        backgroundImage: `url(https://image.tmdb.org/t/p/original${movie?.backdropPath})`,
+                      }
+                    : { backgroundImage: `url(${defaultImage})` }
+                }
               ></div>
             </div>
           )}
@@ -235,7 +240,11 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
         <div className="grid grid-cols-[1fr_2fr] gap-8 px-8">
           <div>
             <img
-              src={`https://image.tmdb.org/t/p/w500${movie?.posterPath}`}
+              src={
+                movie?.posterPath
+                  ? `https://image.tmdb.org/t/p/w500${movie.posterPath}`
+                  : defaultImage
+              }
               alt={movie?.title}
               className="object-cover w-full h-full"
               onDragStart={(e) => e.preventDefault()}
@@ -250,9 +259,9 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
             <dl>
               <dt className="text-xl pb-2">장르</dt>
               <dd className="flex gap-4 text-lg text-gray-500">
-                {movie?.genreIds.map((genreId) => (
+                {movie?.genreIds.map((genreId, index) => (
                   <span
-                    key={genreId}
+                    key={`cinema detail genre ${index}`}
                     className="bg-[rgba(0,0,0,0.4)] py-2 px-4 rounded-md text-white text-base"
                   >
                     {genres.find((genre) => genre.id === genreId)?.name}
@@ -264,9 +273,9 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
             <dl>
               <dt className="text-xl pb-2">출연</dt>
               <dd className="flex gap-4 text-lg text-gray-500">
-                {movie?.actor.map((actor) => (
+                {movie?.actor.map((actor, index) => (
                   <span
-                    key={actor.id}
+                    key={`cinema detail actor ${index}`}
                     onClick={() => {
                       setIsMovieOpen(false),
                         setSelectedMovie(null),
@@ -285,9 +294,9 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
             <dl>
               <dt className="text-xl pb-2">감독</dt>
               <dd className="flex gap-4 text-lg text-gray-500">
-                {movie?.director.map((director) => (
+                {movie?.director.map((director, index) => (
                   <span
-                    key={director.id}
+                    key={`cinema-detail-director-${index}`}
                     onClick={() => {
                       setIsMovieOpen(false),
                         setSelectedMovie(null),
@@ -323,13 +332,13 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
           <section className="flex flex-col gap-4 w-full">
             <h2 className="text-2xl text-slate-900">포스터</h2>
             <div className="flex flex-col gap-8 items-center w-full justify-between">
-              <div className="flex gap-4 w-full justify-between">
-                {posters.map((poster) => {
+              <div className="flex gap-4 w-full">
+                {posters.map((poster, index) => {
                   return (
                     <div
-                      key={poster}
+                      key={`cinema-detail-poster-${index}`}
                       onClick={() => handleModalOpen(poster)}
-                      className="w-[220px] h-[330px]"
+                      className="w-[230px] h-[350px]"
                     >
                       <img
                         src={`https://image.tmdb.org/t/p/w185${poster}`}
@@ -358,13 +367,13 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
           <section className="flex flex-col gap-4 w-full">
             <h2 className="text-2xl text-slate-900">스틸이미지</h2>
             <div className="flex flex-col gap-8 items-center w-full justify-between">
-              <div className="flex gap-4 w-full justify-between flex-wrap">
-                {images.map((image) => {
+              <div className="flex gap-4 w-full flex-wrap">
+                {images.map((image, index) => {
                   return (
                     <div
-                      key={image}
+                      key={`cinema-detail-image-${index}`}
                       onClick={() => {
-                        handleModalOpen(image), window.scrollTo(0, scrollY);
+                        handleModalOpen(image);
                       }}
                       className="w-[292px] h-[170px]"
                     >

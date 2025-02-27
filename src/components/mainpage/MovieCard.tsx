@@ -37,7 +37,7 @@ const MovieCard: FC<MovieProps> = ({
           setSelectedPerson(null);
         navigate(`?movie=${movieId}`);
       }}
-      className="cursor-pointer shadow-md w-[240px] h-full rounded-md bg-white border border-gray-200"
+      className="cursor-pointer shadow-md w-full h-full rounded-md bg-white border border-gray-200"
     >
       <div className="relative overflow-hidden rounded-tl-md rounded-tr-md">
         <div className="h-[340px]">
@@ -66,8 +66,10 @@ const MovieCard: FC<MovieProps> = ({
           </span>
         </div>
         <div className="text-sm font-medium text-gray-500 truncate">
-          {genreIds.map((genreId) => (
-            <>{genres.find((genre) => genre.id === genreId)?.name} </>
+          {genreIds.map((genreId, index) => (
+            <span key={`movie-card-genre-${index}`}>
+              {genres.find((genre) => genre.id === genreId)?.name}{" "}
+            </span>
           ))}
         </div>
       </div>

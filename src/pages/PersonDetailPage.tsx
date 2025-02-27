@@ -109,24 +109,28 @@ const PersonDetailPage: FC<PersonDetailPageProps> = ({ personId }) => {
 
           <section className="flex flex-col gap-4 w-full">
             <h2 className="text-2xl text-slate-900">참여 작품</h2>
-            <div className="flex flex-col gap-8 items-center w-full justify-between">
-              <div className="flex gap-4 w-full justify-around flex-wrap">
+            <div className="flex flex-col gap-8 items-center w-full">
+              <div className="flex gap-4 w-full flex-wrap">
                 {isLoading ? (
                   <div className="flex justify-center items-center w-full h-[980px] text-5xl text-gray-400">
                     로딩중
                   </div>
                 ) : (
                   <>
-                    {credits.map((movie) => {
+                    {credits.map((movie, index) => {
                       return (
-                        <MovieCard
-                          key={movie.movieId}
-                          movieId={movie.movieId}
-                          title={movie.title}
-                          releaseDate={movie.releaseDate}
-                          posterPath={movie.posterPath}
-                          genreIds={movie.genreIds}
-                        />
+                        <div
+                          key={`person-detail-movie-${index}`}
+                          className="w-[292px]"
+                        >
+                          <MovieCard
+                            movieId={movie.movieId}
+                            title={movie.title}
+                            releaseDate={movie.releaseDate}
+                            posterPath={movie.posterPath}
+                            genreIds={movie.genreIds}
+                          />
+                        </div>
                       );
                     })}
                   </>
@@ -148,12 +152,12 @@ const PersonDetailPage: FC<PersonDetailPageProps> = ({ personId }) => {
           <hr className="w-full border border-gray-300"></hr>
           <section className="flex flex-col gap-4 w-full">
             <h2 className="text-2xl text-slate-900">인물 사진</h2>
-            <div className="flex flex-col gap-8 items-center w-full justify-between">
-              <div className="flex gap-4 w-full justify-between flex-wrap">
-                {images.map((image) => {
+            <div className="flex flex-col gap-8 items-center w-full">
+              <div className="flex gap-4 w-full flex-wrap">
+                {images.map((image, index) => {
                   return (
                     <div
-                      key={image}
+                      key={`person-detail-image-${index}`}
                       onClick={() => {
                         handleModalOpen(image), window.scrollTo(0, scrollY);
                       }}
