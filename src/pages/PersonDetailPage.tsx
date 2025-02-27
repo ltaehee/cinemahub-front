@@ -2,11 +2,23 @@ import { FC, useEffect, useRef, useState } from "react";
 import Pagination from "@ui/Pagination";
 import Modal from "@ui/Modal";
 import XIcon from "../icons/XIcon";
-// import { genres } from "@consts/genres";
-import { personCredits, personImages } from "../apis/person";
+import { personCredits, personDetail, personImages } from "../apis/person";
 import MovieCard from "../components/mainpage/MovieCard";
+import { Helmet } from "react-helmet-async";
+import defaultImage from "../assets/images/defaultImage.jpg";
+
 interface PersonDetailPageProps {
   personId: string;
+}
+
+interface PersonDetails {
+  name: string;
+  profilePath: string;
+  birthday: string;
+  deathday: string | null;
+  gender: number;
+  department: string;
+  placeOfBirth: string;
 }
 
 interface Credit {
@@ -32,6 +44,24 @@ const PersonDetailPage: FC<PersonDetailPageProps> = ({ personId }) => {
   const [content, setContent] = useState("");
   const portalref = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [personDetails, setPersonDetails] = useState<PersonDetails>({
+    name: "",
+    profilePath: "",
+    birthday: "",
+    deathday: null,
+    gender: 0,
+    department: "",
+    placeOfBirth: "",
+  });
+
+  const fetchPersonDetail = async () => {
+    try {
+      const details = await personDetail(personId);
+      setPersonDetails(details);
+    } catch (err) {
+      console.error("fetchPersonDetail 에러 ", err);
+    }
+  };
 
   const fetchData = async () => {
     try {
@@ -52,6 +82,7 @@ const PersonDetailPage: FC<PersonDetailPageProps> = ({ personId }) => {
   };
 
   useEffect(() => {
+    fetchPersonDetail();
     fetchData();
   }, []);
 
@@ -97,13 +128,79 @@ const PersonDetailPage: FC<PersonDetailPageProps> = ({ personId }) => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
-
   return (
     <>
+      {personDetails && (
+        <Helmet>
+          <title>{`${personDetails.name} - 인물 상세정보`}</title>
+          <meta
+            name="description"
+            content={`${personDetails.name}의 인물 상세정보 페이지입니다.`}
+          />
+        </Helmet>
+      )}
       <main
         ref={portalref}
         className="flex flex-col gap-8 items-center bg-white w-[1280px] rounded-2xl pb-16"
       >
+        <div className="grid grid-cols-[1fr_2fr] gap-8 px-8 pt-8">
+          <div>
+            <img
+              src={
+                personDetails.profilePath
+                  ? `https://image.tmdb.org/t/p/w500${personDetails.profilePath}`
+                  : defaultImage
+              }
+              alt={personDetails.name}
+              className="object-cover w-full h-full rounded-2xl"
+              onDragStart={(e) => e.preventDefault()}
+            />
+          </div>
+          <div className="flex flex-col justify-center gap-8">
+            <h1 className="text-4xl text-gray-900">{personDetails.name}</h1>
+            <div className="flex flex-col gap-4 justify-center">
+              <dl>
+                <dt className="text-xl pb-2">전문분야</dt>
+                <dd className="text-lg text-gray-500">
+                  {personDetails.department === "Acting" ? "배우" : "감독"}
+                </dd>
+              </dl>
+              <hr className="w-full border border-gray-300"></hr>
+              <dl>
+                <dt className="text-xl pb-2">성별</dt>
+                <dd className="flex gap-4 text-lg text-gray-500">
+                  {personDetails.gender === 1 ? "여성" : "남성"}
+                </dd>
+              </dl>
+              <hr className="w-full border border-gray-300"></hr>
+              <dl>
+                <dt className="text-xl pb-2">출생일</dt>
+                <dd className="flex gap-4 text-lg text-gray-500">
+                  {personDetails.birthday}
+                </dd>
+              </dl>
+              <hr className="w-full border border-gray-300"></hr>
+              {personDetails.deathday && (
+                <>
+                  <dl>
+                    <dt className="text-xl pb-2">사망일</dt>
+                    <dd className="flex gap-4 text-lg text-gray-500">
+                      {personDetails.deathday}
+                    </dd>
+                  </dl>
+                  <hr className="w-full border border-gray-300"></hr>
+                </>
+              )}
+              <dl>
+                <dt className="text-xl pb-2">출생지</dt>
+                <dd className="flex gap-4 text-lg text-gray-500">
+                  {personDetails.placeOfBirth}
+                </dd>
+              </dl>
+              <hr className="w-full border border-gray-300"></hr>
+            </div>
+          </div>
+        </div>
         <div className="flex flex-col gap-8 items-center w-full px-8">
           <hr className="w-full border border-gray-300"></hr>
 

@@ -14,6 +14,18 @@ export const popularActors = async () => {
   }
 };
 
+export const personDetail = async (personId: string) => {
+  try {
+    const response = await baseInstance.get(`/person/${personId}`);
+    return response.data;
+  } catch (err) {
+    if (err instanceof AxiosError && err.response) {
+      console.log(err.response.data.message);
+    }
+    throw err;
+  }
+};
+
 export const personImages = async (
   personId: string,
   page: number,

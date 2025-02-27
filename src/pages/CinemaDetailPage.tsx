@@ -228,7 +228,9 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
               )}
               <button
                 onClick={() => {
-                  navigate(`/review?movie=${movieId}`), setIsMuted(true);
+                  navigate(`/review?movie=${movieId}`),
+                    setIsMovieOpen(false),
+                    setSelectedMovie(null);
                 }}
                 className="py-4 w-80 text-xl bg-red-500/80 rounded-lg hover:bg-red-500 backdrop-blur-xs transition ease-in-out"
               >

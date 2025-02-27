@@ -1,14 +1,11 @@
 import CarouselXscroll from "@ui/CarouselXscroll";
-import { useEffect, useRef, useState } from "react";
+import CarouselInfinite from "@ui/CarouselInfinite";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import ChevronIcon from "../icons/ChevronIcon";
 import MainCard from "../components/mainpage/MainCard";
-import Carousel from "@ui/CarouselInfinite";
-import CarouselItem from "@ui/CarouselInfinite/CarouselInfiniteItem";
-import CarouselItemList from "@ui/CarouselInfinite/CarouselInfiniteItemList";
 import { genres } from "@consts/genres";
 import Button from "../components/Button";
 import { trendingMovies } from "../apis/movie";
-import MovieCard from "../components/mainpage/MovieCard";
 import { popularActors } from "../apis/person";
 import PersonCard from "../components/mainpage/PersonCard";
 import CinemaDetailPage from "./CinemaDetailPage";
@@ -16,6 +13,8 @@ import PersonDetailPage from "./PersonDetailPage";
 import { useTrendingMoviesStore } from "../store/useTrendingMovieStore";
 import { useModalOpenStore } from "../store/useModalOpenStore";
 import ModalPage from "@ui/ModalPage";
+import MovieCard from "../components/mainpage/MovieCard";
+// const MainCard = lazy(() => import("../components/mainpage/MainCard"));
 
 interface PopularActors {
   personId: string;
@@ -95,22 +94,21 @@ const MainPage = () => {
     };
   }, []);
 
-  console.log("popularPeople", popularPeople);
   return (
     <>
       <main>
-        <Carousel className="relative px-16 pt-8">
-          <Carousel.ItemContainer>
-            <CarouselItemList>
+        <CarouselInfinite className="relative px-16 pt-8">
+          <CarouselInfinite.ItemContainer>
+            <CarouselInfinite.ItemList>
               {isLoading ? (
                 <div>로딩 중...</div>
               ) : trendingDayMovies.length > 0 ? (
                 trendingDayMovies.map((movie, index) => {
                   return (
-                    <CarouselItem
-                      key={`main-day-${index}`}
+                    <CarouselInfinite.Item
                       className="px-4"
                       index={index}
+                      key={`main-day-${index}`}
                     >
                       {(carouselIndex) => (
                         <MainCard
@@ -126,15 +124,15 @@ const MainPage = () => {
                           index={index + 1}
                         />
                       )}
-                    </CarouselItem>
+                    </CarouselInfinite.Item>
                   );
                 })
               ) : (
                 <div>트렌딩 영화가 없습니다.</div>
               )}
-            </CarouselItemList>
-          </Carousel.ItemContainer>
-          <Carousel.Navigator className=" absolute right-[calc(2vw+80px)] bottom-[2vw] flex items-center">
+            </CarouselInfinite.ItemList>
+          </CarouselInfinite.ItemContainer>
+          <CarouselInfinite.Navigator className=" absolute right-[calc(2vw+80px)] bottom-[2vw] flex items-center">
             {(
               handlePrev,
               handleNext,
@@ -170,8 +168,8 @@ const MainPage = () => {
                 </button>
               </>
             )}
-          </Carousel.Navigator>
-        </Carousel>
+          </CarouselInfinite.Navigator>
+        </CarouselInfinite>
         <section className="pt-8">
           <div className="px-8">
             <h3 ref={baseRef} className="pb-2 font-medium text-xl">
