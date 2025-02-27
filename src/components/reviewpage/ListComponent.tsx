@@ -1,11 +1,11 @@
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
-import ListIcon from '../../icons/ListIcon';
-import { useCommentContext } from './comment';
-import Modal from '@ui/Modal';
-import CloseIcon from '../../icons/CloseIcon';
-import Textarea from '../Textarea';
-import Button from '../Button';
-import { RegisterReportFetch } from '../../apis/review';
+import { ChangeEvent, useEffect, useRef, useState } from "react";
+import ListIcon from "../../icons/ListIcon";
+import { useCommentContext } from "./comment";
+import Modal from "@ui/Modal";
+import CloseIcon from "../../icons/CloseIcon";
+import Textarea from "../Textarea";
+import Button from "../Button";
+import { RegisterReportFetch } from "../../apis/review";
 
 interface ListBarComponentProps {
   handleEdit: (edit: boolean) => void;
@@ -17,7 +17,7 @@ const ListBarComponent = (props: ListBarComponentProps) => {
   const { comment } = useCommentContext();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [reason, setReason] = useState<string>('');
+  const [reason, setReason] = useState<string>("");
   const portalRef = useRef(null);
   const listRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -83,11 +83,11 @@ const ListBarComponent = (props: ListBarComponentProps) => {
     }
 
     if (isOpen) {
-      window.addEventListener('click', handleOutSideClick);
+      window.addEventListener("click", handleOutSideClick);
     }
 
     return () => {
-      window.removeEventListener('click', handleOutSideClick);
+      window.removeEventListener("click", handleOutSideClick);
     };
   }, [isOpen, listRef, contentRef]);
   return (
@@ -98,7 +98,10 @@ const ListBarComponent = (props: ListBarComponentProps) => {
         onOpenModal={handleModalOpen}
         portalref={portalRef.current}
       >
-        <Modal.Content className="z-4 top-[50%] bg-[#FDFDFD] shadow-2xl p-15">
+        <Modal.Content
+          className="z-4 top-[50%] transform -translate-1/2 left-[50%]  bg-[#FDFDFD] shadow-2xl p-15 fixed"
+          fixed
+        >
           <Modal.Close>
             <CloseIcon className="absolute top-5 right-5" />
           </Modal.Close>
