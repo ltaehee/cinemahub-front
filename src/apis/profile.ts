@@ -61,7 +61,7 @@ export const getFetchNicknameCheck = async (
   currentNickname: string
 ) => {
   try {
-    const response = await baseInstance.post('/profile/check-name', {
+    const response = await baseInstance.post('/profile/check-nickname', {
       nickname,
       currentNickname,
     });
@@ -136,5 +136,46 @@ export const getUserReviewsAPI = async (
   } catch (error) {
     console.error('리뷰 조회 오류:', error);
     throw error;
+  }
+};
+
+/* 팔로워 조회 */
+export const getFollowersAPI = async (
+  nickname: string,
+  page: number,
+  limit: number
+) => {
+  try {
+    const response = await baseInstance.get(`/follow/followers/${nickname}`, {
+      params: {
+        page,
+        limit,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('팔로워 조회 실패:', error);
+    throw new Error('팔로워 조회에 실패했습니다. 새로고침 해주세요.');
+  }
+};
+
+/* 팔로잉 조회 */
+export const getFollowingAPI = async (
+  nickname: string,
+  page: number,
+  limit: number
+) => {
+  try {
+    const response = await baseInstance.get(`/follow/following/${nickname}`, {
+      params: {
+        page,
+        limit,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('팔로잉 조회 실패:', error);
+    throw new Error('팔로잉 조회에 실패했습니다. 새로고침 해주세요.');
   }
 };

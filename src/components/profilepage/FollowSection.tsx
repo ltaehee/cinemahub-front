@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import useLoginStore from '../../store/useStore';
 import SearchBar from '../adminpage/SearchBar';
 import { UserProfile } from '../../store/useProfileStore';
+// import { getFollowersAPI, getFollowingAPI } from '../../apis/profile';
 
 interface FollowUser {
   nickname: string;
@@ -21,6 +22,8 @@ interface FollowSectionProps {
   handleUnfollow: (nickname: string) => void;
   debouncingMap: { [key: string]: boolean };
 }
+
+// const limit = 4;
 
 const FollowSection = ({
   profile,
@@ -44,6 +47,31 @@ const FollowSection = ({
         : [],
     [profile.following]
   );
+
+  /* const [followers, setFollowers] = useState<FollowUser[]>([]);
+  const [following, setFollowing] = useState<FollowUser[]>([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true); */
+
+  /* const loadMoreFollowers = async () => {
+    const response = await getFollowersAPI(profile.nickname, page, limit);
+    setFollowers((prev) => [...prev, ...response.data]);
+    setHasMore(response.currentPage < response.totalPages);
+    setPage((prev) => prev + 1);
+    console.log('FollowersData', response);
+  };
+
+  const loadMoreFollowing = async () => {
+    const response = await getFollowingAPI(profile.nickname, page, limit);
+    setFollowing((prev) => [...prev, ...response.data]);
+    setHasMore(response.currentPage < response.totalPages);
+    setPage((prev) => prev + 1);
+    console.log('FollowingData', response);
+  }; */
+  /*  useEffect(() => {
+    loadMoreFollowers();
+    loadMoreFollowing();
+  }, []); */
 
   const [view, setView] = useState<'follower' | 'following' | null>(null);
   const navigate = useNavigate();
@@ -111,29 +139,30 @@ const FollowSection = ({
     setSearchTerm('');
     setFilteredUsers([]);
   }, [view]);
+
   return (
-    <div className='w-full'>
+    <div className="w-full">
       {view === null ? (
-        <div className='w-full h-full flex flex-col gap-2'>
-          <div className='h-full flex flex-col justify-center items-center border border-[#DFDFDF] rounded-2xl py-4 px-12'>
-            <p className='font-semibold'>팔로워</p>
-            <p className='font-bold text-2xl py-4'>
+        <div className="w-full h-full flex flex-col gap-2">
+          <div className="h-full flex flex-col justify-center items-center border border-[#DFDFDF] rounded-2xl py-4 px-12">
+            <p className="font-semibold">팔로워</p>
+            <p className="font-bold text-2xl py-4">
               {filteredFollowers.length}명
             </p>
             <Button
-              className='bg-gray-500 hover:bg-gray-600'
+              className="bg-gray-500 hover:bg-gray-600"
               onClick={() => setView('follower')}
             >
               팔로워 보기
             </Button>
           </div>
-          <div className='h-full flex flex-col justify-center items-center border border-[#DFDFDF] rounded-2xl py-4 px-12'>
-            <p className='font-semibold'>팔로잉</p>
-            <p className='font-bold text-2xl py-4'>
+          <div className="h-full flex flex-col justify-center items-center border border-[#DFDFDF] rounded-2xl py-4 px-12">
+            <p className="font-semibold">팔로잉</p>
+            <p className="font-bold text-2xl py-4">
               {filteredFollowing.length}명
             </p>
             <Button
-              className='bg-gray-500 hover:bg-gray-600'
+              className="bg-gray-500 hover:bg-gray-600"
               onClick={() => setView('following')}
             >
               팔로잉 보기
@@ -141,24 +170,24 @@ const FollowSection = ({
           </div>
         </div>
       ) : (
-        <div className='border border-[#DFDFDF] rounded-2xl p-4 w-full h-full overflow-y-scroll '>
-          <div className='flex justify-between items-center pb-2'>
-            <h2 className='text-xl font-bold'>
+        <div className="border border-[#DFDFDF] rounded-2xl p-4 w-full h-full overflow-y-scroll ">
+          <div className="flex justify-between items-center pb-2">
+            <h2 className="text-xl font-bold">
               {view === 'follower' ? '팔로워' : '팔로잉'}
             </h2>
             <button
-              className='font-bold cursor-pointer'
+              className="font-bold cursor-pointer"
               onClick={() => setView(null)}
             >
-              <img className='w-8' src={closeImg} alt='닫기 버튼' />
+              <img className="w-8" src={closeImg} alt="닫기 버튼" />
             </button>
           </div>
 
-          <div className='w-full'>
+          <div className="w-full">
             <SearchBar
               onSearch={handleSearch}
               useDebounce={false}
-              className='w-[full]'
+              className="w-[full]"
             />
             {(searchTerm
               ? filteredUsers
@@ -172,10 +201,10 @@ const FollowSection = ({
               return (
                 <div
                   key={user.nickname}
-                  className='flex items-center justify-between p-2 '
+                  className="flex items-center justify-between p-2 "
                 >
                   <div
-                    className='w-full flex items-center gap-3 cursor-pointer'
+                    className="w-full flex items-center gap-3 cursor-pointer"
                     onClick={() => {
                       navigate(`/profile/${user.nickname}`);
                       setView(null);
@@ -183,12 +212,12 @@ const FollowSection = ({
                   >
                     <img
                       src={user.profile || profileImg}
-                      alt='프로필'
-                      className='w-10 h-10 object-cover rounded-full'
+                      alt="프로필"
+                      className="w-10 h-10 object-cover rounded-full"
                     />
                     <div>
-                      <p className='font-bold'>{user.nickname}</p>
-                      <p className='text-sm text-gray-500'>{user.email}</p>
+                      <p className="font-bold">{user.nickname}</p>
+                      <p className="text-sm text-gray-500">{user.email}</p>
                     </div>
                   </div>
 
@@ -218,8 +247,8 @@ const FollowSection = ({
                         }`}
                       >
                         {isLoading(user.nickname) ? (
-                          <div className='flex justify-center items-center'>
-                            <div className='w-6 h-6 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin'></div>
+                          <div className="flex justify-center items-center">
+                            <div className="w-6 h-6 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
                           </div>
                         ) : isFollowing ? (
                           '언팔로우'
