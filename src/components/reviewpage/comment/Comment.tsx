@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { useCommentContext } from '.';
 import AspectRatio from '../AspectRatio';
 import StarContainer from '../StarContainer';
@@ -6,17 +6,84 @@ import LikeComponent from '../LikeComponent';
 import ListBarComponent from '../ListComponent';
 import Textarea from '../../Textarea';
 import Button from '../../Button';
+import useLoginStore from '../../../store/useStore';
+import CloseIcon from '../../../icons/CloseIcon';
+import CameraIcon from '../../../icons/CameraIcon';
+import { getPresignedUrl, uploadImageToS3 } from '../../../apis/profile';
 
 const Comment = () => {
+  const IsLogin = useLoginStore((set) => set.IsLogin);
+
   const { comment } = useCommentContext();
-  const [_, setStarRate] = useState(0);
   const [editMode, setEditMode] = useState<boolean>(false);
   const [editReview, setEditReview] = useState<string>(comment.content);
-  // const [editImgUrls, setEditImgUrls] = useState<string[]>([]);
-  // const [editStarpoint, setEditStarpoint] = useState<number>(comment.starpoint);
+  const [editStarpoint, setEditStarpoint] = useState<number>(comment.starpoint);
+  const [editImgUrls, setEditImgUrls] = useState<string[]>(comment.imgUrls);
+
+  const [files, setFiles] = useState<File[]>([]);
+  const [__, setimgUrls] = useState<string[]>([]);
+
+  const uploadRef = useRef<HTMLInputElement>(null);
+
+  const SingleFileReader = async (file: File) => {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
+      fileReader.onload = () => {
+        try {
+          resolve(fileReader.result);
+        } catch (err) {
+          if (err instanceof Error) {
+            reject(new Error(err.message));
+          }
+        }
+      };
+    });
+  };
+
+  const handleFilePreview = async (e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+
+    if (typeof files === 'object' && files !== null && files.length <= 2) {
+      const filesArr = Array.from(files);
+      setFiles((prev) => [...prev, ...filesArr]);
+
+      for (const file of filesArr) {
+        const src = await SingleFileReader(file);
+        setEditImgUrls((prev) => [...prev, `${src}`]);
+      }
+    }
+  };
+
+  const handleFileUpload = async () => {
+    let imgUrls = [];
+
+    if (files.length !== 0) {
+      for (const file of files) {
+        const presignedUrl = await getPresignedUrl(file.name);
+        await uploadImageToS3(presignedUrl, file);
+        const imgUrl = presignedUrl.split('?')[0];
+        imgUrls.push(imgUrl);
+      }
+    }
+    return imgUrls;
+  };
+
+  const handleResetFileValue = () => {
+    if (uploadRef.current) {
+      console.log(uploadRef.current.value);
+      uploadRef.current.value = '';
+      return;
+    }
+  };
+
+  const handleRemovePreview = (targetIndex: number) => {
+    setEditImgUrls(editImgUrls.filter((_, index) => index !== targetIndex));
+    setFiles(files.filter((_, index) => index !== targetIndex));
+  };
 
   const handleRating = (index: number) => {
-    setStarRate(index);
+    setEditStarpoint(index);
   };
 
   const handleEdit = (edit: boolean) => {
@@ -31,60 +98,139 @@ const Comment = () => {
     setEditReview(value);
   };
 
-  const handleEditReview = () => {
-    // try {
-    //   const { result, message } = await editReviewFetch({
-    //     commentId: comment._id,
-    //     imgUrls: editImgUrls,
-    //     content: editReview,
-    //     starpoint: editStarpoint,
-    //   });
-    //   if (!result) {
-    //     alert(message);
-    //     return;
-    //   }
-    //   alert(message);
-    // } catch (e) {}
+  const handleEditReview = async () => {
+    try {
+      const imgUrls = await handleFileUpload();
+      setimgUrls(imgUrls);
+
+      //   const { result, message } = await editReviewFetch({
+      //     commentId: comment._id,
+      //     imgUrls: editImgUrls,
+      //     content: editReview,
+      //     starpoint: editStarpoint,
+      //   });
+      //   if (!result) {
+      //     alert(message);
+      //     return;
+      //   }
+      //   alert(message);
+    } catch (e) {}
   };
+
+  useEffect(() => {
+    if (!uploadRef.current) {
+      return;
+    }
+  }, []);
 
   return (
     <div className="mt-6">
-      <div className="flex items-center justify-between">
-        <StarContainer
-          handleRating={handleRating}
-          defaultStar={comment.starpoint}
-        />
-        <ListBarComponent handleEdit={handleEdit} />
-      </div>
-      <div className="mt-2 flex gap-2">
-        {comment.imgUrls.map((src, index) => (
-          <div
-            key={`image-src-${index}`}
-            className="relative w-[150px] h-full rounded-[5px] border border-[#DDDDDD]"
-          >
+      <div className="mt-2 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-[36px]">
             <AspectRatio ratio={1 / 1}>
               <AspectRatio.Image
-                className="w-full h-full"
-                src={src}
+                className="rounded-[18px] w-full h-full"
+                src={comment.userId.profile}
                 alt={'리뷰 사진'}
               />
             </AspectRatio>
           </div>
-        ))}
-      </div>
-      <div className="mt-2 flex items-center gap-3">
-        <div className="w-[36px]">
-          <AspectRatio ratio={1 / 1}>
-            <AspectRatio.Image
-              className="rounded-[18px] w-full h-full"
-              src={comment.userId.profile}
-              alt={'리뷰 사진'}
-            />
-          </AspectRatio>
+
+          <p className="text-slate-400">{comment.userId.nickname}</p>
+          <p className="text-slate-400">{comment.createdAt.split('T')[0]}</p>
         </div>
 
-        <p className="text-slate-400">{comment.userId.nickname}</p>
-        <p className="text-slate-400">{comment.createdAt.split('T')[0]}</p>
+        <ListBarComponent handleEdit={handleEdit} />
+      </div>
+
+      <div className="flex items-center justify-between mt-5">
+        {editMode ? (
+          <StarContainer
+            starRate={editStarpoint}
+            handleRating={handleRating}
+            defaultStar={0}
+          />
+        ) : (
+          <StarContainer
+            handleRating={handleRating}
+            defaultStar={comment.starpoint}
+          />
+        )}
+      </div>
+
+      <div className="mt-5 flex gap-2">
+        {editMode ? (
+          <>
+            {IsLogin ? (
+              <div className="w-full h-full">
+                <div className="flex gap-2">
+                  {editImgUrls.map((src, index) => (
+                    <div
+                      key={`image-src-${index}`}
+                      className="relative w-[180px] h-full rounded-[5px] border border-[#DDDDDD]"
+                    >
+                      <AspectRatio ratio={1 / 1}>
+                        <AspectRatio.Image
+                          className="w-full h-full"
+                          src={src}
+                          alt={'리뷰 사진'}
+                        />
+                      </AspectRatio>
+
+                      <div
+                        onClick={() => handleRemovePreview(index)}
+                        className="absolute w-[12px] top-1 right-1"
+                      >
+                        <CloseIcon width={'100%'} height={'100%'} />
+                      </div>
+
+                      <div className="absolute top-0 right-0 z-1" />
+                    </div>
+                  ))}
+
+                  {editImgUrls.length < 2 ? (
+                    <label
+                      htmlFor="fileupdate"
+                      className="block border border-[#DDDDDD] w-[180px] h-full rounded-[5px] hover:bg-[#BDBDBD] cursor-pointer"
+                    >
+                      <CameraIcon width={'100%'} height={'100%'} />
+                    </label>
+                  ) : null}
+                </div>
+
+                <input
+                  ref={uploadRef}
+                  style={{ display: 'none' }}
+                  type="file"
+                  name="fileupdate"
+                  id="fileupdate"
+                  accept="image/*"
+                  onChange={handleFilePreview}
+                  onClick={handleResetFileValue}
+                  multiple
+                />
+              </div>
+            ) : null}
+          </>
+        ) : (
+          <>
+            {comment.imgUrls.map((src, index) => (
+              <div
+                key={`image-src-${index}`}
+                className="relative w-[180px] h-full rounded-[5px] border border-[#DDDDDD]"
+              >
+                <AspectRatio ratio={1 / 1}>
+                  <AspectRatio.Image
+                    className="w-full h-full"
+                    src={src}
+                    alt={'리뷰 사진'}
+                  />
+                </AspectRatio>
+              </div>
+            ))}
+          </>
+        )}
       </div>
 
       {editMode ? (
@@ -118,6 +264,8 @@ const Comment = () => {
                 onClick={() => {
                   handleEdit(false);
                   setEditReview(comment.content);
+                  setEditImgUrls(comment.imgUrls);
+                  setEditStarpoint(comment.starpoint);
                 }}
               >
                 취소

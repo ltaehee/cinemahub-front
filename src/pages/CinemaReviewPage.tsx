@@ -36,6 +36,7 @@ type CommentType = {
   totalLike: number;
   totalDisLike: number;
   IsOwner: boolean;
+  deletedAt: string;
 };
 
 type UserType = {
@@ -113,14 +114,6 @@ const CinemaReviewPage = () => {
   const handleRemovePreview = (targetIndex: number) => {
     setImageSrcs(imageSrcs.filter((_, index) => index !== targetIndex));
     setFiles(files.filter((_, index) => index !== targetIndex));
-
-    if (uploadRef.current && uploadRef.current.files) {
-      const dataTransfer = new DataTransfer();
-      files.forEach((file) => {
-        dataTransfer.items.add(file);
-      });
-      uploadRef.current.files = dataTransfer.files;
-    }
   };
 
   const handleReviewInput: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
@@ -305,7 +298,7 @@ const CinemaReviewPage = () => {
 
                 {imageSrcs.length < 2 ? (
                   <label
-                    htmlFor="fileInput"
+                    htmlFor="fileinput"
                     className="block border border-[#DDDDDD] w-[180px] h-full rounded-[5px] hover:bg-[#BDBDBD] cursor-pointer"
                   >
                     <CameraIcon width={'100%'} height={'100%'} />
@@ -317,8 +310,8 @@ const CinemaReviewPage = () => {
                 ref={uploadRef}
                 style={{ display: 'none' }}
                 type="file"
-                name="fileInput"
-                id="fileInput"
+                name="fileinput"
+                id="fileinput"
                 accept="image/*"
                 onChange={handleFilePreview}
                 onClick={handleResetFileValue}

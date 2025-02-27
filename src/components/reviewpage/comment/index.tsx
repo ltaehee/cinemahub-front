@@ -13,6 +13,7 @@ type CommentType = {
   totalLike: number;
   totalDisLike: number;
   IsOwner: boolean;
+  deletedAt: string;
 };
 
 type UserType = {
@@ -46,6 +47,7 @@ const CommentContext = createContext<CommentContextType>({
     totalLike: 0,
     totalDisLike: 0,
     IsOwner: false,
+    deletedAt: '',
   },
 });
 
@@ -62,12 +64,14 @@ const Comments = (props: CommentProps) => {
 
   return (
     <>
-      {comments.map((comment, index) => (
-        <CommentContext.Provider key={index} value={{ comment }}>
-          <Comment />
-          <div className="h-[1px] bg-slate-200 my-5"></div>
-        </CommentContext.Provider>
-      ))}
+      {comments
+        .filter(({ deletedAt }) => deletedAt !== null)
+        .map((comment, index) => (
+          <CommentContext.Provider key={index} value={{ comment }}>
+            <Comment />
+            <div className="h-[1px] bg-slate-200 my-5"></div>
+          </CommentContext.Provider>
+        ))}
     </>
   );
 };

@@ -17,6 +17,7 @@ type CommentType = {
   totalLike: number;
   totalDisLike: number;
   IsOwner: boolean;
+  deletedAt: string;
 };
 
 type UserType = {

@@ -6,6 +6,7 @@ import CloseIcon from '../../icons/CloseIcon';
 import Textarea from '../Textarea';
 import Button from '../Button';
 import { deleteReviewFetch, RegisterReportFetch } from '../../apis/review';
+import ModalBackdrop from '@ui/Modal/ModalBackdrop';
 
 interface ListBarComponentProps {
   handleEdit: (edit: boolean) => void;
@@ -111,6 +112,8 @@ const ListBarComponent = (props: ListBarComponentProps) => {
         onOpenModal={handleModalOpen}
         portalref={portalRef.current}
       >
+        <ModalBackdrop className="bg-black/70" />
+
         <Modal.Content
           className="z-4 top-[50%] transform -translate-1/2 left-[50%]  bg-[#FDFDFD] shadow-2xl p-15 fixed"
           fixed
