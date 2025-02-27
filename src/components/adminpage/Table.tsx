@@ -2,16 +2,18 @@ interface TableProps<T> {
   columns: { key: keyof T; label: string }[];
   data: T[];
   selectedItems: string[];
-  onSelectItem: (email: string) => void;
+  onSelectItem: (value: string) => void; // email 또는 _id 받을 수 있게
   onSelectAll: (checked: boolean) => void;
+  selectkey: keyof T; // 어떤 키를 설정할지
 }
 
-const Table = <T extends { email: string }>({
+const Table = <T extends { _id: string; email: string }>({
   columns,
   data,
   selectedItems,
   onSelectItem,
   onSelectAll,
+  selectkey,
 }: TableProps<T>) => {
   return (
     <>
@@ -38,20 +40,16 @@ const Table = <T extends { email: string }>({
         <tbody>
           {data.length > 0 ? (
             data.map((item) => (
-              <tr key={item.email} className="text-center">
+              <tr key={item._id} className="text-center">
                 {/* 개별 선택 체크박스 */}
                 <td className="p-3 border">
                   <input
                     type="checkbox"
-                    checked={selectedItems.includes(item.email)}
-                    onChange={() => onSelectItem(item.email)}
+                    checked={selectedItems.includes(String(item[selectkey]))}
+                    onChange={() => onSelectItem(String(item[selectkey]))}
                   />
                 </td>
-                {/* {columns.map((col) => (
-                  <td key={col.key.toString()} className="p-3 border">
-                    {String(item[col.key]) ?? ""}
-                  </td>
-                ))} */}
+
                 {columns.map((col) => (
                   <td key={col.key.toString()} className="p-3 border">
                     {col.key === "imgUrls"
