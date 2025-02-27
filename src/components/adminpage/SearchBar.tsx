@@ -1,5 +1,5 @@
 import { ChangeEvent, FC, useEffect, useState } from "react";
-import UseDebounce from "../../hooks/useDebounce";
+import useDebounce from "../../hooks/useDebounce";
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
@@ -15,7 +15,7 @@ const SearchBar: FC<SearchBarProps> = ({
 }) => {
   const [query, setQuery] = useState("");
 
-  const debouncedSearch = UseDebounce(query, 700);
+  const debouncedSearch = useDebounce(query, 700);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);

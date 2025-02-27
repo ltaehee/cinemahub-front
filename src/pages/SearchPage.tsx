@@ -1,13 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { getFetchMovieInfo, getFetchPeopleInfo } from "../apis/search";
 import MovieCard from "../components/mainpage/MovieCard";
 import PersonCard from "../components/mainpage/PersonCard";
 import CarouselXscroll from "@ui/CarouselXscroll";
 import ChevronIcon from "../icons/ChevronIcon";
 import useInfinite from "../hooks/useInfinite";
-import Modal from "@ui/Modal";
-import XIcon from "../icons/XIcon";
 import CinemaDetailPage from "./CinemaDetailPage";
 import PersonDetailPage from "./PersonDetailPage";
 import ModalPage from "@ui/ModalPage";
@@ -18,7 +16,6 @@ const isHangulConsonantPattern = /^[\u3131-\u314e]+$/; // 한글 자음 확인
 interface People {
   id: string;
   name: string;
-  known_for_department: string;
   profile_path: string;
 }
 
@@ -52,14 +49,9 @@ const SearchPage = () => {
   const [responseTotalCount, setResponseTotalCount] = useState(0);
   const personRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<HTMLDivElement>(null);
-  const category = searchParams.get("category") ?? "movie";
-  const keyword = searchParams.get("keyword") ?? "";
+  const category = searchParams.get("category");
+  const keyword = searchParams.get("keyword");
 
-  // (영화,배우)상세페이지 들어갔다 나올 때 검색결과페이지 그대로 나오게
-  // const [modalCategory, setModalCategory] = useState("");
-  // const [modalKeyword, setModalKeyword] = useState("");
-  // setModalCategory(category);
-  // setModalKeyword(keyword);
   console.log("page: ", page);
   console.log("people: ", people);
   console.log("responseTotalCount: ", responseTotalCount);
@@ -152,8 +144,6 @@ const SearchPage = () => {
     }
   }, [observerRef]);
 
-  // people.forEach((person) => console.log(person.id));
-
   const {
     isMovieOpen,
     isPersonOpen,
@@ -165,7 +155,12 @@ const SearchPage = () => {
     setSelectedPerson,
   } = useModalOpenStore();
 
-  console.log("window.location.pathname: ", window.location.pathname);
+  console.log(
+    "window.location.search: ",
+    window.location.pathname + window.location.search
+  );
+  console.log("경로: ", `/search?category=${category}&keyword=${keyword}`);
+
   return (
     <>
       <div>
@@ -274,7 +269,7 @@ const SearchPage = () => {
               setSelectedPage={setSelectedMovie}
               selectedPage={selectedMovie}
               isPageOpen={isMovieOpen}
-              currentPage={window.location.pathname}
+              pageFrom={`/search?category=${category}&keyword=${keyword}`}
             >
               {selectedMovie !== null && (
                 <CinemaDetailPage movieId={selectedMovie} />
@@ -287,7 +282,7 @@ const SearchPage = () => {
               setSelectedPage={setSelectedPerson}
               selectedPage={selectedPerson}
               isPageOpen={isPersonOpen}
-              currentPage={window.location.pathname}
+              pageFrom={`/search?category=${category}&keyword=${keyword}`}
             >
               {selectedPerson !== null && (
                 <PersonDetailPage personId={selectedPerson} />

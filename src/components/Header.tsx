@@ -1,14 +1,14 @@
-import { useLocation, useNavigate, useSearchParams } from 'react-router';
-import { getFetchUserLogout } from '../apis/login';
-import useLoginStore from '../store/useStore';
-import { ReactNode, useEffect, useState } from 'react';
-import DefaultUserIcon from '../icons/DefaultUserIcon';
-import { useForm } from 'react-hook-form';
-import UseDebounce from '../hooks/useDebounce';
-import Select from '@ui/Select';
-import LogoIcon from '../icons/LogoIcon';
-import XIcon from '../icons/XIcon';
-import { getLoggedInUserInfo } from '../apis/profile';
+import { useLocation, useNavigate, useSearchParams } from "react-router";
+import { getFetchUserLogout } from "../apis/login";
+import useLoginStore from "../store/useStore";
+import { ReactNode, useEffect, useState } from "react";
+import DefaultUserIcon from "../icons/DefaultUserIcon";
+import { useForm } from "react-hook-form";
+import UseDebounce from "../hooks/useDebounce";
+import Select from "@ui/Select";
+import LogoIcon from "../icons/LogoIcon";
+import XIcon from "../icons/XIcon";
+import { getLoggedInUserInfo } from "../apis/profile";
 
 type SelectedItem = {
   label: ReactNode;
@@ -25,8 +25,8 @@ const Header = () => {
   const { pathname } = useLocation();
 
   const handleClickMain = () => {
-    navigate('/');
-    setValue('keyword', '');
+    navigate("/");
+    setValue("keyword", "");
   };
 
   const handleLogoutFetch = async () => {
@@ -34,24 +34,24 @@ const Header = () => {
       const { result } = await getFetchUserLogout();
       if (result) {
         logout();
-        navigate('/login', { replace: true });
+        navigate("/login", { replace: true });
       }
     } catch (e) {}
   };
 
   // 검색 카테고리
-  const [category, setCategory] = useState<string>('movie');
+  const [category, setCategory] = useState<string>("movie");
   const [selectedItem, setSelectedItem] = useState<SelectedItem>({
-    label: '영화',
-    value: 'movie',
+    label: "영화",
+    value: "movie",
   });
 
   // 검색
   const [searchParams, _] = useSearchParams();
   const { register, handleSubmit, watch, setValue } = useForm<SearchForm>();
-  const keyword = watch('keyword');
-  const urlKeyword = searchParams.get('keyword') ?? '';
-  const urlCategory = searchParams.get('category') ?? '';
+  const keyword = watch("keyword");
+  const urlKeyword = searchParams.get("keyword") ?? "";
+  const urlCategory = searchParams.get("category") ?? "";
   const debounceKeyword = UseDebounce(keyword, 700);
   const [isAdmin, setIsAdmin] = useState(false); // 관리자인지 확인
   const [userNickname, setUserNickname] = useState(); // 프로필로 이동할 때 쓰는
@@ -68,21 +68,21 @@ const Header = () => {
   useEffect(() => {
     if (debounceKeyword) {
       navigate(`/search?category=${category}&keyword=${debounceKeyword}`);
-    } else if (pathname === '/search') {
-      navigate('/');
+    } else if (pathname === "/search") {
+      navigate("/");
     }
   }, [debounceKeyword]);
 
   useEffect(() => {
     if (urlKeyword) {
-      setValue('keyword', urlKeyword);
+      setValue("keyword", urlKeyword);
     }
   }, [urlKeyword]);
 
   useEffect(() => {
-    if (urlCategory === 'person') {
-      setCategory('person');
-      setSelectedItem({ label: '영화인', value: 'person' });
+    if (urlCategory === "person") {
+      setCategory("person");
+      setSelectedItem({ label: "영화인", value: "person" });
     }
   }, [urlCategory]);
 
@@ -94,11 +94,11 @@ const Header = () => {
           const userInfo = await getLoggedInUserInfo();
           setUserNickname(userInfo.nickname);
 
-          if (userInfo.role === 'admin') {
+          if (userInfo.role === "admin") {
             setIsAdmin(true);
           }
         } catch (err) {
-          console.error('로그인한 유저 정보 가져오기 실패: ', err);
+          console.error("로그인한 유저 정보 가져오기 실패: ", err);
         }
       };
       fetchUserInfo();
@@ -134,13 +134,13 @@ const Header = () => {
               </Select.Content>
             </Select>
             <input
-              {...register('keyword', { required: true, minLength: 2 })}
+              {...register("keyword", { required: true, minLength: 2 })}
               className="flex-1 px-3 py-1 outline-none"
               placeholder="검색어를 입력하세요"
             />
             {keyword && (
               <button
-                onClick={() => setValue('keyword', '')}
+                onClick={() => setValue("keyword", "")}
                 className="hover:cursor-pointer"
               >
                 <XIcon fill="#555" className="w-3 mr-3" />
@@ -152,7 +152,7 @@ const Header = () => {
               <>
                 {isAdmin && (
                   <button
-                    onClick={() => navigate('/admin')}
+                    onClick={() => navigate("/admin")}
                     className="hover:cursor-pointer text-nowrap text-red-500"
                   >
                     관리자
@@ -168,7 +168,7 @@ const Header = () => {
               </>
             ) : (
               <div
-                onClick={() => navigate('/login')}
+                onClick={() => navigate("/login")}
                 className="hover:cursor-pointer text-nowrap"
               >
                 로그인

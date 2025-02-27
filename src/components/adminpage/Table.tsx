@@ -47,9 +47,25 @@ const Table = <T extends { email: string }>({
                     onChange={() => onSelectItem(item.email)}
                   />
                 </td>
-                {columns.map((col) => (
+                {/* {columns.map((col) => (
                   <td key={col.key.toString()} className="p-3 border">
                     {String(item[col.key]) ?? ""}
+                  </td>
+                ))} */}
+                {columns.map((col) => (
+                  <td key={col.key.toString()} className="p-3 border">
+                    {col.key === "imgUrls"
+                      ? (item[col.key] as string[]).map(
+                          (imgUrl: string, index: number) => (
+                            <img
+                              key={index}
+                              src={imgUrl}
+                              alt={`review-image-${index}`}
+                              className="w-20 h-20 object-cover"
+                            />
+                          )
+                        )
+                      : String(item[col.key]) ?? ""}
                   </td>
                 ))}
               </tr>

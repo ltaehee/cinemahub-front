@@ -1,8 +1,13 @@
+import { emptyChecker } from "../util/emptyCheck";
 import { baseInstance } from "./axios.config";
 
 // 배우Id로 검색
 export const getFetchPeopleInfo = async (peopleName: string, page: number) => {
-  console.log("peopleName: ", peopleName);
+  if (emptyChecker({ peopleName })) {
+    alert("배우,감독명을 입력해 주세요");
+    return;
+  }
+
   try {
     const response = await baseInstance.get(
       `/search/people?name=${peopleName}&page=${page}`
@@ -21,6 +26,11 @@ export const getFetchPeopleInfo = async (peopleName: string, page: number) => {
 
 // 검색어로 영화정보 검색
 export const getFetchMovieInfo = async (MovieName: string, page: number) => {
+  if (emptyChecker({ MovieName })) {
+    alert("영화명을 입력해 주세요");
+    return;
+  }
+
   try {
     const response = await baseInstance.get(
       `/search/movie?keyword=${MovieName}&page=${page}`
@@ -44,6 +54,10 @@ export const getFetchUserInfo = async (
   page: number,
   limit: number
 ) => {
+  if (emptyChecker({ keyword })) {
+    alert("유저이름을 입력해 주세요");
+    return;
+  }
   try {
     const response = await baseInstance.get(
       `/search/user?keyword=${keyword}&page=${page}&limit=${limit}`
