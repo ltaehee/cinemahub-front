@@ -1,4 +1,10 @@
-import { ChangeEvent, ChangeEventHandler, useEffect, useState } from 'react';
+import {
+  ChangeEvent,
+  ChangeEventHandler,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import StarContainer from '../components/reviewpage/StarContainer';
 import Textarea from '../components/Textarea';
 import Button from '../components/Button';
@@ -63,6 +69,8 @@ const CinemaReviewPage = () => {
   const [imageSrcs, setImageSrcs] = useState<string[]>([]);
   const [_, setimgUrls] = useState<string[]>([]);
   const [totalStarPoint, setTotalStarPoint] = useState<number>(0);
+  const uploadRef = useRef<HTMLInputElement>(null);
+
   // const [loading, setLoading] = useState<boolean>(false);
 
   /**
@@ -89,7 +97,7 @@ const CinemaReviewPage = () => {
 
   const handleFilePreview = async (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    console.log(files);
+
     if (typeof files === 'object' && files !== null && files.length <= 2) {
       const filesArr = Array.from(files);
       setFiles((prev) => [...prev, ...filesArr]);
@@ -102,9 +110,16 @@ const CinemaReviewPage = () => {
   };
 
   const handleRemovePreview = (targetIndex: number) => {
-    console.log(files);
-    setImageSrcs((prev) => prev.filter((_, index) => index !== targetIndex));
-    setFiles((prev) => prev.filter((_, index) => index !== targetIndex));
+    setImageSrcs(imageSrcs.filter((_, index) => index !== targetIndex));
+    setFiles(files.filter((_, index) => index !== targetIndex));
+
+    if (uploadRef.current && uploadRef.current.files) {
+      const dataTransfer = new DataTransfer();
+      files.forEach((file) => {
+        dataTransfer.items.add(file);
+      });
+      uploadRef.current.files = dataTransfer.files;
+    }
   };
 
   const handleReviewInput: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
@@ -182,8 +197,7 @@ const CinemaReviewPage = () => {
 
   const getMovieData = async (movieId: string) => {
     try {
-      const castingMovieId = Number(movieId);
-      const response = await movieDetail(castingMovieId);
+      const response = await movieDetail(movieId);
 
       if (emptyChecker({ response })) {
         alert(
@@ -207,7 +221,13 @@ const CinemaReviewPage = () => {
     } else {
       getMovieData(movieId);
     }
-  }, []);
+
+    if (!uploadRef.current) {
+      return;
+    }
+
+    console.log(uploadRef.current.files);
+  }, [files]);
 
   return (
     <>
@@ -245,11 +265,11 @@ const CinemaReviewPage = () => {
             </div>
           </div>
 
-          <p className="text-xl">리뷰 사진 등록하기</p>
-
           {IsLogin ? (
             <div className="mt-5 w-full h-full">
-              <div className="flex gap-5">
+              <p className="text-xl">리뷰 사진 등록하기</p>
+
+              <div className="mt-5 flex gap-5">
                 {imageSrcs.map((src, index) => (
                   <div
                     key={`image-src-${index}`}
@@ -285,6 +305,7 @@ const CinemaReviewPage = () => {
               </div>
 
               <input
+                ref={uploadRef}
                 style={{ display: 'none' }}
                 type="file"
                 name="fileInput"
@@ -327,7 +348,7 @@ const CinemaReviewPage = () => {
           ) : null}
 
           <div className="mt-5">
-            {/* <p>최신순 / 등록순 보기</p> */}
+            <p className="text-xl">리뷰 내역 보기</p>
 
             {comments.length ? (
               <Comments comments={comments} />
