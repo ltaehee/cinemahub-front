@@ -49,7 +49,6 @@ export const getFavoriteMoviesAPI = async (
         limit,
       },
     });
-    console.log('즐겨찾기 영화', response.data);
     return response.data;
   } catch (err) {
     alert('즐겨찾기 영화 조회 에러 새로고침 해주세요');
@@ -69,7 +68,6 @@ export const getFavoritePersonsAPI = async (
         limit,
       },
     });
-    console.log('즐겨찾기 영화인', response.data);
     return response.data;
   } catch (err) {
     alert('즐겨찾기 영화인 조회 에러 새로고침 해주세요');
