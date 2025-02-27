@@ -1,4 +1,4 @@
-import { ChangeEvent, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import ListIcon from '../../icons/ListIcon';
 import { useCommentContext } from './comment';
 import Modal from '@ui/Modal';
@@ -18,13 +18,15 @@ const ListBarComponent = (props: ListBarComponentProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [reason, setReason] = useState<string>('');
-  const portalref = useRef(null);
+  const portalRef = useRef(null);
+  const listRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const IsOwner = comment.IsOwner;
 
   const handleReport = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const { value } = e.target;
-    if (value.length > 2000) {
+    if (value.length > 200) {
       return;
     }
     setReason(value);
@@ -58,13 +60,43 @@ const ListBarComponent = (props: ListBarComponentProps) => {
     handleEdit(true);
   };
 
+  const handleDeleteReview = () => {};
+
+  const handleOutSideClick = (e: MouseEvent) => {
+    if (
+      listRef.current &&
+      !listRef.current.contains(e.target as Node) &&
+      contentRef.current &&
+      !contentRef.current.contains(e.target as Node)
+    ) {
+      setIsOpen(false);
+      return;
+    }
+  };
+
+  useEffect(() => {
+    if (!listRef.current) {
+      return;
+    }
+    if (!contentRef.current) {
+      return;
+    }
+
+    if (isOpen) {
+      window.addEventListener('click', handleOutSideClick);
+    }
+
+    return () => {
+      window.removeEventListener('click', handleOutSideClick);
+    };
+  }, [isOpen, listRef, contentRef]);
   return (
     <div>
       <Modal
         onCloseModal={handleModalClose}
         open={isModalOpen}
         onOpenModal={handleModalOpen}
-        portalref={portalref.current}
+        portalref={portalRef.current}
       >
         <Modal.Content className="z-4 top-[50%] bg-[#FDFDFD] shadow-2xl p-15">
           <Modal.Close>
@@ -86,7 +118,7 @@ const ListBarComponent = (props: ListBarComponentProps) => {
                 />
 
                 <p className="text-slate-400 text-sm float-right">
-                  {reason.length}/2000
+                  {reason.length}/200
                 </p>
               </div>
 
@@ -98,21 +130,40 @@ const ListBarComponent = (props: ListBarComponentProps) => {
         </Modal.Content>
       </Modal>
 
-      <div className="relative" onClick={() => setIsOpen((prev) => !prev)}>
+      <div
+        className="relative"
+        ref={listRef}
+        onClick={() => setIsOpen((prev) => !prev)}
+      >
         <ListIcon />
       </div>
       {isOpen ? (
-        <div className="absolute">
+        <div className="absolute bg-[#EFEFEF]" ref={contentRef}>
           {IsOwner ? (
-            <div className="border">
-              <button className="block" onClick={handleEditReview}>
+            <div>
+              <button
+                className="block text-black p-2 opacity-80 hover:bg-blue-500 hover:text-white"
+                onClick={handleEditReview}
+              >
                 수정하기
               </button>
-              <button className="block">삭제하기</button>
+              <button
+                className="block text-black p-2 opacity-80 hover:bg-red-500 hover:text-white"
+                onClick={handleDeleteReview}
+              >
+                삭제하기
+              </button>
             </div>
           ) : (
-            <div className="border">
-              <button className="block" onClick={() => setIsModalOpen(true)}>
+            <div className="absolute bg-[#EFEFEF]">
+              <button
+                className="text-black
+                p-2
+                opacity-80
+                hover:bg-red-500
+                hover:text-white"
+                onClick={() => setIsModalOpen(true)}
+              >
                 신고하기
               </button>
             </div>
