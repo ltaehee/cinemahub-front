@@ -214,12 +214,7 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
                 maskImage: "linear-gradient(to right, black, transparent)",
               }}
             ></div>
-            <div className="flex flex-col absolute inset-y-0 left-16 top-[50%] text-white">
-              <FavoritesBtn
-                favoriteType="Movie"
-                favoriteId={movieId}
-                className="border border-gray-200 rounded-full"
-              />
+            <div className="flex flex-col absolute inset-y-0 left-16 top-[60%] text-white">
               {movie?.logoPath ? (
                 <img
                   src={`https://image.tmdb.org/t/p/original${movie?.logoPath}`}
@@ -246,7 +241,7 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
           </div>
         </div>
         <div className="grid grid-cols-[1fr_2fr] gap-8 px-8">
-          <div>
+          <div className="relative">
             <img
               src={
                 movie?.posterPath
@@ -256,6 +251,11 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
               alt={movie?.title}
               className="object-cover w-full h-full"
               onDragStart={(e) => e.preventDefault()}
+            />
+            <FavoritesBtn
+              favoriteType="Movie"
+              favoriteId={movieId}
+              className="border absolute top-4 left-4 border-gray-200 rounded-full"
             />
           </div>
           <div className="flex flex-col gap-4 justify-center">
