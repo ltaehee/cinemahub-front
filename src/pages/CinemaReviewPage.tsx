@@ -22,6 +22,7 @@ import Comments from '../components/reviewpage/comment';
 import { getPresignedUrl, uploadImageToS3 } from '../apis/profile';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { movieDetail } from '../apis/movie';
+import { useLoadingContext } from '../context/loadingContext';
 
 type CommentType = {
   _id: string;
@@ -71,13 +72,7 @@ const CinemaReviewPage = () => {
   const [totalStarPoint, setTotalStarPoint] = useState<number>(0);
   const uploadRef = useRef<HTMLInputElement>(null);
 
-  // const [loading, setLoading] = useState<boolean>(false);
-
-  /**
-   *
-   * 1. 동일한 파일 올리면 업로드 안됌
-   * 2. 등록 시 loading 넣기
-   */
+  const { isLoading, setLoading } = useLoadingContext();
 
   const SingleFileReader = async (file: File) => {
     return new Promise((resolve, reject) => {
@@ -106,6 +101,12 @@ const CinemaReviewPage = () => {
         const src = await SingleFileReader(file);
         setImageSrcs((prev) => [...prev, `${src}`]);
       }
+    }
+  };
+
+  const handleResetFileValue = () => {
+    if (uploadRef.current) {
+      uploadRef.current.value = '';
     }
   };
 
@@ -149,14 +150,13 @@ const CinemaReviewPage = () => {
   };
 
   const handleRegisterReview = async () => {
-    console.log(emptyChecker({ movieId, review, starRate }));
-
     if (emptyChecker({ movieId, review, starRate })) {
       alert('별점과 리뷰 내용을 적어주세요.');
       return;
     }
 
     try {
+      setLoading(true);
       const imgUrls = await handleFileUpload();
       setimgUrls(imgUrls);
 
@@ -177,11 +177,15 @@ const CinemaReviewPage = () => {
       setStarRate(0); // 별점 초기화
       setImageSrcs([]);
       handleGetComments(); // 목록 갱신
-    } catch (e) {}
+    } catch (e) {
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGetComments = async () => {
     try {
+      setLoading(true);
       const { result, data, message } = await getMovieidCommentArrayFetch({
         movieId,
       });
@@ -192,11 +196,15 @@ const CinemaReviewPage = () => {
       const { totalstarpoint, reviews } = data;
       setComments(reviews);
       setTotalStarPoint(totalstarpoint);
-    } catch (e) {}
+    } catch (e) {
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getMovieData = async (movieId: string) => {
     try {
+      setLoading(true);
       const response = await movieDetail(movieId);
 
       if (emptyChecker({ response })) {
@@ -208,7 +216,10 @@ const CinemaReviewPage = () => {
       }
       setMovieData({ posterPath: response.posterPath, title: response.title });
       handleGetComments();
-    } catch (e) {}
+    } catch (e) {
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -225,9 +236,7 @@ const CinemaReviewPage = () => {
     if (!uploadRef.current) {
       return;
     }
-
-    console.log(uploadRef.current.files);
-  }, [files]);
+  }, []);
 
   return (
     <>
@@ -312,13 +321,12 @@ const CinemaReviewPage = () => {
                 id="fileInput"
                 accept="image/*"
                 onChange={handleFilePreview}
+                onClick={handleResetFileValue}
                 multiple
               />
             </div>
           ) : null}
-
           <div className="h-[1px] bg-slate-200 my-5"></div>
-
           {IsLogin ? (
             <div>
               <label htmlFor="review" className="text-lg">
@@ -340,24 +348,30 @@ const CinemaReviewPage = () => {
                   </p>
                 </div>
 
-                <Button className="mt-2 h-10" onClick={handleRegisterReview}>
-                  등록하기
+                <Button
+                  className="mt-2 h-10"
+                  disabled={isLoading}
+                  onClick={handleRegisterReview}
+                >
+                  {isLoading ? (
+                    <div className="flex justify-center items-center">
+                      <div className="w-6 h-6 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
+                    </div>
+                  ) : (
+                    '등록하기'
+                  )}
                 </Button>
               </div>
             </div>
           ) : null}
-
           <div className="mt-5">
             <p className="text-xl">리뷰 내역 보기</p>
-
             {comments.length ? (
               <Comments comments={comments} />
             ) : (
-              <>
-                <div className="text-center border border-slate-300 p-5">
-                  <p>리뷰 조회 내역이 없습니다.</p>
-                </div>
-              </>
+              <div className="text-center border border-slate-300 p-5">
+                <p>리뷰 조회 내역이 없습니다.</p>
+              </div>
             )}
           </div>
         </div>
