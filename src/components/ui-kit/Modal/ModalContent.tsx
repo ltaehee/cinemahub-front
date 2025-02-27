@@ -6,11 +6,12 @@ import { modalContentCls } from "@consts/className";
 interface ModalContentProps {
   className?: string;
   children: ReactNode;
+  fixed?: boolean;
 }
 
 const ModalContent = (props: ModalContentProps) => {
   const { open, onCloseModal, portalref } = useContext(ModalContext);
-  const { className, children } = props;
+  const { className, children, fixed } = props;
 
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -39,11 +40,15 @@ const ModalContent = (props: ModalContentProps) => {
       {open &&
         createPortal(
           <div
-            style={{
-              position: "absolute",
-              left: "50%",
-              transform: "translateX(-50%)",
-            }}
+            style={
+              fixed
+                ? { position: "fixed" }
+                : {
+                    position: "absolute",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                  }
+            }
             ref={contentRef}
             className={cls}
           >

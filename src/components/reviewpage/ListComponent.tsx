@@ -111,7 +111,10 @@ const ListBarComponent = (props: ListBarComponentProps) => {
         onOpenModal={handleModalOpen}
         portalref={portalRef.current}
       >
-        <Modal.Content className="z-4 top-[50%] bg-[#FDFDFD] shadow-2xl p-15">
+        <Modal.Content
+          className="z-4 top-[50%] transform -translate-1/2 left-[50%]  bg-[#FDFDFD] shadow-2xl p-15 fixed"
+          fixed
+        >
           <Modal.Close>
             <CloseIcon className="absolute top-5 right-5" />
           </Modal.Close>
