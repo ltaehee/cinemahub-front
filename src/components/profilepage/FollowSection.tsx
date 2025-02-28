@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from '../Button';
 import profileImg from '/images/profileImg.png';
 import closeImg from '/images/close.png';
@@ -39,7 +39,7 @@ const FollowSection = ({
   const [filteredFollowers, setFilteredFollowers] = useState<FollowUser[]>([]);
   const [filteredFollowing, setFilteredFollowing] = useState<FollowUser[]>([]);
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  const [_hasMore, setHasMore] = useState(true);
   const [view, setView] = useState<'follower' | 'following' | null>(null);
   const navigate = useNavigate();
   const { IsLogin } = useLoginStore();
