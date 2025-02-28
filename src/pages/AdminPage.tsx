@@ -3,35 +3,49 @@ import { useEffect, useState } from "react";
 import Table from "../components/adminpage/Table";
 import Button from "../components/Button";
 import SearchBar from "../components/adminpage/SearchBar";
-import { getFetchUserInfo } from "../apis/search";
-import { getFetchUser, getReportedReview, updateUser } from "../apis/admin";
+import { getFetchReviewInfo, getFetchUserInfo } from "../apis/search";
+import {
+  getFetchUser,
+  getReportedReview,
+  updateReview,
+  updateUser,
+} from "../apis/admin";
 import Pagination from "@ui/Pagination";
 
 interface UserProps {
+  _id: string;
   email: string;
   nickname: string;
   createdAt: string;
 }
 
 interface ReportProps {
+  _id: string; // reportlist의 _id
   email: string; // 신고한 유저의 Id
   reason: string; // 신고 사유
-  reviewUserId: string; // 신고당한 리뷰 id
+  reportedEmail: string; // 신고당한 리뷰 id
   content: string; // 신고된 리뷰 글
   imgUrls: string[]; // 신고된 리뷰 이미지
 }
 
-const limit = 4; // 한 페이지에 표시할 항목 수
+const userLimit = 4; // 한 페이지에 표시할 항목 수
+const reviewLimit = 4;
 const blockSize = 10;
 
 const AdminPage = () => {
   const [users, setUsers] = useState<UserProps[]>([]);
-  console.log("users: ", users);
   const [reportedUser, setReportedUser] = useState<ReportProps[]>([]); // 신고 리뷰 유저
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [selectedReviews, setSelectedReviews] = useState<string[]>([]);
+  console.log("reportedUser: ", reportedUser);
+  // console.log("selectedUsers: ", selectedUsers);
+  console.log("selectedReviews: ", selectedReviews);
+  const [searchQuery, setSearchQuery] = useState<string>(""); // 유저 검색어 상태
+  const [isSearching, setIsSearching] = useState(false); // 유저 검색 중인지 여부
+  const [searchQueryReview, setSearchQueryReview] = useState<string>(""); // 리뷰관련 검색어 상태
+  const [isSearchingReview, setIsSearchingReview] = useState(false); // 리뷰관련 검색 중인지 여부
+  // console.log("searchQueryReview: ", searchQuery);
 
-  const [searchQuery, setSearchQuery] = useState<string>(""); // 검색어 상태
-  const [isSearching, setIsSearching] = useState(false); // 검색 중인지 여부
   const handleSelectUser = (email: string) => {
     setSelectedUsers((prev) =>
       prev.includes(email)
@@ -40,17 +54,38 @@ const AdminPage = () => {
     );
   };
 
+  const handleSelectReview = (_id: string) => {
+    setSelectedReviews((prev) =>
+      prev.includes(_id)
+        ? prev.filter((review) => review !== _id)
+        : [...prev, _id]
+    );
+  };
+
   const handleSelectAllUsers = (checked: boolean) => {
     setSelectedUsers(checked ? users.map((user) => user.email) : []);
   };
 
+  const handleSelectAllReviews = (checked: boolean) => {
+    setSelectedReviews(checked ? reportedUser.map((review) => review._id) : []);
+  };
+
   // 유저 검색
-  const handleSearch = async (query: string) => {
+  const handleSearchUser = async (query: string) => {
     if (query.trim() === "") return;
     setUsers([]);
     setSearchQuery(query);
     setIsSearching(query.trim() !== ""); // 검색어가 있으면 true, 없으면 false
     setUserPage(0);
+  };
+
+  // 리뷰 관리 검색
+  const handleSearchReview = async (query: string) => {
+    if (query.trim() === "") return;
+    setReportedUser([]);
+    setSearchQueryReview(query);
+    setIsSearchingReview(query.trim() !== "");
+    setReviewPage(0);
   };
 
   // 유저 삭제
@@ -62,14 +97,40 @@ const AdminPage = () => {
     }
 
     try {
-      console.log("selectedUsers: ", selectedUsers);
-
       const response = await updateUser(selectedUsers);
-
-      setUsers((prevUsers) =>
-        prevUsers.filter((user) => !selectedUsers.includes(user.email))
-      );
       console.log("delete result", response);
+      if (response.status === 200) {
+        alert("삭제 완료 되었습니다.");
+        setUsers((prevUsers) =>
+          prevUsers.filter((user) => !selectedUsers.includes(user.email))
+        );
+      } else {
+        alert("삭제 실패");
+      }
+    } catch (err) {
+      console.error("삭제 오류", err);
+    }
+  };
+
+  // 신고 리뷰 삭제
+  const handleClickDeleteReview = async () => {
+    const isConfirmed = window.confirm("해당 리뷰를 삭제하시겠습니까?");
+
+    if (!isConfirmed) {
+      return;
+    }
+
+    try {
+      const response = await updateReview(selectedReviews);
+      console.log("delete result", response);
+      if (response.status === 200) {
+        alert("삭제 완료 되었습니다.");
+        setReportedUser((prevReviews) =>
+          prevReviews.filter((review) => !selectedReviews.includes(review._id))
+        );
+      } else {
+        alert("삭제 실패");
+      }
     } catch (err) {
       console.error("삭제 오류", err);
     }
@@ -96,11 +157,11 @@ const AdminPage = () => {
   const getUserData = async () => {
     try {
       let response;
-      if (isSearching) {
-        response = await getFetchUserInfo(searchQuery, userPage, limit);
+      if (isSearchingReview) {
+        response = await getFetchUserInfo(searchQuery, userPage, userLimit);
         if (!response) return;
       } else {
-        response = await getFetchUser(userPage, limit);
+        response = await getFetchUser(userPage, userLimit);
       }
       console.log("response: ", response);
       // setTotalPages(response.data.totalPages); // 수정
@@ -111,10 +172,20 @@ const AdminPage = () => {
     }
   };
 
-  // 신고 리뷰 전체조회
+  // 신고 리뷰 전체조회, 검색
   const getReportedReviewsData = async () => {
     try {
-      const response = await getReportedReview(reviewPage, limit);
+      let response;
+      if (isSearchingReview) {
+        response = await getFetchReviewInfo(
+          searchQueryReview,
+          reviewPage,
+          reviewLimit
+        );
+        if (!response) return;
+      } else {
+        response = await getReportedReview(reviewPage, reviewLimit);
+      }
       console.log("신고리뷰 조회: ", response);
       setReportedUser(response.data.reportResult);
       setTotalReported(response.data.totalCount);
@@ -124,20 +195,35 @@ const AdminPage = () => {
   };
 
   useEffect(() => {
+    setUsers([]);
     getUserData();
   }, [userPage, isSearching, searchQuery]);
 
   useEffect(() => {
-    if (activeindex === 2) {
-      getReportedReviewsData();
+    setReportedUser([]);
+    getReportedReviewsData();
+  }, [reviewPage, isSearchingReview, searchQueryReview]);
+
+  useEffect(() => {
+    if (activeindex === 1) {
+      setSelectedReviews([]);
     }
   }, [activeindex]);
+
+  useEffect(() => {
+    setReportedUser([]);
+    if (activeindex === 2) {
+      setIsSearchingReview(false);
+      getReportedReviewsData();
+      setSelectedUsers([]);
+    }
+  }, [activeindex, reviewPage]);
   return (
     <>
-      <div className="w-full flex items-center justify-center h-[calc(100vh-65px)] ">
+      <div className="w-full flex items-center justify-center ">
         <Tabs onChangeTab={handleChangeTab} className="">
           <div className="flex w-[1280px] px-8 h-full">
-            <div className="bg-[#D9D9D9] w-[20%] h-[calc(100vh-65px)]">
+            <div className="bg-[#D9D9D9] w-[20%] ">
               <Tabs.MenuList>
                 <Tabs.Menu
                   index={1}
@@ -162,7 +248,7 @@ const AdminPage = () => {
                 <div className="p-10 w-full">
                   <div className="p-2 flex flex-row-reverse">
                     <SearchBar
-                      onSearch={handleSearch}
+                      onSearch={handleSearchUser}
                       placeholder="회원 이름 검색"
                       useDebounce={true}
                     />
@@ -178,13 +264,14 @@ const AdminPage = () => {
                     onSelectAll={handleSelectAllUsers}
                     onSelectItem={handleSelectUser}
                     selectedItems={selectedUsers}
+                    selectkey="email"
                   />
                   <Pagination
                     total={totalUsers}
                     value={userPage}
                     onPageChange={handleChangeUserPage}
                     blockSize={blockSize}
-                    pageSize={limit}
+                    pageSize={userLimit}
                     className="flex justify-center p-3 "
                   >
                     <Pagination.Navigator className="flex gap-4">
@@ -205,8 +292,8 @@ const AdminPage = () => {
                 <div className="p-10 w-full">
                   <div className="p-2 flex flex-row-reverse">
                     <SearchBar
-                      onSearch={handleSearch}
-                      placeholder="회원 이름 검색"
+                      onSearch={handleSearchReview}
+                      placeholder="신고된 리뷰 글 검색"
                       useDebounce={true}
                     />
                   </div>
@@ -216,29 +303,33 @@ const AdminPage = () => {
                       { key: "reason", label: "신고 사유" },
                       { key: "imgUrls", label: "리뷰 사진" },
                       { key: "content", label: "리뷰 글" },
-                      { key: "email", label: "신고한 회원아이디" },
+                      { key: "email", label: "신고당한 회원아이디" },
                       {
-                        key: "reviewUserId",
-                        label: "신고당한 회원아이디",
+                        key: "reportedEmail",
+                        label: "신고한 회원아이디",
                       },
                     ]}
                     data={reportedUser}
-                    onSelectAll={handleSelectAllUsers}
-                    onSelectItem={handleSelectUser}
-                    selectedItems={selectedUsers}
+                    onSelectAll={handleSelectAllReviews}
+                    onSelectItem={handleSelectReview}
+                    selectedItems={selectedReviews}
+                    selectkey="_id"
                   />
                   <Pagination
                     total={totalReported}
                     value={reviewPage}
                     onPageChange={handleChangeReviewPage}
                     blockSize={blockSize}
-                    pageSize={limit}
+                    pageSize={reviewLimit}
                     className="flex justify-center p-3 "
                   >
                     <Pagination.Navigator className="flex gap-4">
                       <Pagination.Buttons className="PaginationButtons flex gap-4 font-bold text-slate-300" />
                     </Pagination.Navigator>
                   </Pagination>
+                  <div className="mt-7 w-[50%] mx-auto ">
+                    <Button onClick={handleClickDeleteReview}>삭제</Button>
+                  </div>
                 </div>
               </Tabs.Pannel>
             </div>

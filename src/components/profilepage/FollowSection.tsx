@@ -6,13 +6,14 @@ import { useNavigate } from 'react-router-dom';
 import useLoginStore from '../../store/useStore';
 import SearchBar from '../adminpage/SearchBar';
 import { UserProfile } from '../../store/useProfileStore';
-// import { getFollowersAPI, getFollowingAPI } from '../../apis/profile';
+import { getFollowersAPI, getFollowingAPI } from '../../apis/profile';
 
 interface FollowUser {
   nickname: string;
   email: string;
   profile?: string;
   isFollowing?: boolean;
+  deletedAt?: string | null;
 }
 
 interface FollowSectionProps {
@@ -23,7 +24,7 @@ interface FollowSectionProps {
   debouncingMap: { [key: string]: boolean };
 }
 
-// const limit = 4;
+const limit = 4;
 
 const FollowSection = ({
   profile,
@@ -32,28 +33,12 @@ const FollowSection = ({
   loggedInUserProfile,
   debouncingMap,
 }: FollowSectionProps) => {
-  const filteredFollowers = useMemo(
-    () =>
-      profile.followers
-        ? profile.followers.filter((user) => user.deletedAt === null)
-        : [],
-    [profile.followers]
-  );
-
-  const filteredFollowing = useMemo(
-    () =>
-      profile.following
-        ? profile.following.filter((user) => user.deletedAt === null)
-        : [],
-    [profile.following]
-  );
-
-  /* const [followers, setFollowers] = useState<FollowUser[]>([]);
+  const [followers, setFollowers] = useState<FollowUser[]>([]);
   const [following, setFollowing] = useState<FollowUser[]>([]);
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true); */
+  const [_hasMore, setHasMore] = useState(true);
 
-  /* const loadMoreFollowers = async () => {
+  const loadMoreFollowers = async () => {
     const response = await getFollowersAPI(profile.nickname, page, limit);
     setFollowers((prev) => [...prev, ...response.data]);
     setHasMore(response.currentPage < response.totalPages);
@@ -67,17 +52,29 @@ const FollowSection = ({
     setHasMore(response.currentPage < response.totalPages);
     setPage((prev) => prev + 1);
     console.log('FollowingData', response);
-  }; */
-  /*  useEffect(() => {
+  };
+  useEffect(() => {
     loadMoreFollowers();
     loadMoreFollowing();
-  }, []); */
+  }, []);
+
+  const filteredFollowers = useMemo(
+    () =>
+      followers ? followers.filter((user) => user.deletedAt === null) : [],
+    [followers]
+  );
+
+  const filteredFollowing = useMemo(
+    () =>
+      following ? following.filter((user) => user.deletedAt === null) : [],
+    [following]
+  );
 
   const [view, setView] = useState<'follower' | 'following' | null>(null);
   const navigate = useNavigate();
   const { IsLogin } = useLoginStore();
-  const [loggedUserProfile, setLoggedUserProfile] =
-    useState<UserProfile | null>(loggedInUserProfile || null);
+  /* const [loggedUserProfile, setLoggedUserProfile] =
+    useState<UserProfile | null>(loggedInUserProfile || null); */
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredUsers, setFilteredUsers] = useState<FollowUser[]>([]);
 
@@ -101,8 +98,7 @@ const FollowSection = ({
   };
 
   // 현재 로그인한 유저가 팔로잉하고 있는 닉네임 리스트 추출
-  const followingNicknames =
-    loggedUserProfile?.following.map((user) => user.nickname) || [];
+  const followingNicknames = following.map((user) => user.nickname) || [];
 
   const isLoading = (nickname: string) => {
     return debouncingMap[nickname] || false;
@@ -110,17 +106,11 @@ const FollowSection = ({
 
   // 팔로우 상태 업데이트 함수
   const updateFollowingState = (nickname: string, isFollowing: boolean) => {
-    setLoggedUserProfile((prev) => {
-      if (!prev) return null;
-      const updatedFollowing = isFollowing
-        ? [...prev.following, { nickname, email: '', profile: '' }]
-        : prev.following.filter((user) => user.nickname !== nickname);
-
-      return {
-        ...prev,
-        following: updatedFollowing,
-      };
-    });
+    if (isFollowing) {
+      setFollowing((prev) => [...prev, { nickname, email: '', profile: '' }]);
+    } else {
+      setFollowing((prev) => prev.filter((user) => user.nickname !== nickname));
+    }
   };
 
   // 팔로우 클릭 시 실행되는 함수

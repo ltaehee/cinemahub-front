@@ -14,6 +14,7 @@ import PrivateRouter from "./PrivateRouter";
 import AgreePolicy from "../pages/AgreePolicy";
 import AdminPage from "../pages/AdminPage";
 import ProfilePage from "../pages/ProfilePage";
+import GenrePage from "../pages/GenrePage";
 
 const RouteProvider = () => {
   const login = useLoginStore((state) => state.login);
@@ -40,6 +41,10 @@ const RouteProvider = () => {
         {
           path: "/",
           element: <PrivateRouter element={<MainPage />} />,
+        },
+        {
+          path: "/genre/:genre",
+          element: <GenrePage />,
         },
         {
           path: "/review",

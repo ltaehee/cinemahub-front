@@ -1,6 +1,6 @@
 import CarouselXscroll from "@ui/CarouselXscroll";
 import CarouselInfinite from "@ui/CarouselInfinite";
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ChevronIcon from "../icons/ChevronIcon";
 import MainCard from "../components/mainpage/MainCard";
 import { genres } from "@consts/genres";
@@ -14,7 +14,7 @@ import { useTrendingMoviesStore } from "../store/useTrendingMovieStore";
 import { useModalOpenStore } from "../store/useModalOpenStore";
 import ModalPage from "@ui/ModalPage";
 import MovieCard from "../components/mainpage/MovieCard";
-// const MainCard = lazy(() => import("../components/mainpage/MainCard"));
+import { useNavigate } from "react-router-dom";
 
 interface PopularActors {
   personId: string;
@@ -23,6 +23,7 @@ interface PopularActors {
 }
 
 const MainPage = () => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const baseRef = useRef<HTMLDivElement>(null);
   const genreRef = useRef<HTMLDivElement>(null);
@@ -108,7 +109,7 @@ const MainPage = () => {
                     <CarouselInfinite.Item
                       className="px-4"
                       index={index}
-                      key={`main-day-${index}`}
+                      key={`main-day-${movie.movieId}`}
                     >
                       {(carouselIndex) => (
                         <MainCard
@@ -184,11 +185,14 @@ const MainPage = () => {
           >
             <CarouselXscroll.ItemContainer className="h-full">
               <CarouselXscroll.Items className="flex gap-4">
-                {genres.map((genre, index) => {
+                {genres.map((genre) => {
                   return (
                     <Button
-                      key={`main-genre-${index}`}
+                      key={`main-genre-${genre.id}`}
                       className="bg-gray-500 hover:bg-gray-900 text-nowrap px-8 py-4"
+                      onClick={() => {
+                        navigate(`/genre/${genre.id}`);
+                      }}
                     >
                       {genre.name}
                     </Button>
@@ -232,10 +236,10 @@ const MainPage = () => {
           >
             <CarouselXscroll.ItemContainer className="h-full">
               <CarouselXscroll.Items className="flex gap-4">
-                {trendingWeekMovies.map((movie, index) => {
+                {trendingWeekMovies.map((movie) => {
                   return (
                     <MovieCard
-                      key={`main-week-${index}`}
+                      key={`main-week-${movie.movieId}`}
                       movieId={movie.movieId}
                       title={movie.title}
                       releaseDate={movie.releaseDate}
@@ -282,10 +286,10 @@ const MainPage = () => {
           >
             <CarouselXscroll.ItemContainer className="h-full">
               <CarouselXscroll.Items className="flex gap-4">
-                {popularPeople.map((person, index) => {
+                {popularPeople.map((person) => {
                   return (
                     <PersonCard
-                      key={`main-person-${index}`}
+                      key={`main-person-${person.personId}`}
                       personId={person.personId}
                       name={person.name}
                       profilePath={person.profilePath}

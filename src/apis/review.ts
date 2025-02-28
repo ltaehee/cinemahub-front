@@ -202,3 +202,15 @@ export const deleteReviewFetch = async ({
     throw err;
   }
 };
+
+export const reviewScore = async (movieId: string) => {
+  try {
+    const response = await baseInstance.get(`/review/${movieId}`);
+    return response.data;
+  } catch (err) {
+    if (err instanceof AxiosError && err.response) {
+      console.log(err.response.data.message);
+    }
+    throw err;
+  }
+};

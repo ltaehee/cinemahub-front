@@ -75,3 +75,31 @@ export const getFetchUserInfo = async (
     throw new Error("유저정보를 불러오는 중 오류가 발생했습니다.");
   }
 };
+
+// 신고리뷰 관련 정보검색
+export const getFetchReviewInfo = async (
+  keyword: string,
+  page: number,
+  limit: number
+) => {
+  if (emptyChecker({ keyword })) {
+    alert("신고 리뷰 글을 입력해 주세요");
+    return;
+  }
+  try {
+    const response = await baseInstance.get(
+      `/search/review?keyword=${keyword}&page=${page}&limit=${limit}`
+    );
+
+    if (!response.data || response.data.length === 0) {
+      throw new Error("검색된 신고리뷰 관련 정보가 없습니다.");
+    }
+
+    console.log("신고리뷰 관련 정보: ", response);
+
+    return response;
+  } catch (err) {
+    console.error("신고리뷰 관련 정보를 가져오는데 실패했습니다.", err);
+    throw new Error("신고리뷰 관련 정보를 불러오는 중 오류가 발생했습니다.");
+  }
+};
