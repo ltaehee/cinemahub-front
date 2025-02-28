@@ -1,6 +1,7 @@
 // src/store/useProfileStore.ts
-import { create } from 'zustand';
-import { getProfileData } from '../apis/profile';
+import { create } from "zustand";
+import { getLoggedInUserInfo, getProfileData } from "../apis/profile";
+import useLoginStore from "./useStore";
 
 export interface UserProfile {
   userId: string;
@@ -15,6 +16,7 @@ interface ProfileStore {
   profile: UserProfile | null;
   setProfile: (profile: UserProfile | null) => void;
   fetchProfile: (nickname: string) => Promise<void>;
+  getProfile: () => Promise<void>;
 }
 
 const useProfileStore = create<ProfileStore>((set) => ({
@@ -29,7 +31,19 @@ const useProfileStore = create<ProfileStore>((set) => ({
       const profileData = await getProfileData(nickname);
       set({ profile: profileData });
     } catch (error) {
-      console.error('프로필 데이터 가져오기 오류:', error);
+      console.error("프로필 데이터 가져오기 오류:", error);
+    }
+  },
+
+  getProfile: async () => {
+    try {
+      // const { IsLogin } = useLoginStore();
+      // if (IsLogin) {
+      const userInfo = await getLoggedInUserInfo();
+      set({ profile: userInfo });
+      // }
+    } catch (err) {
+      console.error("프로필 데이터 가져오기 오류:", err);
     }
   },
 }));
