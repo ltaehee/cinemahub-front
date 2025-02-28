@@ -232,12 +232,12 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
                 maskImage: "linear-gradient(to right, black, transparent)",
               }}
             ></div>
-            <div className="flex flex-col gap-4 absolute inset-y-0 left-16 top-[70%] transform -translate-y-1/2 text-white">
+            <div className="flex flex-col gap-4 absolute inset-y-0 left-16 h-[692] top-[90%] transform -translate-y-100 text-white">
               {movie?.logoPath ? (
                 <img
                   src={`https://image.tmdb.org/t/p/original${movie?.logoPath}`}
                   alt={movie?.title}
-                  className="pb-[2vw] max-w-[36vw] max-h-[25vw]"
+                  className="pb-[2vw] max-w-[400px] max-h-[250px]"
                   onDragStart={(e) => e.preventDefault()}
                 />
               ) : (

@@ -3,12 +3,14 @@ import { getFetchUserLogout } from "../apis/login";
 import useLoginStore from "../store/useStore";
 import { ReactNode, useEffect, useState } from "react";
 import DefaultUserIcon from "../icons/DefaultUserIcon";
+import defaultProfile from "../../public/images/user_icon.png";
 import { useForm } from "react-hook-form";
 import UseDebounce from "../hooks/useDebounce";
 import Select from "@ui/Select";
 import LogoIcon from "../icons/LogoIcon";
 import XIcon from "../icons/XIcon";
 import { getLoggedInUserInfo } from "../apis/profile";
+import useProfileStore from "../store/useProfileStore";
 
 type SelectedItem = {
   label: ReactNode;
@@ -21,9 +23,9 @@ interface SearchForm {
 
 const Header = () => {
   const { IsLogin, logout } = useLoginStore();
+  const { profile, getProfile } = useProfileStore();
   const navigate = useNavigate();
   const { pathname } = useLocation();
-
   const handleClickMain = () => {
     navigate("/");
     setValue("keyword", "");
@@ -54,7 +56,7 @@ const Header = () => {
   const urlCategory = searchParams.get("category") ?? "";
   const debounceKeyword = UseDebounce(keyword, 700);
   const [isAdmin, setIsAdmin] = useState(false); // 관리자인지 확인
-  const [userNickname, setUserNickname] = useState(); // 프로필로 이동할 때 쓰는
+  // const [userNickname, setUserNickname] = useState(); // 프로필로 이동할 때 쓰는
 
   const onValid = (data: SearchForm) => {
     navigate(`/search?category=${category}&keyword=${data.keyword}`);
@@ -62,9 +64,11 @@ const Header = () => {
 
   // 프로필이미지 선택 시 프로필페이지로 이동
   const handleClickProfile = () => {
-    navigate(`/profile/${userNickname}`);
+    navigate(`/profile/${profile?.nickname}`);
   };
-
+  // const handleClickProfile = () => {
+  //   navigate(`/profile/${userNickname}`);
+  // };
   useEffect(() => {
     if (debounceKeyword) {
       navigate(`/search?category=${category}&keyword=${debounceKeyword}`);
@@ -86,22 +90,24 @@ const Header = () => {
     }
   }, [urlCategory]);
 
+  const fetchUserInfo = async () => {
+    try {
+      const userInfo = await getLoggedInUserInfo();
+      // setUserNickname(userInfo.nickname);
+      // console.log("userInfo: ", userInfo);
+      if (userInfo.role === "admin") {
+        setIsAdmin(true);
+      }
+    } catch (err) {
+      console.error("로그인한 유저 정보 가져오기 실패: ", err);
+    }
+  };
+
   // 로그인 시 관리자계정인지 확인
   useEffect(() => {
     if (IsLogin) {
-      const fetchUserInfo = async () => {
-        try {
-          const userInfo = await getLoggedInUserInfo();
-          setUserNickname(userInfo.nickname);
-
-          if (userInfo.role === "admin") {
-            setIsAdmin(true);
-          }
-        } catch (err) {
-          console.error("로그인한 유저 정보 가져오기 실패: ", err);
-        }
-      };
       fetchUserInfo();
+      getProfile();
     }
   }, [IsLogin]);
 
@@ -165,6 +171,13 @@ const Header = () => {
                 >
                   로그아웃
                 </button>
+
+                <img
+                  src={profile?.profile || defaultProfile}
+                  alt="Profile"
+                  onClick={handleClickProfile}
+                  className="w-17 h-9 round-full hover:cursor-pointer"
+                />
               </>
             ) : (
               <div
@@ -175,12 +188,19 @@ const Header = () => {
               </div>
             )}
             <div>
-              {IsLogin ? (
+              {/* {IsLogin ? (
+                <img
+                  src={profile?.profile || defaultProfile}
+                  alt="Profile"
+                  onClick={handleClickProfile}
+                  className="w-17 h-9 round-full hover:cursor-pointer"
+                />
+              ) : (
                 <DefaultUserIcon
                   onClick={handleClickProfile}
                   className="w-10 hover:cursor-pointer"
                 />
-              ) : null}
+              )  null} */}
             </div>
           </div>
         </div>
