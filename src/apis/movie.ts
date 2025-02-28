@@ -74,13 +74,15 @@ export const moviePosters = async (
 export const genreMovies = async (
   genreId: number,
   page: number,
-  limit: number
+  limit: number,
+  sortBy: string
 ) => {
   try {
     const response = await baseInstance.get(`/movie/genre/${genreId}`, {
       params: {
         page,
         limit,
+        sortBy,
       },
     });
 
