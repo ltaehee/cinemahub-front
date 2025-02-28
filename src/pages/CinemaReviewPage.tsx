@@ -22,7 +22,6 @@ import Comments from '../components/reviewpage/comment';
 import { getPresignedUrl, uploadImageToS3 } from '../apis/profile';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { movieDetail } from '../apis/movie';
-import { useLoadingContext } from '../context/loadingContext';
 
 type CommentType = {
   _id: string;
@@ -36,6 +35,7 @@ type CommentType = {
   totalLike: number;
   totalDisLike: number;
   IsOwner: boolean;
+  deletedAt: string;
 };
 
 type UserType = {
@@ -69,10 +69,11 @@ const CinemaReviewPage = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [imageSrcs, setImageSrcs] = useState<string[]>([]);
   const [_, setimgUrls] = useState<string[]>([]);
+  const [totalPages, setTotalPages] = useState<number>(0);
   const [totalStarPoint, setTotalStarPoint] = useState<number>(0);
   const uploadRef = useRef<HTMLInputElement>(null);
 
-  const { isLoading, setLoading } = useLoadingContext();
+  const [registerLoading, setRegisterLoading] = useState<boolean>(false);
 
   const SingleFileReader = async (file: File) => {
     return new Promise((resolve, reject) => {
@@ -113,14 +114,6 @@ const CinemaReviewPage = () => {
   const handleRemovePreview = (targetIndex: number) => {
     setImageSrcs(imageSrcs.filter((_, index) => index !== targetIndex));
     setFiles(files.filter((_, index) => index !== targetIndex));
-
-    if (uploadRef.current && uploadRef.current.files) {
-      const dataTransfer = new DataTransfer();
-      files.forEach((file) => {
-        dataTransfer.items.add(file);
-      });
-      uploadRef.current.files = dataTransfer.files;
-    }
   };
 
   const handleReviewInput: ChangeEventHandler<HTMLTextAreaElement> = (e) => {
@@ -156,13 +149,16 @@ const CinemaReviewPage = () => {
     }
 
     try {
-      setLoading(true);
-      const imgUrls = await handleFileUpload();
-      setimgUrls(imgUrls);
+      setRegisterLoading(true);
+
+      if (files.length !== 0) {
+        const imgUrls = await handleFileUpload();
+        setimgUrls(imgUrls);
+      }
 
       const { result, message } = await RegisterReviewFetch({
         movieId,
-        imgUrls,
+        imgUrls: [],
         content: review,
         starpoint: starRate,
       });
@@ -176,35 +172,32 @@ const CinemaReviewPage = () => {
       setReview(''); // 글 초기화
       setStarRate(0); // 별점 초기화
       setImageSrcs([]);
+      setFiles([]);
       handleGetComments(); // 목록 갱신
     } catch (e) {
     } finally {
-      setLoading(false);
+      setRegisterLoading(false);
     }
   };
 
   const handleGetComments = async () => {
     try {
-      setLoading(true);
-      const { result, data, message } = await getMovieidCommentArrayFetch({
+      const { data } = await getMovieidCommentArrayFetch({
         movieId,
       });
-      if (!result) {
-        alert(message);
-        return;
-      }
-      const { totalstarpoint, reviews } = data;
+
+      const { totalstarpoint, reviews, totalPages } = data;
+
       setComments(reviews);
+      setTotalPages(totalPages);
       setTotalStarPoint(totalstarpoint);
     } catch (e) {
     } finally {
-      setLoading(false);
     }
   };
 
   const getMovieData = async (movieId: string) => {
     try {
-      setLoading(true);
       const response = await movieDetail(movieId);
 
       if (emptyChecker({ response })) {
@@ -218,7 +211,6 @@ const CinemaReviewPage = () => {
       handleGetComments();
     } catch (e) {
     } finally {
-      setLoading(false);
     }
   };
 
@@ -231,10 +223,6 @@ const CinemaReviewPage = () => {
       return;
     } else {
       getMovieData(movieId);
-    }
-
-    if (!uploadRef.current) {
-      return;
     }
   }, []);
 
@@ -258,7 +246,7 @@ const CinemaReviewPage = () => {
                   </div>
                 ) : null}
 
-                <p className="">{comments.length} 개 리뷰</p>
+                <p>{totalPages} 개 리뷰</p>
                 <p>관람객 평점 : {totalStarPoint}</p>
               </div>
             </div>
@@ -305,7 +293,7 @@ const CinemaReviewPage = () => {
 
                 {imageSrcs.length < 2 ? (
                   <label
-                    htmlFor="fileInput"
+                    htmlFor="fileinput"
                     className="block border border-[#DDDDDD] w-[180px] h-full rounded-[5px] hover:bg-[#BDBDBD] cursor-pointer"
                   >
                     <CameraIcon width={'100%'} height={'100%'} />
@@ -317,8 +305,8 @@ const CinemaReviewPage = () => {
                 ref={uploadRef}
                 style={{ display: 'none' }}
                 type="file"
-                name="fileInput"
-                id="fileInput"
+                name="fileinput"
+                id="fileinput"
                 accept="image/*"
                 onChange={handleFilePreview}
                 onClick={handleResetFileValue}
@@ -350,10 +338,10 @@ const CinemaReviewPage = () => {
 
                 <Button
                   className="mt-2 h-10"
-                  disabled={isLoading}
+                  disabled={registerLoading}
                   onClick={handleRegisterReview}
                 >
-                  {isLoading ? (
+                  {registerLoading ? (
                     <div className="flex justify-center items-center">
                       <div className="w-6 h-6 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
                     </div>
@@ -366,13 +354,7 @@ const CinemaReviewPage = () => {
           ) : null}
           <div className="mt-5">
             <p className="text-xl">리뷰 내역 보기</p>
-            {comments.length ? (
-              <Comments comments={comments} />
-            ) : (
-              <div className="text-center border border-slate-300 p-5">
-                <p>리뷰 조회 내역이 없습니다.</p>
-              </div>
-            )}
+            <Comments comments={comments} />
           </div>
         </div>
       </div>

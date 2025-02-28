@@ -10,6 +10,7 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://localhost:3000',
+        // target: 'https://kdt-react-2-team02.elicecoding.com',
       },
     },
   },

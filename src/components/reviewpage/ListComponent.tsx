@@ -6,6 +6,7 @@ import CloseIcon from '../../icons/CloseIcon';
 import Textarea from '../Textarea';
 import Button from '../Button';
 import { deleteReviewFetch, RegisterReportFetch } from '../../apis/review';
+import ModalBackdrop from '@ui/Modal/ModalBackdrop';
 
 interface ListBarComponentProps {
   handleEdit: (edit: boolean) => void;
@@ -14,7 +15,7 @@ interface ListBarComponentProps {
 const ListBarComponent = (props: ListBarComponentProps) => {
   const { handleEdit } = props;
 
-  const { comment } = useCommentContext();
+  const { comment, setCommentsState } = useCommentContext();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [reason, setReason] = useState<string>('');
@@ -58,6 +59,7 @@ const ListBarComponent = (props: ListBarComponentProps) => {
 
   const handleEditReview = () => {
     handleEdit(true);
+    setIsOpen(false);
   };
 
   const handleDeleteReview = async () => {
@@ -70,8 +72,13 @@ const ListBarComponent = (props: ListBarComponentProps) => {
         alert(message);
         return;
       }
-
       alert(message);
+      setCommentsState((prev) => {
+        return prev.filter(
+          (review) => JSON.stringify(review._id) !== JSON.stringify(comment._id)
+        );
+      });
+      setIsOpen(false);
     } catch (e) {}
   };
 
@@ -111,6 +118,8 @@ const ListBarComponent = (props: ListBarComponentProps) => {
         onOpenModal={handleModalOpen}
         portalref={portalRef.current}
       >
+        <ModalBackdrop className="bg-black/70" />
+
         <Modal.Content
           className="z-4 top-[50%] transform -translate-1/2 left-[50%]  bg-[#FDFDFD] shadow-2xl p-15 fixed"
           fixed
