@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Table from "../components/adminpage/Table";
 import Button from "../components/Button";
 import SearchBar from "../components/adminpage/SearchBar";
-import { getFetchUserInfo } from "../apis/search";
+import { getFetchReviewInfo, getFetchUserInfo } from "../apis/search";
 import {
   getFetchUser,
   getReportedReview,
@@ -37,12 +37,15 @@ const AdminPage = () => {
   const [reportedUser, setReportedUser] = useState<ReportProps[]>([]); // 신고 리뷰 유저
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [selectedReviews, setSelectedReviews] = useState<string[]>([]);
-  // console.log("reportedUser: ", reportedUser);
-  // console.log("users: ", users);
-  console.log("selectedUsers: ", selectedUsers);
+  console.log("reportedUser: ", reportedUser);
+  // console.log("selectedUsers: ", selectedUsers);
   console.log("selectedReviews: ", selectedReviews);
-  const [searchQuery, setSearchQuery] = useState<string>(""); // 검색어 상태
-  const [isSearching, setIsSearching] = useState(false); // 검색 중인지 여부
+  const [searchQuery, setSearchQuery] = useState<string>(""); // 유저 검색어 상태
+  const [isSearching, setIsSearching] = useState(false); // 유저 검색 중인지 여부
+  const [searchQueryReview, setSearchQueryReview] = useState<string>(""); // 리뷰관련 검색어 상태
+  const [isSearchingReview, setIsSearchingReview] = useState(false); // 리뷰관련 검색 중인지 여부
+  // console.log("searchQueryReview: ", searchQuery);
+
   const handleSelectUser = (email: string) => {
     setSelectedUsers((prev) =>
       prev.includes(email)
@@ -68,12 +71,21 @@ const AdminPage = () => {
   };
 
   // 유저 검색
-  const handleSearch = async (query: string) => {
+  const handleSearchUser = async (query: string) => {
     if (query.trim() === "") return;
     setUsers([]);
     setSearchQuery(query);
     setIsSearching(query.trim() !== ""); // 검색어가 있으면 true, 없으면 false
     setUserPage(0);
+  };
+
+  // 리뷰 관리 검색
+  const handleSearchReview = async (query: string) => {
+    if (query.trim() === "") return;
+    setReportedUser([]);
+    setSearchQueryReview(query);
+    setIsSearchingReview(query.trim() !== "");
+    setReviewPage(0);
   };
 
   // 유저 삭제
@@ -92,6 +104,8 @@ const AdminPage = () => {
         setUsers((prevUsers) =>
           prevUsers.filter((user) => !selectedUsers.includes(user.email))
         );
+      } else {
+        alert("삭제 실패");
       }
     } catch (err) {
       console.error("삭제 오류", err);
@@ -114,6 +128,8 @@ const AdminPage = () => {
         setReportedUser((prevReviews) =>
           prevReviews.filter((review) => !selectedReviews.includes(review._id))
         );
+      } else {
+        alert("삭제 실패");
       }
     } catch (err) {
       console.error("삭제 오류", err);
@@ -141,7 +157,7 @@ const AdminPage = () => {
   const getUserData = async () => {
     try {
       let response;
-      if (isSearching) {
+      if (isSearchingReview) {
         response = await getFetchUserInfo(searchQuery, userPage, userLimit);
         if (!response) return;
       } else {
@@ -156,10 +172,20 @@ const AdminPage = () => {
     }
   };
 
-  // 신고 리뷰 전체조회
+  // 신고 리뷰 전체조회, 검색
   const getReportedReviewsData = async () => {
     try {
-      const response = await getReportedReview(reviewPage, reviewLimit);
+      let response;
+      if (isSearchingReview) {
+        response = await getFetchReviewInfo(
+          searchQueryReview,
+          reviewPage,
+          reviewLimit
+        );
+        if (!response) return;
+      } else {
+        response = await getReportedReview(reviewPage, reviewLimit);
+      }
       console.log("신고리뷰 조회: ", response);
       setReportedUser(response.data.reportResult);
       setTotalReported(response.data.totalCount);
@@ -174,6 +200,11 @@ const AdminPage = () => {
   }, [userPage, isSearching, searchQuery]);
 
   useEffect(() => {
+    setReportedUser([]);
+    getReportedReviewsData();
+  }, [reviewPage, isSearchingReview, searchQueryReview]);
+
+  useEffect(() => {
     if (activeindex === 1) {
       setSelectedReviews([]);
     }
@@ -182,6 +213,7 @@ const AdminPage = () => {
   useEffect(() => {
     setReportedUser([]);
     if (activeindex === 2) {
+      setIsSearchingReview(false);
       getReportedReviewsData();
       setSelectedUsers([]);
     }
@@ -216,7 +248,7 @@ const AdminPage = () => {
                 <div className="p-10 w-full">
                   <div className="p-2 flex flex-row-reverse">
                     <SearchBar
-                      onSearch={handleSearch}
+                      onSearch={handleSearchUser}
                       placeholder="회원 이름 검색"
                       useDebounce={true}
                     />
@@ -258,13 +290,13 @@ const AdminPage = () => {
                   </h1>
                 </div>
                 <div className="p-10 w-full">
-                  {/* <div className="p-2 flex flex-row-reverse">
+                  <div className="p-2 flex flex-row-reverse">
                     <SearchBar
-                      onSearch={handleSearch}
-                      placeholder="회원 이름 검색"
+                      onSearch={handleSearchReview}
+                      placeholder="신고된 리뷰 글 검색"
                       useDebounce={true}
                     />
-                  </div> */}
+                  </div>
 
                   <Table
                     columns={[
