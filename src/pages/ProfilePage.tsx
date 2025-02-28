@@ -56,9 +56,11 @@ const ProfilePage = () => {
 
   /* 로그인한 유저 프로필 조회 */
   const fetchLoggedInUserInfo = async () => {
-    const userInfo = await getLoggedInUserInfo();
-    setLoggedInUserProfile(userInfo);
-    setOriginalNickname(userInfo.nickname);
+    if (IsLogin) {
+      const userInfo = await getLoggedInUserInfo();
+      setLoggedInUserProfile(userInfo);
+      setOriginalNickname(userInfo.nickname);
+    }
   };
 
   /* url에 나온 닉네임 기준 프로필 조회 */
@@ -95,18 +97,15 @@ const ProfilePage = () => {
       await uploadImageToS3(presignedUrl, selectedImage);
       const imageUrl = presignedUrl.split('?')[0];
 
-      if (!profile) {
-        return;
-      }
-      await updateProfileData(profile.nickname, profile.introduce, imageUrl);
-      setProfile({ ...profile, profile: imageUrl });
-
       setSelectedImage(null);
       setPreviewImage(null);
+
+      return imageUrl;
     } catch (error) {
       setPreviewImage(null);
       console.error('이미지 업로드 오류:', error);
       alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
+      return null;
     } finally {
       setIsUploading(false); // 이미지 업로드 완료 후 스피너 제거
     }
@@ -141,26 +140,63 @@ const ProfilePage = () => {
           return;
         }
 
-        // 닉네임 중복 체크
-        const isUnique = await checkNicknameCheck(
-          profile?.nickname || '',
-          originalNickname
-        );
-        if (!isUnique) {
-          alert('이미 사용 중인 닉네임입니다. 다른 닉네임을 입력하세요.');
+        // 변경 사항이 없는 경우
+        if (
+          originalNickname === profile?.nickname &&
+          loggedInUserProfile?.introduce === profile?.introduce &&
+          !selectedImage
+        ) {
+          alert('변경된 내용이 없습니다.');
           return;
+        }
+
+        // 이미지 업로드
+        let updatedImageUrl = profile?.profile;
+        if (selectedImage) {
+          const imageUrl = await handleImageUpload();
+          if (imageUrl) {
+            updatedImageUrl = imageUrl;
+            setProfile((prev) => {
+              if (!prev) return null;
+              return {
+                ...prev,
+                profile: imageUrl, // 프로필 상태에 바로 반영
+              };
+            });
+          }
+        }
+
+        // 닉네임이 변경된 경우에만 중복 체크
+        if (originalNickname !== profile?.nickname) {
+          const isUnique = await checkNicknameCheck(
+            profile?.nickname || '',
+            originalNickname
+          );
+          if (!isUnique) {
+            alert('이미 사용 중인 닉네임입니다. 다른 닉네임을 입력하세요.');
+            setProfile((prev) => {
+              if (!prev) return null;
+              return {
+                ...prev,
+                nickname: originalNickname,
+                introduce: loggedInUserProfile?.introduce || '',
+                profile: loggedInUserProfile?.profile,
+              };
+            });
+
+            return; // 상태 변경 없이 함수 종료
+          }
         }
         if (!profile) {
           return;
         }
 
-        // 이미지 업로드
-        if (selectedImage) {
-          await handleImageUpload();
-        }
-
         // 프로필 데이터 업데이트
-        await updateProfileData(profile.nickname, profile.introduce);
+        await updateProfileData(
+          profile.nickname,
+          profile.introduce,
+          updatedImageUrl
+        );
 
         alert('프로필 수정 완료');
 

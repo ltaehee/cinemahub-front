@@ -8,6 +8,7 @@ export interface UserProfile {
   nickname: string;
   introduce: string;
   profile?: string;
+  following: { nickname: string }[];
 }
 
 interface ProfileStore {
