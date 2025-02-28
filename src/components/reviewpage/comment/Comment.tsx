@@ -26,6 +26,8 @@ const Comment = (props: CommentProps) => {
   const [editStarpoint, setEditStarpoint] = useState<number>(comment.starpoint);
   const [editImgUrls, setEditImgUrls] = useState<string[]>(comment.imgUrls);
 
+  const [updateLoading, setUpdateLoading] = useState<boolean>(false);
+
   const [files, setFiles] = useState<File[]>([]);
   const [__, setimgUrls] = useState<string[]>([]);
 
@@ -106,8 +108,12 @@ const Comment = (props: CommentProps) => {
 
   const handleEditReview = async () => {
     try {
-      const imgUrls = await handleFileUpload();
-      setimgUrls(imgUrls);
+      setUpdateLoading(true);
+
+      if (files.length !== 0) {
+        const imgUrls = await handleFileUpload();
+        setimgUrls(imgUrls);
+      }
 
       const { result, message } = await updateReviewFetch({
         commentId: comment._id,
@@ -134,13 +140,13 @@ const Comment = (props: CommentProps) => {
         );
       });
       setEditMode(false);
-    } catch (e) {}
+      setFiles([]);
+      setimgUrls([]);
+    } catch (e) {
+    } finally {
+      setUpdateLoading(false);
+    }
   };
-
-  // ...review,
-  // imgUrls: editImgUrls,
-  // content: editReview,
-  // starpoint: editStarpoint,
 
   useEffect(() => {
     if (!uploadRef.current) {
@@ -278,9 +284,16 @@ const Comment = (props: CommentProps) => {
             <div className="mt-2 w-30">
               <Button
                 className="bg-blue-300 hover:bg-blue-500"
+                disabled={updateLoading}
                 onClick={handleEditReview}
               >
-                수정하기
+                {updateLoading ? (
+                  <div className="flex justify-center items-center">
+                    <div className="w-6 h-6 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
+                  </div>
+                ) : (
+                  '수정하기'
+                )}
               </Button>
             </div>
 

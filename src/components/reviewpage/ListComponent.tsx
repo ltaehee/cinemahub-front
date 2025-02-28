@@ -59,6 +59,7 @@ const ListBarComponent = (props: ListBarComponentProps) => {
 
   const handleEditReview = () => {
     handleEdit(true);
+    setIsOpen(false);
   };
 
   const handleDeleteReview = async () => {
@@ -77,6 +78,7 @@ const ListBarComponent = (props: ListBarComponentProps) => {
           (review) => JSON.stringify(review._id) !== JSON.stringify(comment._id)
         );
       });
+      setIsOpen(false);
     } catch (e) {}
   };
 

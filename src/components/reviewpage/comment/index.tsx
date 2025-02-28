@@ -79,17 +79,15 @@ const Comments = (props: CommentProps) => {
   return (
     <>
       {commentsState.length ? (
-        commentsState
-          .filter(({ deletedAt }) => deletedAt === null)
-          .map((comment, index) => (
-            <CommentContext.Provider
-              key={index}
-              value={{ comment, setCommentsState }}
-            >
-              <Comment index={index} />
-              <div className="h-[1px] bg-slate-200 my-5"></div>
-            </CommentContext.Provider>
-          ))
+        commentsState.map((comment, index) => (
+          <CommentContext.Provider
+            key={index}
+            value={{ comment, setCommentsState }}
+          >
+            <Comment index={index} />
+            <div className="h-[1px] bg-slate-200 my-5"></div>
+          </CommentContext.Provider>
+        ))
       ) : (
         <div className="text-center border border-slate-300 p-5">
           <p>리뷰 조회 내역이 없습니다.</p>

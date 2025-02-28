@@ -20,7 +20,7 @@ export const RegisterReviewFetch = async ({
   content,
   starpoint,
 }: Review) => {
-  if (emptyChecker({ movieId, imgUrls, content, starpoint })) {
+  if (emptyChecker({ movieId, content, starpoint })) {
     alert('별점과 리뷰 내용을 적어주세요.');
     return;
   }
@@ -47,7 +47,9 @@ export const RegisterReviewFetch = async ({
 
 export const getMovieidCommentArrayFetch = async ({
   movieId,
-}: Pick<Review, 'movieId'>) => {
+}: {
+  movieId: string;
+}) => {
   if (emptyChecker({ movieId })) {
     alert('리뷰를 작성할 영화 정보를 조회할 수 없어요.');
     return;

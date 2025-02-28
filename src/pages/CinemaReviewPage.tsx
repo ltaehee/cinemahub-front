@@ -22,7 +22,6 @@ import Comments from '../components/reviewpage/comment';
 import { getPresignedUrl, uploadImageToS3 } from '../apis/profile';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { movieDetail } from '../apis/movie';
-import { useLoadingContext } from '../context/loadingContext';
 
 type CommentType = {
   _id: string;
@@ -70,10 +69,11 @@ const CinemaReviewPage = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [imageSrcs, setImageSrcs] = useState<string[]>([]);
   const [_, setimgUrls] = useState<string[]>([]);
+  const [totalPages, setTotalPages] = useState<number>(0);
   const [totalStarPoint, setTotalStarPoint] = useState<number>(0);
   const uploadRef = useRef<HTMLInputElement>(null);
 
-  const { isLoading, setLoading } = useLoadingContext();
+  const [registerLoading, setRegisterLoading] = useState<boolean>(false);
 
   const SingleFileReader = async (file: File) => {
     return new Promise((resolve, reject) => {
@@ -149,14 +149,16 @@ const CinemaReviewPage = () => {
     }
 
     try {
-      setLoading(true);
+      setRegisterLoading(true);
 
-      const imgUrls = await handleFileUpload();
-      setimgUrls(imgUrls);
+      if (files.length !== 0) {
+        const imgUrls = await handleFileUpload();
+        setimgUrls(imgUrls);
+      }
 
       const { result, message } = await RegisterReviewFetch({
         movieId,
-        imgUrls,
+        imgUrls: [],
         content: review,
         starpoint: starRate,
       });
@@ -170,32 +172,32 @@ const CinemaReviewPage = () => {
       setReview(''); // 글 초기화
       setStarRate(0); // 별점 초기화
       setImageSrcs([]);
+      setFiles([]);
       handleGetComments(); // 목록 갱신
     } catch (e) {
     } finally {
-      setLoading(false);
+      setRegisterLoading(false);
     }
   };
 
   const handleGetComments = async () => {
     try {
-      setLoading(true);
       const { data } = await getMovieidCommentArrayFetch({
         movieId,
       });
 
-      const { totalstarpoint, reviews } = data;
+      const { totalstarpoint, reviews, totalPages } = data;
+
       setComments(reviews);
+      setTotalPages(totalPages);
       setTotalStarPoint(totalstarpoint);
     } catch (e) {
     } finally {
-      setLoading(false);
     }
   };
 
   const getMovieData = async (movieId: string) => {
     try {
-      setLoading(true);
       const response = await movieDetail(movieId);
 
       if (emptyChecker({ response })) {
@@ -209,7 +211,6 @@ const CinemaReviewPage = () => {
       handleGetComments();
     } catch (e) {
     } finally {
-      setLoading(false);
     }
   };
 
@@ -222,10 +223,6 @@ const CinemaReviewPage = () => {
       return;
     } else {
       getMovieData(movieId);
-    }
-
-    if (!uploadRef.current) {
-      return;
     }
   }, []);
 
@@ -249,7 +246,7 @@ const CinemaReviewPage = () => {
                   </div>
                 ) : null}
 
-                <p className="">{comments.length} 개 리뷰</p>
+                <p>{totalPages} 개 리뷰</p>
                 <p>관람객 평점 : {totalStarPoint}</p>
               </div>
             </div>
@@ -341,10 +338,10 @@ const CinemaReviewPage = () => {
 
                 <Button
                   className="mt-2 h-10"
-                  disabled={isLoading}
+                  disabled={registerLoading}
                   onClick={handleRegisterReview}
                 >
-                  {isLoading ? (
+                  {registerLoading ? (
                     <div className="flex justify-center items-center">
                       <div className="w-6 h-6 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
                     </div>
