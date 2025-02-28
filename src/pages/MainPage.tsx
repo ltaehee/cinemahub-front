@@ -15,7 +15,6 @@ import { useModalOpenStore } from "../store/useModalOpenStore";
 import ModalPage from "@ui/ModalPage";
 import MovieCard from "../components/mainpage/MovieCard";
 import { useNavigate } from "react-router-dom";
-// const MainCard = lazy(() => import("../components/mainpage/MainCard"));
 
 interface PopularActors {
   personId: string;

@@ -1,9 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import StarIcon from "../../icons/StarIcon";
 import FavoritesBtn from "./FavoritesBtn";
 import { genres } from "@consts/genres";
 import { FC } from "react";
 import { useModalOpenStore } from "../../store/useModalOpenStore";
+import posterImg from "../../assets/images/defaultImage.jpg";
+import StarYellowIcon from "../../icons/StarYellowIcon";
 
 interface MovieProps {
   title: string;
@@ -28,6 +29,10 @@ const MovieCard: FC<MovieProps> = ({
     setSelectedPerson,
   } = useModalOpenStore();
 
+  const poster = posterPath
+    ? `https://image.tmdb.org/t/p/w500${posterPath}`
+    : posterImg;
+
   return (
     <div
       onClick={() => {
@@ -42,7 +47,7 @@ const MovieCard: FC<MovieProps> = ({
       <div className="relative overflow-hidden rounded-tl-md rounded-tr-md">
         <div className="h-[340px]">
           <img
-            src={`https://image.tmdb.org/t/p/w500${posterPath}`}
+            src={poster}
             alt={title}
             className="h-full w-full object-cover select-none duration-300 ease-in-out hover:scale-110"
             onDragStart={(e) => e.preventDefault()}
@@ -57,7 +62,7 @@ const MovieCard: FC<MovieProps> = ({
       <div className="flex flex-col gap-1 p-4">
         <h3 className="text-lg font-semibold w-52 truncate">{title}</h3>
         <div className="flex items-center gap-1">
-          <StarIcon className="w-5" index={0} />
+          <StarYellowIcon className="w-5" />
           <div className="text-yellow-500 text-sm">4.0</div>
         </div>
         <div className="flex items-center justify-between mt-2">

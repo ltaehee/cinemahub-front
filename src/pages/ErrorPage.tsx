@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
-import bgImage from "../assets/images/lost-image.avif";
+import bgImage from "../assets/images/lostImage.avif";
 
 const ErrorPage = () => {
   const navigate = useNavigate();

@@ -1,6 +1,6 @@
-import { AxiosError } from 'axios';
-import { baseInstance } from './axios.config';
-import { emptyChecker } from '../util/emptyCheck';
+import { AxiosError } from "axios";
+import { baseInstance } from "./axios.config";
+import { emptyChecker } from "../util/emptyCheck";
 
 type Review = {
   movieId: string;
@@ -21,12 +21,12 @@ export const RegisterReviewFetch = async ({
   starpoint,
 }: Review) => {
   if (emptyChecker({ movieId, imgUrls, content, starpoint })) {
-    alert('별점과 리뷰 내용을 적어주세요.');
+    alert("별점과 리뷰 내용을 적어주세요.");
     return;
   }
 
   try {
-    const response = await baseInstance.post('/review/register', {
+    const response = await baseInstance.post("/review/register", {
       movieId,
       imgUrls,
       content,
@@ -47,9 +47,9 @@ export const RegisterReviewFetch = async ({
 
 export const getMovieidCommentArrayFetch = async ({
   movieId,
-}: Pick<Review, 'movieId'>) => {
+}: Pick<Review, "movieId">) => {
   if (emptyChecker({ movieId })) {
-    alert('리뷰를 작성할 영화 정보를 조회할 수 없어요.');
+    alert("리뷰를 작성할 영화 정보를 조회할 수 없어요.");
     return;
   }
 
@@ -82,7 +82,7 @@ export const getLikesFetch = async ({
   likes: likesType;
 }) => {
   if (emptyChecker({ commentId })) {
-    throw new Error('댓글을 참조할 수 없습니다. 새로고침 해주세요.');
+    throw new Error("댓글을 참조할 수 없습니다. 새로고침 해주세요.");
   }
 
   try {
@@ -113,7 +113,7 @@ export const RegisterReportFetch = async ({
   reason: string;
 }) => {
   if (emptyChecker({ commentId })) {
-    throw new Error('댓글을 참조할 수 없습니다. 새로고침 해주세요.');
+    throw new Error("댓글을 참조할 수 없습니다. 새로고침 해주세요.");
   }
 
   try {
@@ -142,7 +142,7 @@ export const deleteReviewFetch = async ({
   commentId: string;
 }) => {
   if (emptyChecker({ commentId })) {
-    throw new Error('댓글을 참조할 수 없습니다. 새로고침 해주세요.');
+    throw new Error("댓글을 참조할 수 없습니다. 새로고침 해주세요.");
   }
 
   try {
@@ -159,6 +159,18 @@ export const deleteReviewFetch = async ({
     if (err instanceof AxiosError && err.response) {
       console.log(err.response.data.message);
       alert(err.response.data.message);
+    }
+    throw err;
+  }
+};
+
+export const reviewScore = async (movieId: string) => {
+  try {
+    const response = await baseInstance.get(`/review/${movieId}`);
+    return response.data;
+  } catch (err) {
+    if (err instanceof AxiosError && err.response) {
+      console.log(err.response.data.message);
     }
     throw err;
   }

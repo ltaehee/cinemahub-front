@@ -12,6 +12,8 @@ import { Helmet } from "react-helmet-async";
 import { useModalOpenStore } from "../store/useModalOpenStore";
 import defaultImage from "../assets/images/defaultImage.jpg";
 import FavoritesBtn from "../components/mainpage/FavoritesBtn";
+import StarYellowIcon from "../icons/StarYellowIcon";
+import { reviewScore } from "../apis/review";
 interface CinemaDetailPageProps {
   movieId: string;
 }
@@ -46,6 +48,11 @@ interface Movie {
   director: Director[];
 }
 
+interface Review {
+  totalStarScore: number;
+  totalCount: number;
+}
+
 const imagePageSize = 8;
 const posterPageSize = 5;
 const blockSize = 15;
@@ -69,19 +76,31 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
     setIsPersonOpen,
     setSelectedPerson,
   } = useModalOpenStore();
+  const [review, setReview] = useState<Review>({
+    totalStarScore: 0,
+    totalCount: 0,
+  });
 
   const [movie, setMovie] = useState<Movie | null>(null);
 
   const fetchData = async () => {
     try {
-      const [posters, images] = await Promise.all([
+      const [posters, images, review] = await Promise.all([
         moviePosters(movieId, 0, posterPageSize),
         movieImages(movieId, 0, imagePageSize),
+        reviewScore(movieId),
       ]);
       setPosters(posters.posters);
       setPosterCount(posters.totalCount);
       setImages(images.images);
       setImageCount(images.totalCount);
+      setReview({
+        totalStarScore:
+          review.reviewScore.totalStarScore % 1 === 0
+            ? `${review.reviewScore.totalStarScore}.0`
+            : review.reviewScore.totalStarScore.toFixed(1),
+        totalCount: review.reviewLength,
+      });
     } catch (err) {
       console.error("fetchData 에러 ", err);
     }
@@ -150,7 +169,6 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
   };
 
   const toggleMute = () => setIsMuted((prev) => !prev);
-
   return (
     <>
       {movie && (
@@ -214,7 +232,7 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
                 maskImage: "linear-gradient(to right, black, transparent)",
               }}
             ></div>
-            <div className="flex flex-col absolute inset-y-0 left-16 top-[60%] text-white">
+            <div className="flex flex-col gap-4 absolute inset-y-0 left-16 top-[70%] transform -translate-y-1/2 text-white">
               {movie?.logoPath ? (
                 <img
                   src={`https://image.tmdb.org/t/p/original${movie?.logoPath}`}
@@ -223,9 +241,18 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
                   onDragStart={(e) => e.preventDefault()}
                 />
               ) : (
-                <h1 className="pb-[2vw] text-6xl/[5vw] text-white font-bold">
+                <h1 className="text-6xl text-white font-bold">
                   {movie?.title}
                 </h1>
+              )}
+
+              {review.totalCount > 0 ? (
+                <div className="flex gap-2">
+                  <StarYellowIcon className="w-5" />
+                  <p className="text-xl">{`${review.totalStarScore} (${review.totalCount})`}</p>
+                </div>
+              ) : (
+                <p className="text-xl">리뷰가 없습니다.</p>
               )}
               <button
                 onClick={() => {

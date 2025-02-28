@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import FavoritesBtn from "./FavoritesBtn";
+import defaultPersonImg from "../../assets/images/defaultPerson.svg";
 
 interface PopularPerson {
   personId: string;
@@ -10,6 +11,10 @@ interface PopularPerson {
 
 const PersonCard: FC<PopularPerson> = ({ personId, name, profilePath }) => {
   const navigate = useNavigate();
+
+  const profile = profilePath
+    ? `https://image.tmdb.org/t/p/w500${profilePath}`
+    : defaultPersonImg;
   return (
     <div
       onClick={() => navigate(`?person=${personId}`)}
@@ -17,7 +22,7 @@ const PersonCard: FC<PopularPerson> = ({ personId, name, profilePath }) => {
     >
       <div className="flex flex-col w-56 h-56 rounded-full overflow-hidden">
         <img
-          src={`https://image.tmdb.org/t/p/w500${profilePath}`}
+          src={profile}
           alt={name}
           className="object-cover  w-full h-full border border-gray-200 shadow-md hover:scale-110 duration-300 ease-in-out "
           onDragStart={(e) => e.preventDefault()}

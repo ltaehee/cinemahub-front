@@ -3,6 +3,8 @@ import { genres } from "@consts/genres";
 import UnMuteIcon from "../../icons/UnMuteIcon";
 import MuteIcon from "../../icons/MuteIcon";
 import { useNavigate } from "react-router-dom";
+import { reviewScore } from "../../apis/review";
+import StarYellowIcon from "../../icons/StarYellowIcon";
 
 interface MovieProps {
   movieId: string;
@@ -15,6 +17,11 @@ interface MovieProps {
   koreanRating: string;
   carouselIndex: number;
   index: number;
+}
+
+interface Review {
+  totalStarScore: number;
+  totalCount: number;
 }
 
 const MainCard: FC<MovieProps> = ({
@@ -33,6 +40,30 @@ const MainCard: FC<MovieProps> = ({
   const [isMuted, setIsMuted] = useState(true);
   const [trailerKey, setTrailerKey] = useState(0);
   const navigate = useNavigate();
+
+  const [review, setReview] = useState<Review>({
+    totalStarScore: 0,
+    totalCount: 0,
+  });
+
+  const fetchReview = async () => {
+    try {
+      const review = await reviewScore(movieId);
+      setReview({
+        totalStarScore:
+          review.reviewScore.totalStarScore % 1 === 0
+            ? `${review.reviewScore.totalStarScore}.0`
+            : review.reviewScore.totalStarScore.toFixed(1),
+        totalCount: review.reviewLength,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchReview();
+  }, []);
 
   useEffect(() => {
     if (carouselIndex === index && trailer) {
@@ -120,7 +151,25 @@ const MainCard: FC<MovieProps> = ({
             </div>
           ))}
         </div>
-        <div>{koreanRating}</div>
+
+        {review.totalCount > 0 ? (
+          <div className="flex gap-4 items-center">
+            <div className="flex items-center gap-1">
+              <StarYellowIcon className="w-5" />
+              <p className="text-xl">{`${review.totalStarScore} (${review.totalCount})`}</p>
+            </div>
+            <div className="bg-gray-600 px-2 rounded text-base">
+              {koreanRating}
+            </div>
+          </div>
+        ) : (
+          <div className="flex gap-4 items-center">
+            <p className="text-xl">리뷰가 없습니다.</p>
+            <div className="bg-gray-600 px-2 rounded text-base">
+              {koreanRating}
+            </div>
+          </div>
+        )}
         <button
           onClick={() => {
             navigate(`?movie=${movieId}`), setIsMuted(true);
