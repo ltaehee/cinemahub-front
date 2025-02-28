@@ -20,7 +20,8 @@ const Comment = (props: CommentProps) => {
   const { index } = props;
   const IsLogin = useLoginStore((set) => set.IsLogin);
 
-  const { comment, setCommentsState } = useCommentContext();
+  const { comment, setCommentsState, setReviewInfo } = useCommentContext();
+
   const [editMode, setEditMode] = useState<boolean>(false);
   const [editReview, setEditReview] = useState<string>(comment.content);
   const [editStarpoint, setEditStarpoint] = useState<number>(comment.starpoint);
@@ -139,6 +140,27 @@ const Comment = (props: CommentProps) => {
             : review
         );
       });
+
+      setReviewInfo((prev) => {
+        const length = prev.reviewLength;
+        const score = prev.reviewScore;
+
+        if (length > 1 && score > 1) {
+          const newScore =
+            (length * score - comment.starpoint + editStarpoint) / length;
+          return {
+            ...prev,
+            reviewScore: Number(newScore.toFixed(1)),
+          };
+        } else {
+          /// 리뷰가 20개 인데 평균 평점이 1일 경우
+          return {
+            ...prev,
+            reviewScore: Number(editStarpoint.toFixed(1)) / length,
+          };
+        }
+      });
+
       setEditMode(false);
       setFiles([]);
       setimgUrls([]);

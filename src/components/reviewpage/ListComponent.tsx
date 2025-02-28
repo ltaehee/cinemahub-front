@@ -15,7 +15,7 @@ interface ListBarComponentProps {
 const ListBarComponent = (props: ListBarComponentProps) => {
   const { handleEdit } = props;
 
-  const { comment, setCommentsState } = useCommentContext();
+  const { comment, setCommentsState, setReviewInfo } = useCommentContext();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [reason, setReason] = useState<string>('');
@@ -77,6 +77,25 @@ const ListBarComponent = (props: ListBarComponentProps) => {
         return prev.filter(
           (review) => JSON.stringify(review._id) !== JSON.stringify(comment._id)
         );
+      });
+
+      setReviewInfo((prev) => {
+        const length = prev.reviewLength;
+        const score = prev.reviewScore;
+
+        if (length > 1 && score > 1) {
+          const newScore = (length * score - comment.starpoint) / length - 1;
+          return {
+            reviewLength: length - 1,
+            reviewScore: Number(newScore.toFixed(1)),
+          };
+        } else {
+          /// 리뷰가 20개 인데 평균 평점이 1일 경우 다시 고려
+          return {
+            reviewLength: length - 1,
+            reviewScore: (length - 1) * score - comment.starpoint,
+          };
+        }
       });
       setIsOpen(false);
     } catch (e) {}
