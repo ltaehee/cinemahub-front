@@ -133,7 +133,7 @@ const PersonDetailPage: FC<PersonDetailPageProps> = ({ personId }) => {
     <>
       {personDetails && (
         <Helmet>
-          <title>{`${personDetails.name} - 인물 상세정보`}</title>
+          <title>{`${personDetails.name} | CinemaHub`}</title>
           <meta
             name="description"
             content={`${personDetails.name}의 인물 상세정보 페이지입니다.`}

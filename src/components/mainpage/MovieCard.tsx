@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import FavoritesBtn from "./FavoritesBtn";
 import { genres } from "@consts/genres";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 import { useModalOpenStore } from "../../store/useModalOpenStore";
 import posterImg from "../../assets/images/defaultImage.jpg";
 import StarYellowIcon from "../../icons/StarYellowIcon";
+import { reviewScore } from "../../apis/review";
 
 interface MovieProps {
   title: string;
@@ -12,6 +13,11 @@ interface MovieProps {
   releaseDate: string;
   posterPath: string;
   genreIds: number[];
+}
+
+interface Review {
+  totalStarScore: number;
+  totalCount: number;
 }
 
 const MovieCard: FC<MovieProps> = ({
@@ -28,6 +34,30 @@ const MovieCard: FC<MovieProps> = ({
     setIsPersonOpen,
     setSelectedPerson,
   } = useModalOpenStore();
+
+  const [review, setReview] = useState<Review>({
+    totalStarScore: 0,
+    totalCount: 0,
+  });
+
+  const fetchReview = async () => {
+    try {
+      const review = await reviewScore(movieId);
+      setReview({
+        totalStarScore:
+          review.reviewScore.totalStarScore % 1 === 0
+            ? `${review.reviewScore.totalStarScore}.0`
+            : review.reviewScore.totalStarScore.toFixed(1),
+        totalCount: review.reviewLength,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchReview();
+  }, []);
 
   const poster = posterPath
     ? `https://image.tmdb.org/t/p/w500${posterPath}`
@@ -61,10 +91,16 @@ const MovieCard: FC<MovieProps> = ({
       </div>
       <div className="flex flex-col gap-1 p-4">
         <h3 className="text-lg font-semibold w-52 truncate">{title}</h3>
-        <div className="flex items-center gap-1">
-          <StarYellowIcon className="w-5" />
-          <div className="text-yellow-500 text-sm">4.0</div>
-        </div>
+
+        {review.totalCount > 0 ? (
+          <div className="flex gap-1">
+            <StarYellowIcon className="w-5" />
+            <p className="text-[#F5C518] text-sm">{`${review.totalStarScore} (${review.totalCount})`}</p>
+          </div>
+        ) : (
+          <p className="text-gray-400 text-sm">리뷰가 없습니다.</p>
+        )}
+
         <div className="flex items-center justify-between mt-2">
           <span className="text-sm font-medium text-gray-500">
             {releaseDate}

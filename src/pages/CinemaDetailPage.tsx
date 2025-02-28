@@ -80,8 +80,8 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
     totalStarScore: 0,
     totalCount: 0,
   });
-
   const [movie, setMovie] = useState<Movie | null>(null);
+  const currentUrl = new URL(window.location.href);
 
   const fetchData = async () => {
     try {
@@ -173,7 +173,7 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
     <>
       {movie && (
         <Helmet>
-          <title>{`${movie.title} - 영화 상세정보`}</title>
+          <title>{`${movie.title} | CinemaHub`}</title>
           <meta
             name="description"
             content={movie.tagline || movie.overview || "설명이 없습니다."}
@@ -256,9 +256,9 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
               )}
               <button
                 onClick={() => {
-                  navigate(`/review?movie=${movieId}`),
-                    setIsMovieOpen(false),
-                    setSelectedMovie(null);
+                  setIsMovieOpen(false),
+                    setSelectedMovie(null),
+                    navigate(`/review?movie=${movieId}`);
                 }}
                 className="py-4 w-80 text-xl bg-red-500/80 rounded-lg hover:bg-red-500 backdrop-blur-xs transition ease-in-out"
               >
@@ -316,7 +316,9 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
                         setSelectedMovie(null),
                         setIsPersonOpen(true),
                         setSelectedPerson(actor.id);
-                      navigate(`/?person=${actor.id}`);
+                      currentUrl.search = "";
+                      currentUrl.searchParams.set("person", actor.id);
+                      navigate(currentUrl.pathname + currentUrl.search);
                     }}
                     className="cursor-pointer"
                   >
@@ -337,7 +339,9 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
                         setSelectedMovie(null),
                         setIsPersonOpen(true),
                         setSelectedPerson(director.id);
-                      navigate(`/?person=${director.id}`);
+                      currentUrl.search = "";
+                      currentUrl.searchParams.set("person", director.id);
+                      navigate(currentUrl.pathname + currentUrl.search);
                     }}
                     className="cursor-pointer"
                   >
@@ -355,86 +359,87 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-8 items-center px-8">
-          <hr className="w-full border border-gray-300"></hr>
+        <div className="flex flex-col gap-8 w-[1280px] items-center px-8">
+          <div className="w-[1280px] flex flex-col gap-8 px-8">
+            <hr className="w-full border border-gray-300"></hr>
+            <section className="flex flex-col gap-4 w-full">
+              <h2 className="text-2xl text-slate-900">줄거리</h2>
+              <p className="text-lg text-slate-500">{movie?.overview}</p>
+            </section>
+            <hr className="w-full border border-gray-300"></hr>
 
-          <section className="flex flex-col gap-4 w-full">
-            <h2 className="text-2xl text-slate-900">줄거리</h2>
-            <p className="text-lg text-slate-500">{movie?.overview}</p>
-          </section>
-          <hr className="w-full border border-gray-300"></hr>
-
-          <section className="flex flex-col gap-4 w-full">
-            <h2 className="text-2xl text-slate-900">포스터</h2>
-            <div className="flex flex-col gap-8 items-center w-full justify-between">
-              <div className="flex gap-4 w-full">
-                {posters.map((poster) => {
-                  return (
-                    <div
-                      key={`cinema-detail-poster-${poster}`}
-                      onClick={() => handleModalOpen(poster)}
-                      className="w-[230px] h-[350px]"
-                    >
-                      <img
-                        src={`https://image.tmdb.org/t/p/w185${poster}`}
-                        alt="poster"
-                        className="object-cover w-full h-full"
-                        onDragStart={(e) => e.preventDefault()}
-                      />
-                    </div>
-                  );
-                })}
+            <section className="flex flex-col gap-4">
+              <h2 className="text-2xl text-slate-900">포스터</h2>
+              <div className="flex flex-col gap-8 items-center w-full justify-between">
+                <div className="flex gap-4 w-full">
+                  {posters.map((poster) => {
+                    return (
+                      <div
+                        key={`cinema-detail-poster-${poster}`}
+                        onClick={() => handleModalOpen(poster)}
+                        className="w-[230px] h-[350px]"
+                      >
+                        <img
+                          src={`https://image.tmdb.org/t/p/w185${poster}`}
+                          alt="poster"
+                          className="object-cover w-full h-full"
+                          onDragStart={(e) => e.preventDefault()}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+                <Pagination
+                  total={posterCount}
+                  value={currentPosterPage}
+                  onPageChange={handlePosterPageChange}
+                  blockSize={blockSize}
+                  pageSize={posterPageSize}
+                >
+                  <Pagination.Navigator className="flex gap-4">
+                    <Pagination.Buttons className="PaginationButtons flex gap-4 font-bold text-slate-300" />
+                  </Pagination.Navigator>
+                </Pagination>
               </div>
-              <Pagination
-                total={posterCount}
-                value={currentPosterPage}
-                onPageChange={handlePosterPageChange}
-                blockSize={blockSize}
-                pageSize={posterPageSize}
-              >
-                <Pagination.Navigator className="flex gap-4">
-                  <Pagination.Buttons className="PaginationButtons flex gap-4 font-bold text-slate-300" />
-                </Pagination.Navigator>
-              </Pagination>
-            </div>
-          </section>
-          <hr className="w-full border border-gray-300"></hr>
-          <section className="flex flex-col gap-4 w-full">
-            <h2 className="text-2xl text-slate-900">스틸이미지</h2>
-            <div className="flex flex-col gap-8 items-center w-full justify-between">
-              <div className="flex gap-4 w-full flex-wrap">
-                {images.map((image) => {
-                  return (
-                    <div
-                      key={`cinema-detail-image-${image}`}
-                      onClick={() => {
-                        handleModalOpen(image);
-                      }}
-                      className="w-[292px] h-[170px]"
-                    >
-                      <img
-                        src={`https://image.tmdb.org/t/p/w342${image}`}
-                        alt="poster"
-                        className="object-cover w-full h-full flex-shrink-0"
-                        onDragStart={(e) => e.preventDefault()}
-                      />
-                    </div>
-                  );
-                })}
+            </section>
+            <hr className="w-full border border-gray-300"></hr>
+            <section className="flex flex-col gap-4">
+              <h2 className="text-2xl text-slate-900">스틸이미지</h2>
+              <div className="flex flex-col gap-8 items-center w-full justify-between">
+                <div className="flex gap-4 w-full flex-wrap">
+                  {images.map((image) => {
+                    return (
+                      <div
+                        key={`cinema-detail-image-${image}`}
+                        onClick={() => {
+                          handleModalOpen(image);
+                        }}
+                        className="w-[292px] h-[170px]"
+                      >
+                        <img
+                          src={`https://image.tmdb.org/t/p/w342${image}`}
+                          alt="poster"
+                          className="object-cover w-full h-full flex-shrink-0"
+                          onDragStart={(e) => e.preventDefault()}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+                <Pagination
+                  total={imageCount}
+                  value={currentImagePage}
+                  onPageChange={handleImagePageChange}
+                  blockSize={blockSize}
+                  pageSize={imagePageSize}
+                >
+                  <Pagination.Navigator className="flex gap-4">
+                    <Pagination.Buttons className="PaginationButtons flex gap-4 font-bold text-slate-300" />
+                  </Pagination.Navigator>
+                </Pagination>
               </div>
-              <Pagination
-                total={imageCount}
-                value={currentImagePage}
-                onPageChange={handleImagePageChange}
-                blockSize={blockSize}
-                pageSize={imagePageSize}
-              >
-                <Pagination.Navigator className="flex gap-4">
-                  <Pagination.Buttons className="PaginationButtons flex gap-4 font-bold text-slate-300" />
-                </Pagination.Navigator>
-              </Pagination>
-            </div>
-          </section>
+            </section>
+          </div>
         </div>
       </main>
       <Modal

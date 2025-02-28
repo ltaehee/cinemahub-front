@@ -70,3 +70,25 @@ export const moviePosters = async (
     throw err;
   }
 };
+
+export const genreMovies = async (
+  genreId: number,
+  page: number,
+  limit: number
+) => {
+  try {
+    const response = await baseInstance.get(`/movie/genre/${genreId}`, {
+      params: {
+        page,
+        limit,
+      },
+    });
+
+    return response.data;
+  } catch (err) {
+    if (err instanceof AxiosError && err.response) {
+      console.log(err.response.data.message);
+    }
+    throw err;
+  }
+};
