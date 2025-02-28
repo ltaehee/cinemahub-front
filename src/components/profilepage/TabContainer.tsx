@@ -71,20 +71,16 @@ const TabContainer: FC<TabContainerProps> = ({ profile }) => {
       const response = await getFavoriteMoviesAPI(nickname, page + 1, limit);
       setFavoriteMovies(response.data);
       setTotalFavoriteMovies(response.total);
-    } catch (error) {
-      alert('에러 입니다 새로고침을 해주세요.');
-    }
+    } catch (error) {}
   };
 
-  /* 즐겨찾기 영화 데이터 조회 */
+  /* 즐겨찾기 영화인 데이터 조회 */
   const fetchFavoritePersons = async (nickname: string, page = 0) => {
     try {
       const response = await getFavoritePersonsAPI(nickname, page + 1, limit);
       setFavoritePersons(response.data);
       setTotalFavoritePersons(response.total);
-    } catch (error) {
-      alert('에러 입니다 새로고침을 해주세요.');
-    }
+    } catch (error) {}
   };
 
   // 리뷰 조회
@@ -95,7 +91,6 @@ const TabContainer: FC<TabContainerProps> = ({ profile }) => {
       setTotalReviews(response.total);
     } catch (error) {
       console.error('리뷰 데이터를 가져오는 데 실패했습니다.', error);
-      alert('리뷰 조회 실패 새로고침 해주세요');
     }
   };
 

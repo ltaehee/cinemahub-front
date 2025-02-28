@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from '../Button';
 import profileImg from '/images/profileImg.png';
 import closeImg from '/images/close.png';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import useLoginStore from '../../store/useStore';
 import SearchBar from '../adminpage/SearchBar';
 import { UserProfile } from '../../store/useProfileStore';
@@ -24,7 +24,7 @@ interface FollowSectionProps {
   debouncingMap: { [key: string]: boolean };
 }
 
-const limit = 4;
+const limit = 10;
 
 const FollowSection = ({
   profile,
@@ -33,32 +33,43 @@ const FollowSection = ({
   loggedInUserProfile,
   debouncingMap,
 }: FollowSectionProps) => {
+  const { nickname } = useParams();
   const [followers, setFollowers] = useState<FollowUser[]>([]);
   const [following, setFollowing] = useState<FollowUser[]>([]);
+  const [filteredFollowers, setFilteredFollowers] = useState<FollowUser[]>([]);
+  const [filteredFollowing, setFilteredFollowing] = useState<FollowUser[]>([]);
   const [page, setPage] = useState(1);
   const [_hasMore, setHasMore] = useState(true);
+  const [view, setView] = useState<'follower' | 'following' | null>(null);
+  const navigate = useNavigate();
+  const { IsLogin } = useLoginStore();
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredUsers, setFilteredUsers] = useState<FollowUser[]>([]);
 
   const loadMoreFollowers = async () => {
     const response = await getFollowersAPI(profile.nickname, page, limit);
-    setFollowers((prev) => [...prev, ...response.data]);
+    const newFollowers = response.data.filter(
+      (user: FollowUser) => user.deletedAt === null
+    );
+    setFollowers((prev) => [...prev, ...newFollowers]);
+    setFilteredFollowers((prev) => [...prev, ...newFollowers]); // 🔥 업데이트
     setHasMore(response.currentPage < response.totalPages);
     setPage((prev) => prev + 1);
-    console.log('FollowersData', response);
   };
 
   const loadMoreFollowing = async () => {
     const response = await getFollowingAPI(profile.nickname, page, limit);
-    setFollowing((prev) => [...prev, ...response.data]);
+    const newFollowing = response.data.filter(
+      (user: FollowUser) => user.deletedAt === null
+    );
+    setFollowing((prev) => [...prev, ...newFollowing]);
+    setFilteredFollowing((prev) => [...prev, ...newFollowing]); // 🔥 업데이트
     setHasMore(response.currentPage < response.totalPages);
     setPage((prev) => prev + 1);
-    console.log('FollowingData', response);
   };
-  useEffect(() => {
-    loadMoreFollowers();
-    loadMoreFollowing();
-  }, []);
 
-  const filteredFollowers = useMemo(
+  /* const filteredFollowers = useMemo(
     () =>
       followers ? followers.filter((user) => user.deletedAt === null) : [],
     [followers]
@@ -68,15 +79,7 @@ const FollowSection = ({
     () =>
       following ? following.filter((user) => user.deletedAt === null) : [],
     [following]
-  );
-
-  const [view, setView] = useState<'follower' | 'following' | null>(null);
-  const navigate = useNavigate();
-  const { IsLogin } = useLoginStore();
-  /* const [loggedUserProfile, setLoggedUserProfile] =
-    useState<UserProfile | null>(loggedInUserProfile || null); */
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredUsers, setFilteredUsers] = useState<FollowUser[]>([]);
+  ); */
 
   /* 팔로우,팔로잉 유저 검색 */
   const handleSearch = async (term: string) => {
@@ -98,7 +101,8 @@ const FollowSection = ({
   };
 
   // 현재 로그인한 유저가 팔로잉하고 있는 닉네임 리스트 추출
-  const followingNicknames = following.map((user) => user.nickname) || [];
+  const followingNicknames =
+    loggedInUserProfile?.following?.map((user) => user.nickname) || [];
 
   const isLoading = (nickname: string) => {
     return debouncingMap[nickname] || false;
@@ -124,6 +128,19 @@ const FollowSection = ({
     await handleUnfollow(nickname);
     updateFollowingState(nickname, false);
   };
+
+  useEffect(() => {
+    setFilteredFollowers(followers.filter((user) => user.deletedAt === null));
+  }, [followers]);
+
+  useEffect(() => {
+    setFilteredFollowing(following.filter((user) => user.deletedAt === null));
+  }, [following]);
+
+  useEffect(() => {
+    loadMoreFollowers();
+    loadMoreFollowing();
+  }, [nickname]);
 
   useEffect(() => {
     setSearchTerm('');
