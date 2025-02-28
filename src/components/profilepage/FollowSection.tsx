@@ -53,7 +53,7 @@ const FollowSection = ({
       (user: FollowUser) => user.deletedAt === null
     );
     setFollowers((prev) => [...prev, ...newFollowers]);
-    setFilteredFollowers((prev) => [...prev, ...newFollowers]); // 🔥 업데이트
+    setFilteredFollowers((prev) => [...prev, ...newFollowers]);
     setHasMore(response.currentPage < response.totalPages);
     setPage((prev) => prev + 1);
   };

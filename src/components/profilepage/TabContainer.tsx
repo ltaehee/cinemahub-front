@@ -13,6 +13,8 @@ import {
   getFavoritePersonsAPI,
 } from '../../apis/favorite';
 import { getUserReviewsAPI } from '../../apis/profile';
+import { CommentType } from '../../pages/CinemaReviewPage';
+import Comments from '../reviewpage/comment';
 
 interface TabContainerProps {
   profile: UserProfile;
@@ -45,6 +47,7 @@ const TabContainer: FC<TabContainerProps> = ({ profile }) => {
   const [pagePersons, setPagePersons] = useState(0);
 
   /* 평점 내역 */
+  const [comments, setComments] = useState<CommentType[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const [totalReviews, setTotalReviews] = useState(0);
   const [pageReviews, setPageReviews] = useState(0);
@@ -89,6 +92,7 @@ const TabContainer: FC<TabContainerProps> = ({ profile }) => {
       const response = await getUserReviewsAPI(nickname, page + 1, limit);
       setReviews(response.data);
       setTotalReviews(response.total);
+      setComments(response.data);
     } catch (error) {
       console.error('리뷰 데이터를 가져오는 데 실패했습니다.', error);
     }
@@ -211,19 +215,12 @@ const TabContainer: FC<TabContainerProps> = ({ profile }) => {
             </Pagination.Navigator>
           </Pagination>
         </Tabs.Pannel>
-        <Tabs.Pannel index={3} className="flex flex-col items-center gap-6">
-          <div className="border-2 border-black">
-            <h2>리뷰 내역:</h2>
-            {reviews.length ? (
-              reviews.map((review) => (
-                <div key={`review-${review._id}`}>
-                  <p>{review.content}</p>
-                  <p>별점: {review.starpoint}</p>
-                </div>
-              ))
-            ) : (
-              <p>리뷰가 없습니다.</p>
-            )}
+        <Tabs.Pannel
+          index={3}
+          className="w-full flex flex-col items-center gap-6"
+        >
+          <div className="w-full">
+            <Comments comments={comments} />
           </div>
           <Pagination
             total={totalReviews}

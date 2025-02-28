@@ -23,7 +23,7 @@ import { getPresignedUrl, uploadImageToS3 } from '../apis/profile';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { movieDetail } from '../apis/movie';
 
-type CommentType = {
+export type CommentType = {
   _id: string;
   userId: UserType;
   content: string;

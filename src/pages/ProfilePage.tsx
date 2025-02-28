@@ -254,7 +254,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     fetchLoggedInUserInfo();
-  }, [nickname]);
+  }, []);
 
   if (!profile) {
     return;
