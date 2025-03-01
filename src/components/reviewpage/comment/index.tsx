@@ -12,7 +12,6 @@ type CommentType = {
   _id: string;
   userId: UserType;
   content: string;
-  createdAt: string;
   imgUrls: string[];
   starpoint: number;
   like: boolean;
@@ -20,6 +19,8 @@ type CommentType = {
   totalLike: number;
   totalDisLike: number;
   IsOwner: boolean;
+  reportstatus: boolean;
+  createdAt: string;
   deletedAt: string;
 };
 
@@ -53,7 +54,6 @@ const defaultComment = {
     _id: '',
   },
   content: '',
-  createdAt: '',
   imgUrls: [],
   starpoint: 0,
   like: false,
@@ -61,6 +61,8 @@ const defaultComment = {
   totalLike: 0,
   totalDisLike: 0,
   IsOwner: false,
+  reportstatus: false,
+  createdAt: '',
   deletedAt: '',
 };
 
