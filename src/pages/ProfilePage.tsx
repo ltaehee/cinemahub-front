@@ -1,13 +1,13 @@
-import { useNavigate, useParams } from "react-router-dom";
-import Button from "../components/Button";
-import profileImg from "/images/profileImg.png";
-import profileCamera from "/images/camera.png";
-import profileEdit from "/images/profileEdit.png";
-import profileEdit2 from "/images/profileEdit2.png";
-import { useEffect, useRef, useState } from "react";
-import FollowSection from "../components/profilepage/FollowSection";
-import TabContainer from "../components/profilepage/TabContainer";
-import useLoginStore from "../store/useStore";
+import { useNavigate, useParams } from 'react-router-dom';
+import Button from '../components/Button';
+import profileImg from '/images/profileImg.png';
+import profileCamera from '/images/camera.png';
+import profileEdit from '/images/profileEdit.png';
+import profileEdit2 from '/images/profileEdit2.png';
+import { useEffect, useRef, useState } from 'react';
+import FollowSection from '../components/profilepage/FollowSection';
+import TabContainer from '../components/profilepage/TabContainer';
+import useLoginStore from '../store/useStore';
 import {
   followUser,
   getFetchNicknameCheck,
@@ -17,9 +17,9 @@ import {
   unfollowUser,
   updateProfileData,
   uploadImageToS3,
-} from "../apis/profile";
-import { profileSchema } from "../schemas/ProfileSchema";
-import useProfileStore, { UserProfile } from "../store/useProfileStore";
+} from '../apis/profile';
+import { profileSchema } from '../schemas/ProfileSchema';
+import useProfileStore, { UserProfile } from '../store/useProfileStore';
 
 const ProfilePage = () => {
   const { nickname } = useParams();
@@ -35,7 +35,7 @@ const ProfilePage = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // originalNickname 프로필 수정 전 닉네임
-  const [originalNickname, setOriginalNickname] = useState<string>("");
+  const [originalNickname, setOriginalNickname] = useState<string>('');
   const [loggedInUserProfile, setLoggedInUserProfile] =
     useState<UserProfile | null>(null);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
@@ -58,7 +58,7 @@ const ProfilePage = () => {
   const fetchLoggedInUserInfo = async () => {
     if (IsLogin) {
       const userInfo = await getLoggedInUserInfo();
-      console.log("userInfo: ", userInfo);
+      console.log('userInfo: ', userInfo);
       setLoggedInUserProfile(userInfo);
       setOriginalNickname(userInfo.nickname);
     }
@@ -96,7 +96,7 @@ const ProfilePage = () => {
 
       // S3에 이미지 업로드
       await uploadImageToS3(presignedUrl, selectedImage);
-      const imageUrl = presignedUrl.split("?")[0];
+      const imageUrl = presignedUrl.split('?')[0];
 
       setSelectedImage(null);
       setPreviewImage(null);
@@ -104,8 +104,8 @@ const ProfilePage = () => {
       return imageUrl;
     } catch (error) {
       setPreviewImage(null);
-      console.error("이미지 업로드 오류:", error);
-      alert("이미지 업로드에 실패했습니다. 다시 시도해주세요.");
+      console.error('이미지 업로드 오류:', error);
+      alert('이미지 업로드에 실패했습니다. 다시 시도해주세요.');
       return null;
     } finally {
       setIsUploading(false); // 이미지 업로드 완료 후 스피너 제거
@@ -121,7 +121,7 @@ const ProfilePage = () => {
       const { result } = await getFetchNicknameCheck(nickname, currentNickname);
       return result;
     } catch (error) {
-      console.error("닉네임 중복 체크 오류:", error);
+      console.error('닉네임 중복 체크 오류:', error);
       return false;
     }
   };
@@ -130,8 +130,8 @@ const ProfilePage = () => {
     try {
       if (isEditing && originalNickname) {
         const result = profileSchema.safeParse({
-          nickname: profile?.nickname || "",
-          introduce: profile?.introduce || "",
+          nickname: profile?.nickname || '',
+          introduce: profile?.introduce || '',
         });
 
         // 유효성 검사 실패 시 에러 메시지 나오게
@@ -147,7 +147,7 @@ const ProfilePage = () => {
           loggedInUserProfile?.introduce === profile?.introduce &&
           !selectedImage
         ) {
-          alert("변경된 내용이 없습니다.");
+          alert('변경된 내용이 없습니다.');
           return;
         }
 
@@ -170,17 +170,17 @@ const ProfilePage = () => {
         // 닉네임이 변경된 경우에만 중복 체크
         if (originalNickname !== profile?.nickname) {
           const isUnique = await checkNicknameCheck(
-            profile?.nickname || "",
+            profile?.nickname || '',
             originalNickname
           );
           if (!isUnique) {
-            alert("이미 사용 중인 닉네임입니다. 다른 닉네임을 입력하세요.");
+            alert('이미 사용 중인 닉네임입니다. 다른 닉네임을 입력하세요.');
             setProfile((prev) => {
               if (!prev) return null;
               return {
                 ...prev,
                 nickname: originalNickname,
-                introduce: loggedInUserProfile?.introduce || "",
+                introduce: loggedInUserProfile?.introduce || '',
                 profile: loggedInUserProfile?.profile,
               };
             });
@@ -199,7 +199,7 @@ const ProfilePage = () => {
           updatedImageUrl
         );
 
-        alert("프로필 수정 완료");
+        alert('프로필 수정 완료');
 
         // 프로필 상태 업데이트 (헤더에 반영)
         setHeaderProfile({
@@ -214,7 +214,7 @@ const ProfilePage = () => {
         }
       }
     } catch (error) {
-      alert("프로필 수정 실패");
+      alert('프로필 수정 실패');
     } finally {
       setIsEditing(!isEditing);
     }
@@ -229,8 +229,8 @@ const ProfilePage = () => {
       await followUser(targetNickname);
       await fetchProfileData(); // 프로필 데이터 갱신
     } catch (error) {
-      console.error("팔로우 요청 오류:", error);
-      alert("팔로우 요청 실패");
+      console.error('팔로우 요청 오류:', error);
+      alert('팔로우 요청 실패');
     } finally {
       setTimeout(() => {
         updateDebouncingMap(targetNickname, false);
@@ -247,8 +247,8 @@ const ProfilePage = () => {
       await unfollowUser(targetNickname);
       await fetchProfileData(); // 프로필 데이터 갱신
     } catch (error) {
-      console.error("언팔로우 요청 오류:", error);
-      alert("언팔로우 요청 실패");
+      console.error('언팔로우 요청 오류:', error);
+      alert('언팔로우 요청 실패');
     } finally {
       setTimeout(() => {
         updateDebouncingMap(targetNickname, false);
@@ -262,13 +262,13 @@ const ProfilePage = () => {
 
   useEffect(() => {
     fetchLoggedInUserInfo();
-  }, [nickname]);
+  }, [IsLogin]);
 
   if (!profile) {
     return;
   }
-  console.log("로그인 기준 프로필", loggedInUserProfile);
-  console.log("url기준 프로필", profile);
+  console.log('로그인 기준 프로필', loggedInUserProfile);
+  console.log('url기준 프로필', profile);
   return (
     <div className="w-full flex flex-col items-center justify-center">
       <div className="w-full max-w-[1280px] flex gap-2 mt-10 mb-20 px-8 max-h-[440px]">
@@ -359,14 +359,14 @@ const ProfilePage = () => {
                 />
               </div>
             ) : (
-              <p>{profile.introduce || "자기소개를 해주세요"}</p>
+              <p>{profile.introduce || '자기소개를 해주세요'}</p>
             )}
 
             <div className="w-full px-12">
               {!IsLogin && (
                 <Button
                   onClick={() => {
-                    alert("로그인이 필요합니다.");
+                    alert('로그인이 필요합니다.');
                   }}
                 >
                   팔로우
@@ -379,7 +379,7 @@ const ProfilePage = () => {
                       <div className="w-6 h-6 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
                     </div>
                   ) : (
-                    "팔로우"
+                    '팔로우'
                   )}
                 </Button>
               )}
@@ -393,7 +393,7 @@ const ProfilePage = () => {
                       <div className="w-6 h-6 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
                     </div>
                   ) : (
-                    "언팔로우"
+                    '언팔로우'
                   )}
                 </Button>
               )}
