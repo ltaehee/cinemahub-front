@@ -15,7 +15,7 @@ interface ListBarComponentProps {
 const ListBarComponent = (props: ListBarComponentProps) => {
   const { handleEdit } = props;
 
-  const { comment, setCommentsState } = useCommentContext();
+  const { comment, setCommentsState, setReviewInfo } = useCommentContext();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [reason, setReason] = useState<string>('');
@@ -77,6 +77,26 @@ const ListBarComponent = (props: ListBarComponentProps) => {
         return prev.filter(
           (review) => JSON.stringify(review._id) !== JSON.stringify(comment._id)
         );
+      });
+
+      setReviewInfo((prev) => {
+        const length = prev.reviewLength;
+        const score = Number(prev.reviewScore);
+        const sum = Math.floor(length * score);
+
+        if (length > 1) {
+          const newScore = (sum - comment.starpoint) / (length - 1);
+
+          return {
+            reviewLength: length - 1,
+            reviewScore: newScore.toFixed(1),
+          };
+        } else {
+          return {
+            reviewLength: length - 1,
+            reviewScore: '0',
+          };
+        }
       });
       setIsOpen(false);
     } catch (e) {}

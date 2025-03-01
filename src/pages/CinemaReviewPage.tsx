@@ -13,6 +13,7 @@ import AspectRatio from '../components/reviewpage/AspectRatio';
 import {
   getMovieidCommentArrayFetch,
   RegisterReviewFetch,
+  reviewScore,
 } from '../apis/review';
 import useLoginStore from '../store/useStore';
 import { emptyChecker } from '../util/emptyCheck';
@@ -27,7 +28,6 @@ export type CommentType = {
   _id: string;
   userId: UserType;
   content: string;
-  createdAt: string;
   imgUrls: string[];
   starpoint: number;
   like: boolean;
@@ -35,6 +35,8 @@ export type CommentType = {
   totalLike: number;
   totalDisLike: number;
   IsOwner: boolean;
+  reportstatus: boolean;
+  createdAt: string;
   deletedAt: string;
 };
 
@@ -49,9 +51,19 @@ type MovieType = {
   posterPath: string;
 };
 
+type InfoType = {
+  reviewScore: string;
+  reviewLength: number;
+};
+
 const defaultMovie = {
   title: '',
   posterPath: '',
+};
+
+const defaultInfo = {
+  reviewScore: '0',
+  reviewLength: 0,
 };
 
 const CinemaReviewPage = () => {
@@ -69,11 +81,9 @@ const CinemaReviewPage = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [imageSrcs, setImageSrcs] = useState<string[]>([]);
   const [_, setimgUrls] = useState<string[]>([]);
-  const [totalPages, setTotalPages] = useState<number>(0);
-  const [totalStarPoint, setTotalStarPoint] = useState<number>(0);
   const uploadRef = useRef<HTMLInputElement>(null);
-
   const [registerLoading, setRegisterLoading] = useState<boolean>(false);
+  const [reviewInfo, setReviewInfo] = useState<InfoType>(defaultInfo);
 
   const SingleFileReader = async (file: File) => {
     return new Promise((resolve, reject) => {
@@ -156,7 +166,7 @@ const CinemaReviewPage = () => {
         setimgUrls(imgUrls);
       }
 
-      const { result, message } = await RegisterReviewFetch({
+      const { result, data, message } = await RegisterReviewFetch({
         movieId,
         imgUrls: [],
         content: review,
@@ -173,7 +183,19 @@ const CinemaReviewPage = () => {
       setStarRate(0); // 별점 초기화
       setImageSrcs([]);
       setFiles([]);
-      handleGetComments(); // 목록 갱신
+      setComments((prev) => [...prev, { ...data.review }]);
+      setReviewInfo((prev) => {
+        const length = prev.reviewLength;
+        const score = Number(prev.reviewScore);
+        const sum = Math.floor(length * score);
+
+        const newScore = (sum + data.review.starpoint) / (length + 1);
+
+        return {
+          reviewLength: length + 1,
+          reviewScore: newScore.toFixed(1),
+        };
+      });
     } catch (e) {
     } finally {
       setRegisterLoading(false);
@@ -186,11 +208,8 @@ const CinemaReviewPage = () => {
         movieId,
       });
 
-      const { totalstarpoint, reviews, totalPages } = data;
-
+      const { reviews } = data;
       setComments(reviews);
-      setTotalPages(totalPages);
-      setTotalStarPoint(totalstarpoint);
     } catch (e) {
     } finally {
     }
@@ -214,6 +233,24 @@ const CinemaReviewPage = () => {
     }
   };
 
+  const getReviewInfo = async (movieId: string) => {
+    try {
+      const response = await reviewScore(movieId);
+
+      const finedReviewScore =
+        Number(response.reviewScore.totalStarScore) !== 0
+          ? response.reviewScore.totalStarScore.toFixed(1)
+          : '0';
+
+      setReviewInfo({
+        reviewScore: finedReviewScore,
+        reviewLength: response.reviewLength,
+      });
+    } catch (e) {
+    } finally {
+    }
+  };
+
   useEffect(() => {
     if (emptyChecker({ movieId })) {
       alert(
@@ -223,6 +260,7 @@ const CinemaReviewPage = () => {
       return;
     } else {
       getMovieData(movieId);
+      getReviewInfo(movieId);
     }
   }, []);
 
@@ -234,7 +272,7 @@ const CinemaReviewPage = () => {
             <div>
               <p className="text-3xl font-bold">{movieData.title}</p>
 
-              <div className="flex gap-5 mt-5 items-center @max-[380px]:flex-col">
+              <div className="flex gap-5 mt-5 items-center flex-col-info">
                 {IsLogin ? (
                   <div className="flex gap-2">
                     <p>나의 평점 : </p>
@@ -246,8 +284,8 @@ const CinemaReviewPage = () => {
                   </div>
                 ) : null}
 
-                <p>{totalPages} 개 리뷰</p>
-                <p>관람객 평점 : {totalStarPoint}</p>
+                <p>{reviewInfo.reviewLength} 개 리뷰</p>
+                <p>관람객 평점 : {reviewInfo.reviewScore}</p>
               </div>
             </div>
 
@@ -354,7 +392,7 @@ const CinemaReviewPage = () => {
           ) : null}
           <div className="mt-5">
             <p className="text-xl">리뷰 내역 보기</p>
-            <Comments comments={comments} />
+            <Comments comments={comments} setReviewInfo={setReviewInfo} />
           </div>
         </div>
       </div>
