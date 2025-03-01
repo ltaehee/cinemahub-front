@@ -28,7 +28,6 @@ type CommentType = {
   _id: string;
   userId: UserType;
   content: string;
-  createdAt: string;
   imgUrls: string[];
   starpoint: number;
   like: boolean;
@@ -36,6 +35,8 @@ type CommentType = {
   totalLike: number;
   totalDisLike: number;
   IsOwner: boolean;
+  reportstatus: boolean;
+  createdAt: string;
   deletedAt: string;
 };
 
@@ -165,7 +166,7 @@ const CinemaReviewPage = () => {
         setimgUrls(imgUrls);
       }
 
-      const { result, message } = await RegisterReviewFetch({
+      const { result, data, message } = await RegisterReviewFetch({
         movieId,
         imgUrls: [],
         content: review,
@@ -182,7 +183,21 @@ const CinemaReviewPage = () => {
       setStarRate(0); // 별점 초기화
       setImageSrcs([]);
       setFiles([]);
-      handleGetComments(); // 목록 갱신
+      console.log({ ...data.review });
+
+      setComments((prev) => [...prev, { ...data.review }]);
+      setReviewInfo((prev) => {
+        const length = prev.reviewLength;
+        const score = Number(prev.reviewScore);
+        const sum = Math.floor(length * score);
+
+        const newScore = (sum + data.review.starpoint) / (length + 1);
+
+        return {
+          reviewLength: length + 1,
+          reviewScore: newScore.toFixed(1),
+        };
+      });
     } catch (e) {
     } finally {
       setRegisterLoading(false);

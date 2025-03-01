@@ -82,9 +82,10 @@ const ListBarComponent = (props: ListBarComponentProps) => {
       setReviewInfo((prev) => {
         const length = prev.reviewLength;
         const score = Number(prev.reviewScore);
+        const sum = Math.floor(length * score);
 
         if (length > 1) {
-          const newScore = (length * score - comment.starpoint) / (length - 1);
+          const newScore = (sum - comment.starpoint) / (length - 1);
 
           return {
             reviewLength: length - 1,

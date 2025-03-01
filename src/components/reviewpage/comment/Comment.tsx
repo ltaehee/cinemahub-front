@@ -144,9 +144,9 @@ const Comment = (props: CommentProps) => {
       setReviewInfo((prev) => {
         const length = prev.reviewLength;
         const score = Number(prev.reviewScore);
+        const sum = Math.floor(length * score);
 
-        const newScore =
-          (length * score - comment.starpoint + editStarpoint) / length;
+        const newScore = (sum - comment.starpoint + editStarpoint) / length;
         return {
           ...prev,
           reviewScore: newScore.toFixed(1),
