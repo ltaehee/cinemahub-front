@@ -338,7 +338,7 @@ const Comment = (props: CommentProps) => {
           className="mt-2"
           style={{ wordWrap: 'break-word', whiteSpace: 'pre-wrap' }}
         >
-          {comment.reportstatus ? (
+          {comment.reportstatus && !comment.IsOwner ? (
             <div className="text-red-500">신고된 리뷰글 입니다.</div>
           ) : (
             comment.content
