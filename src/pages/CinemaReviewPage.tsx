@@ -183,8 +183,6 @@ const CinemaReviewPage = () => {
       setStarRate(0); // 별점 초기화
       setImageSrcs([]);
       setFiles([]);
-      console.log({ ...data.review });
-
       setComments((prev) => [...prev, { ...data.review }]);
       setReviewInfo((prev) => {
         const length = prev.reviewLength;

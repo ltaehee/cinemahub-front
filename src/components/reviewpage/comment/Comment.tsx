@@ -170,6 +170,12 @@ const Comment = (props: CommentProps) => {
 
   return (
     <div className="mt-6">
+      {comment.reportstatus ? (
+        <div className="w-[60px] text-center bg-red-400 text-white rounded-md">
+          신고됨
+        </div>
+      ) : null}
+
       <div className="mt-2 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="w-[36px]">
@@ -186,7 +192,9 @@ const Comment = (props: CommentProps) => {
           <p className="text-slate-400">{comment.createdAt.split('T')[0]}</p>
         </div>
 
-        <ListBarComponent handleEdit={handleEdit} />
+        {comment.reportstatus && !comment.IsOwner ? null : (
+          <ListBarComponent handleEdit={handleEdit} />
+        )}
       </div>
 
       <div className="flex items-center justify-between mt-5">
@@ -326,12 +334,16 @@ const Comment = (props: CommentProps) => {
           </div>
         </div>
       ) : (
-        <p
+        <div
           className="mt-2"
           style={{ wordWrap: 'break-word', whiteSpace: 'pre-wrap' }}
         >
-          {comment.content}
-        </p>
+          {comment.reportstatus && !comment.IsOwner ? (
+            <div className="text-red-500">신고된 리뷰글 입니다.</div>
+          ) : (
+            comment.content
+          )}
+        </div>
       )}
 
       <div className="mt-4">
