@@ -81,21 +81,14 @@ const ListBarComponent = (props: ListBarComponentProps) => {
 
       setReviewInfo((prev) => {
         const length = prev.reviewLength;
-        const score = prev.reviewScore;
+        const score = Number(prev.reviewScore);
 
-        if (length > 1 && score > 1) {
-          const newScore = (length * score - comment.starpoint) / length - 1;
-          return {
-            reviewLength: length - 1,
-            reviewScore: Number(newScore.toFixed(1)),
-          };
-        } else {
-          /// 리뷰가 20개 인데 평균 평점이 1일 경우 다시 고려
-          return {
-            reviewLength: length - 1,
-            reviewScore: (length - 1) * score - comment.starpoint,
-          };
-        }
+        const newScore = (length * score - comment.starpoint) / (length - 1);
+
+        return {
+          reviewLength: length - 1,
+          reviewScore: newScore.toFixed(1),
+        };
       });
       setIsOpen(false);
     } catch (e) {}

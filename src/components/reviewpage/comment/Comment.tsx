@@ -143,22 +143,14 @@ const Comment = (props: CommentProps) => {
 
       setReviewInfo((prev) => {
         const length = prev.reviewLength;
-        const score = prev.reviewScore;
+        const score = Number(prev.reviewScore);
 
-        if (length > 1 && score > 1) {
-          const newScore =
-            (length * score - comment.starpoint + editStarpoint) / length;
-          return {
-            ...prev,
-            reviewScore: Number(newScore.toFixed(1)),
-          };
-        } else {
-          /// 리뷰가 20개 인데 평균 평점이 1일 경우
-          return {
-            ...prev,
-            reviewScore: Number(editStarpoint.toFixed(1)) / length,
-          };
-        }
+        const newScore =
+          (length * score - comment.starpoint + editStarpoint) / length;
+        return {
+          ...prev,
+          reviewScore: newScore.toFixed(1),
+        };
       });
 
       setEditMode(false);

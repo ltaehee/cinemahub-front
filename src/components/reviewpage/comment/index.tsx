@@ -30,7 +30,7 @@ type UserType = {
 };
 
 type InfoType = {
-  reviewScore: number;
+  reviewScore: string;
   reviewLength: number;
 };
 
