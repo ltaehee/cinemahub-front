@@ -51,7 +51,7 @@ type MovieType = {
 };
 
 type InfoType = {
-  reviewScore: number;
+  reviewScore: string;
   reviewLength: number;
 };
 
@@ -61,7 +61,7 @@ const defaultMovie = {
 };
 
 const defaultInfo = {
-  reviewScore: 0,
+  reviewScore: '0',
   reviewLength: 0,
 };
 
@@ -224,8 +224,13 @@ const CinemaReviewPage = () => {
     try {
       const response = await reviewScore(movieId);
 
+      const finedReviewScore =
+        Number(response.reviewScore.totalStarScore) !== 0
+          ? response.reviewScore.totalStarScore.toFixed(1)
+          : '0';
+
       setReviewInfo({
-        reviewScore: response.reviewScore.totalStarScore.toFixed(1),
+        reviewScore: finedReviewScore,
         reviewLength: response.reviewLength,
       });
     } catch (e) {

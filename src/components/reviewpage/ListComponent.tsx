@@ -83,12 +83,19 @@ const ListBarComponent = (props: ListBarComponentProps) => {
         const length = prev.reviewLength;
         const score = Number(prev.reviewScore);
 
-        const newScore = (length * score - comment.starpoint) / (length - 1);
+        if (length > 1) {
+          const newScore = (length * score - comment.starpoint) / (length - 1);
 
-        return {
-          reviewLength: length - 1,
-          reviewScore: newScore.toFixed(1),
-        };
+          return {
+            reviewLength: length - 1,
+            reviewScore: newScore.toFixed(1),
+          };
+        } else {
+          return {
+            reviewLength: length - 1,
+            reviewScore: '0',
+          };
+        }
       });
       setIsOpen(false);
     } catch (e) {}
