@@ -29,35 +29,45 @@ type UserType = {
   _id: string;
 };
 
+type InfoType = {
+  reviewScore: string;
+  reviewLength: number;
+};
+
 export interface CommentContextType {
   comment: CommentType;
   setCommentsState: Dispatch<SetStateAction<CommentType[]>>;
+  setReviewInfo: Dispatch<SetStateAction<InfoType>>;
 }
 
 interface CommentProps {
   comments: CommentType[];
+  setReviewInfo: Dispatch<SetStateAction<InfoType>>;
 }
 
-const CommentContext = createContext<CommentContextType>({
-  comment: {
+const defaultComment = {
+  _id: '',
+  userId: {
+    nickname: '',
+    profile: '',
     _id: '',
-    userId: {
-      nickname: '',
-      profile: '',
-      _id: '',
-    },
-    content: '',
-    createdAt: '',
-    imgUrls: [],
-    starpoint: 0,
-    like: false,
-    dislike: false,
-    totalLike: 0,
-    totalDisLike: 0,
-    IsOwner: false,
-    deletedAt: '',
   },
+  content: '',
+  createdAt: '',
+  imgUrls: [],
+  starpoint: 0,
+  like: false,
+  dislike: false,
+  totalLike: 0,
+  totalDisLike: 0,
+  IsOwner: false,
+  deletedAt: '',
+};
+
+const CommentContext = createContext<CommentContextType>({
+  comment: defaultComment,
   setCommentsState: () => {},
+  setReviewInfo: () => {},
 });
 
 export const useCommentContext = () => {
@@ -69,7 +79,7 @@ export const useCommentContext = () => {
 };
 
 const Comments = (props: CommentProps) => {
-  const { comments } = props;
+  const { comments, setReviewInfo } = props;
   const [commentsState, setCommentsState] = useState<CommentType[]>([]);
 
   useEffect(() => {
@@ -82,7 +92,7 @@ const Comments = (props: CommentProps) => {
         commentsState.map((comment, index) => (
           <CommentContext.Provider
             key={index}
-            value={{ comment, setCommentsState }}
+            value={{ comment, setCommentsState, setReviewInfo }}
           >
             <Comment index={index} />
             <div className="h-[1px] bg-slate-200 my-5"></div>

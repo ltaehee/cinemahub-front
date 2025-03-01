@@ -20,7 +20,8 @@ const Comment = (props: CommentProps) => {
   const { index } = props;
   const IsLogin = useLoginStore((set) => set.IsLogin);
 
-  const { comment, setCommentsState } = useCommentContext();
+  const { comment, setCommentsState, setReviewInfo } = useCommentContext();
+
   const [editMode, setEditMode] = useState<boolean>(false);
   const [editReview, setEditReview] = useState<string>(comment.content);
   const [editStarpoint, setEditStarpoint] = useState<number>(comment.starpoint);
@@ -139,6 +140,19 @@ const Comment = (props: CommentProps) => {
             : review
         );
       });
+
+      setReviewInfo((prev) => {
+        const length = prev.reviewLength;
+        const score = Number(prev.reviewScore);
+
+        const newScore =
+          (length * score - comment.starpoint + editStarpoint) / length;
+        return {
+          ...prev,
+          reviewScore: newScore.toFixed(1),
+        };
+      });
+
       setEditMode(false);
       setFiles([]);
       setimgUrls([]);
