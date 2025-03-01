@@ -192,7 +192,9 @@ const Comment = (props: CommentProps) => {
           <p className="text-slate-400">{comment.createdAt.split('T')[0]}</p>
         </div>
 
-        <ListBarComponent handleEdit={handleEdit} />
+        {comment.reportstatus && !comment.IsOwner ? null : (
+          <ListBarComponent handleEdit={handleEdit} />
+        )}
       </div>
 
       <div className="flex items-center justify-between mt-5">
