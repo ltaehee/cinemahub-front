@@ -4,6 +4,7 @@ import UnlikeIcon from '../../icons/UnlikeIcon';
 import { useCommentContext } from './comment';
 import { emptyChecker } from '../../util/emptyCheck';
 import { getLikesFetch } from '../../apis/review';
+import useLikeDebounce from '../../hooks/useLikeDebounce';
 
 type CommentType = {
   _id: string;
@@ -57,7 +58,7 @@ const LikeComponent = () => {
     }
 
     try {
-      const { result, data, message } = await getLikesFetch({
+      const { result, data } = await getLikesFetch({
         commentId,
         likes,
       });
@@ -65,20 +66,22 @@ const LikeComponent = () => {
       if (!result) {
         throw new Error('좋아요/싫어요 등록 실패');
       }
-      alert(message);
 
       setUpdateComment((prev) => ({
         ...prev,
+        like: data.like,
+        dislike: data.dislike,
         totalLike: data.totalLike,
         totalDisLike: data.totalDisLike,
       }));
+
+      setLikes((prev) => ({ ...prev, like: data.like, dislike: data.dislike }));
     } catch (e) {}
   };
 
   const handleLike = () => {
     //좋아요 취소
     if (likes.like) {
-      setLikes({ like: false, dislike: false });
       handleLikesFetch({ commentId, likes: { like: false, dislike: false } });
       return;
     }
@@ -89,7 +92,6 @@ const LikeComponent = () => {
   const handleUnLike = () => {
     //싫어요 취소
     if (likes.dislike) {
-      setLikes({ like: false, dislike: false });
       handleLikesFetch({ commentId, likes: { like: false, dislike: false } });
       return;
     }
@@ -104,19 +106,23 @@ const LikeComponent = () => {
     });
   }, []);
 
+  const debounce = useLikeDebounce();
+  const likeDebounce = debounce(handleLike, 1000);
+  const dislikeDebounce = debounce(handleUnLike, 1000);
+
   return (
     <>
       <div className="flex gap-3">
         <div
           className={`flex items-center gap-2 bg-[#D1D1D1] hover:bg-[#BDBDBD] p-[8px] rounded-[5px] transition`}
-          onClick={() => handleLike()}
+          onClick={likeDebounce}
         >
           <LikeIcon recomm={likes.like} />
           <span>{updateComment.totalLike}</span>
         </div>
         <div
           className={`flex items-center gap-2 bg-[#D1D1D1] hover:bg-[#BDBDBD] p-[8px] rounded-[5px] transition`}
-          onClick={() => handleUnLike()}
+          onClick={dislikeDebounce}
         >
           <UnlikeIcon recomm={likes.dislike} />
           <span>{updateComment.totalDisLike}</span>
