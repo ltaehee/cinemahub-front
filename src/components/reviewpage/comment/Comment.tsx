@@ -141,7 +141,7 @@ const Comment = (props: CommentProps) => {
         );
       });
 
-      setReviewInfo((prev) => {
+      setReviewInfo?.((prev) => {
         const length = prev.reviewLength;
         const score = Number(prev.reviewScore);
         const sum = Math.floor(length * score);
