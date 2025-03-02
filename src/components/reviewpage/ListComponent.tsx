@@ -23,6 +23,8 @@ const ListBarComponent = (props: ListBarComponentProps) => {
   const listRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
+  const [registerLoading, setRegisterLoading] = useState<boolean>(false);
+
   const IsOwner = comment.IsOwner;
 
   const handleReport = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -43,6 +45,7 @@ const ListBarComponent = (props: ListBarComponentProps) => {
 
   const handleRegisterReport = async () => {
     try {
+      setRegisterLoading(true);
       const { result, message } = await RegisterReportFetch({
         commentId: comment._id,
         reason,
@@ -54,7 +57,10 @@ const ListBarComponent = (props: ListBarComponentProps) => {
       }
 
       alert(message);
-    } catch (e) {}
+    } catch (e) {
+    } finally {
+      setRegisterLoading(false);
+    }
   };
 
   const handleEditReview = () => {
@@ -164,8 +170,18 @@ const ListBarComponent = (props: ListBarComponentProps) => {
                 </p>
               </div>
 
-              <Button className="mt-2 h-10" onClick={handleRegisterReport}>
-                등록하기
+              <Button
+                className="mt-2 h-10"
+                onClick={handleRegisterReport}
+                disabled={registerLoading}
+              >
+                {registerLoading ? (
+                  <div className="flex justify-center items-center">
+                    <div className="w-6 h-6 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
+                  </div>
+                ) : (
+                  '등록하기'
+                )}
               </Button>
             </div>
           </div>
