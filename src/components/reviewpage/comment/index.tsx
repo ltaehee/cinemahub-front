@@ -38,12 +38,12 @@ type InfoType = {
 export interface CommentContextType {
   comment: CommentType;
   setCommentsState: Dispatch<SetStateAction<CommentType[]>>;
-  setReviewInfo: Dispatch<SetStateAction<InfoType>>;
+  setReviewInfo?: Dispatch<SetStateAction<InfoType>>;
 }
 
 interface CommentProps {
   comments: CommentType[];
-  setReviewInfo: Dispatch<SetStateAction<InfoType>>;
+  setReviewInfo?: Dispatch<SetStateAction<InfoType>>;
 }
 
 const defaultComment = {

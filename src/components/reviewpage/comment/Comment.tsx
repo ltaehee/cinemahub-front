@@ -346,9 +346,11 @@ const Comment = (props: CommentProps) => {
         </div>
       )}
 
-      <div className="mt-4">
-        <LikeComponent />
-      </div>
+      {comment.reportstatus && !comment.IsOwner ? null : (
+        <div className="mt-4">
+          <LikeComponent />
+        </div>
+      )}
     </div>
   );
 };
