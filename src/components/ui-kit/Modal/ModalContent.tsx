@@ -42,7 +42,12 @@ const ModalContent = (props: ModalContentProps) => {
           <div
             style={
               fixed
-                ? { position: "fixed" }
+                ? {
+                    position: "fixed",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                  }
                 : {
                     position: "absolute",
                     left: "50%",

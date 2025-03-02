@@ -223,16 +223,15 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
               ></div>
             </div>
           )}
-          <div>
-            <div
-              className="flex absolute inset-y-0 left-0 w-full rounded-t-2xl bg-black/50 backdrop-blur-[20px]"
-              style={{
-                WebkitMaskImage:
-                  "linear-gradient(to right, black, transparent)",
-                maskImage: "linear-gradient(to right, black, transparent)",
-              }}
-            ></div>
-            <div className="flex flex-col gap-4 absolute inset-y-0 left-16 h-[692] top-[90%] transform -translate-y-100 text-white">
+          <div
+            className="flex absolute inset-y-0 left-0 w-full rounded-t-2xl bg-black/50 backdrop-blur-[20px]"
+            style={{
+              WebkitMaskImage: "linear-gradient(to right, black, transparent)",
+              maskImage: "linear-gradient(to right, black, transparent)",
+            }}
+          ></div>
+          <div className="flex flex-col absolute inset-y-0 left-16 h-[692] top-0 text-white">
+            <div className="flex flex-col gap-4 justify-end pb-24 h-full">
               {movie?.logoPath ? (
                 <img
                   src={`https://image.tmdb.org/t/p/original${movie?.logoPath}`}

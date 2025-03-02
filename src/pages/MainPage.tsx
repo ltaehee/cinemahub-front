@@ -47,13 +47,9 @@ const MainPage = () => {
     setSelectedPerson,
   } = useModalOpenStore();
 
-  const [popularPeople, setPopularPeople] = useState<PopularActors[]>([
-    {
-      personId: "",
-      name: "",
-      profilePath: "",
-    },
-  ]);
+  const [popularPeople, setPopularPeople] = useState<PopularActors[] | null>(
+    null
+  );
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -272,54 +268,56 @@ const MainPage = () => {
             </CarouselXscroll.Navigator>
           </CarouselXscroll>
         </section>
-        <section className="pt-8">
-          <div className="px-8">
-            <h3 ref={baseRef} className="pb-2 font-medium text-xl">
-              이번주 인기 배우
-            </h3>
-          </div>
-          <CarouselXscroll
-            baseRect={baseRect}
-            pixelMove={window.outerWidth}
-            itemListRef={personRef}
-            className="group pb-16"
-          >
-            <CarouselXscroll.ItemContainer className="h-full">
-              <CarouselXscroll.Items className="flex gap-4">
-                {popularPeople.map((person) => {
-                  return (
-                    <PersonCard
-                      key={`main-person-${person.personId}`}
-                      personId={person.personId}
-                      name={person.name}
-                      profilePath={person.profilePath}
-                    />
-                  );
-                })}
-              </CarouselXscroll.Items>
-            </CarouselXscroll.ItemContainer>
-            <CarouselXscroll.Navigator>
-              {(prev, next, leftStyle, rightStyle) => (
-                <>
-                  <button
-                    className="bg-[rgba(255,255,255,0.5)] rounded-full opacity-0 group-hover:opacity-100 duration-300 ease-in-out b backdrop-blur-sm"
-                    style={leftStyle}
-                    onClick={prev}
-                  >
-                    <ChevronIcon height="56px" />
-                  </button>
-                  <button
-                    className="bg-[rgba(255,255,255,0.5)] rounded-full opacity-0 group-hover:opacity-100 duration-300 ease-in-out backdrop-blur-sm"
-                    style={rightStyle}
-                    onClick={next}
-                  >
-                    <ChevronIcon height="56px" className="rotate-180" />
-                  </button>
-                </>
-              )}
-            </CarouselXscroll.Navigator>
-          </CarouselXscroll>
-        </section>
+        {popularPeople && (
+          <section className="pt-8">
+            <div className="px-8">
+              <h3 ref={baseRef} className="pb-2 font-medium text-xl">
+                이번주 인기 배우
+              </h3>
+            </div>
+            <CarouselXscroll
+              baseRect={baseRect}
+              pixelMove={window.outerWidth}
+              itemListRef={personRef}
+              className="group pb-16"
+            >
+              <CarouselXscroll.ItemContainer className="h-full">
+                <CarouselXscroll.Items className="flex gap-4">
+                  {popularPeople.map((person) => {
+                    return (
+                      <PersonCard
+                        key={`main-person-${person.personId}`}
+                        personId={person.personId}
+                        name={person.name}
+                        profilePath={person.profilePath}
+                      />
+                    );
+                  })}
+                </CarouselXscroll.Items>
+              </CarouselXscroll.ItemContainer>
+              <CarouselXscroll.Navigator>
+                {(prev, next, leftStyle, rightStyle) => (
+                  <>
+                    <button
+                      className="bg-[rgba(255,255,255,0.5)] rounded-full opacity-0 group-hover:opacity-100 duration-300 ease-in-out b backdrop-blur-sm"
+                      style={leftStyle}
+                      onClick={prev}
+                    >
+                      <ChevronIcon height="56px" />
+                    </button>
+                    <button
+                      className="bg-[rgba(255,255,255,0.5)] rounded-full opacity-0 group-hover:opacity-100 duration-300 ease-in-out backdrop-blur-sm"
+                      style={rightStyle}
+                      onClick={next}
+                    >
+                      <ChevronIcon height="56px" className="rotate-180" />
+                    </button>
+                  </>
+                )}
+              </CarouselXscroll.Navigator>
+            </CarouselXscroll>
+          </section>
+        )}
       </main>
 
       <ModalPage

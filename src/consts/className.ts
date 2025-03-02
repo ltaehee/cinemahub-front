@@ -16,7 +16,7 @@ export const calendarBodyCls = getBaseCls("calendar-body");
 export const calendarCurrentCls = getBaseCls("calendar-current");
 export const calendarNavigatorCls = getBaseCls("calendar-navigator");
 
-// Carousel Component
+// carouselInfinite Component
 export const carouselInfiniteBaseCls = getBaseCls("carousel-infinite");
 export const carouselInfiniteItemContainerCls = getBaseCls(
   "carousel-infinite-item-container"
