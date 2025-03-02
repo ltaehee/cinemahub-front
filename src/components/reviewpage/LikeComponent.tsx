@@ -58,7 +58,7 @@ const LikeComponent = () => {
     }
 
     try {
-      const { result, data } = await getLikesFetch({
+      const { result, data, message } = await getLikesFetch({
         commentId,
         likes,
       });
@@ -76,6 +76,7 @@ const LikeComponent = () => {
       }));
 
       setLikes((prev) => ({ ...prev, like: data.like, dislike: data.dislike }));
+      alert(message);
     } catch (e) {}
   };
 
