@@ -141,18 +141,18 @@ const AdminPage = () => {
     setActiveIndex(index);
   };
 
-  // const [totalPages, setTotalPages] = useState(0); // 전체 페이지 수  수정
   const [totalUsers, setTotalUsers] = useState(0); // 총 유저 데이터 수
   const [totalReported, setTotalReported] = useState(0); // 신고 리뷰 총 개수
   const [userPage, setUserPage] = useState(0);
   const [reviewPage, setReviewPage] = useState(0);
-  // console.log("page: ", page);
+
   const handleChangeUserPage = (page: number) => {
     setUserPage(page);
   };
   const handleChangeReviewPage = (page: number) => {
     setReviewPage(page);
   };
+
   // 유저데이터 가져오기 (검색 or 전체 조회)
   const getUserData = async () => {
     try {
@@ -164,7 +164,6 @@ const AdminPage = () => {
         response = await getFetchUser(userPage, userLimit);
       }
       console.log("response: ", response);
-      // setTotalPages(response.data.totalPages); // 수정
       setTotalUsers(response.data.totalCount);
       setUsers(response.data.users);
     } catch (err) {
@@ -218,6 +217,7 @@ const AdminPage = () => {
       setSelectedUsers([]);
     }
   }, [activeindex, reviewPage]);
+
   return (
     <>
       <div className="w-full flex items-center justify-center ">
