@@ -48,6 +48,7 @@ const TabContainer: FC<TabContainerProps> = ({ profile }) => {
 
   /* 평점 내역 */
   const [comments, setComments] = useState<CommentType[]>([]);
+  console.log('comments', comments);
   const [totalReviews, setTotalReviews] = useState(0);
   const [pageReviews, setPageReviews] = useState(0);
 
