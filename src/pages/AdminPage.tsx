@@ -37,14 +37,11 @@ const AdminPage = () => {
   const [reportedUser, setReportedUser] = useState<ReportProps[]>([]); // 신고 리뷰 유저
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [selectedReviews, setSelectedReviews] = useState<string[]>([]);
-  console.log("reportedUser: ", reportedUser);
-  // console.log("selectedUsers: ", selectedUsers);
-  console.log("selectedReviews: ", selectedReviews);
+
   const [searchQuery, setSearchQuery] = useState<string>(""); // 유저 검색어 상태
   const [isSearching, setIsSearching] = useState(false); // 유저 검색 중인지 여부
   const [searchQueryReview, setSearchQueryReview] = useState<string>(""); // 리뷰관련 검색어 상태
   const [isSearchingReview, setIsSearchingReview] = useState(false); // 리뷰관련 검색 중인지 여부
-  // console.log("searchQueryReview: ", searchQuery);
 
   const handleSelectUser = (email: string) => {
     setSelectedUsers((prev) =>
@@ -157,7 +154,7 @@ const AdminPage = () => {
   const getUserData = async () => {
     try {
       let response;
-      if (isSearchingReview) {
+      if (isSearching) {
         response = await getFetchUserInfo(searchQuery, userPage, userLimit);
         if (!response) return;
       } else {
