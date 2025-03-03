@@ -1,11 +1,4 @@
-import {
-  createContext,
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { createContext, Dispatch, SetStateAction, useContext } from 'react';
 import Comment from './Comment';
 
 type CommentType = {
@@ -37,12 +30,13 @@ type InfoType = {
 
 export interface CommentContextType {
   comment: CommentType;
-  setCommentsState: Dispatch<SetStateAction<CommentType[]>>;
+  setComments?: Dispatch<SetStateAction<CommentType[]>>;
   setReviewInfo?: Dispatch<SetStateAction<InfoType>>;
 }
 
 interface CommentProps {
   comments: CommentType[];
+  setComments?: Dispatch<SetStateAction<CommentType[]>>;
   setReviewInfo?: Dispatch<SetStateAction<InfoType>>;
 }
 
@@ -68,7 +62,7 @@ const defaultComment = {
 
 const CommentContext = createContext<CommentContextType>({
   comment: defaultComment,
-  setCommentsState: () => {},
+  setComments: () => {},
   setReviewInfo: () => {},
 });
 
@@ -81,20 +75,15 @@ export const useCommentContext = () => {
 };
 
 const Comments = (props: CommentProps) => {
-  const { comments, setReviewInfo } = props;
-  const [commentsState, setCommentsState] = useState<CommentType[]>([]);
-
-  useEffect(() => {
-    setCommentsState(comments);
-  }, [comments]);
+  const { comments, setComments, setReviewInfo } = props;
 
   return (
     <>
-      {commentsState.length ? (
-        commentsState.map((comment, index) => (
+      {comments.length ? (
+        comments.map((comment, index) => (
           <CommentContext.Provider
             key={index}
-            value={{ comment, setCommentsState, setReviewInfo }}
+            value={{ comment, setComments, setReviewInfo }}
           >
             <Comment index={index} />
             <div className="h-[1px] bg-slate-200 my-5"></div>

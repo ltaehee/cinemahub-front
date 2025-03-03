@@ -1,12 +1,12 @@
-import { ChangeEvent, useEffect, useRef, useState } from "react";
-import ListIcon from "../../icons/ListIcon";
-import { useCommentContext } from "./comment";
-import Modal from "@ui/Modal";
-import CloseIcon from "../../icons/CloseIcon";
-import Textarea from "../Textarea";
-import Button from "../Button";
-import { deleteReviewFetch, RegisterReportFetch } from "../../apis/review";
-import ModalBackdrop from "@ui/Modal/ModalBackdrop";
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import ListIcon from '../../icons/ListIcon';
+import { useCommentContext } from './comment';
+import Modal from '@ui/Modal';
+import CloseIcon from '../../icons/CloseIcon';
+import Textarea from '../Textarea';
+import Button from '../Button';
+import { deleteReviewFetch, RegisterReportFetch } from '../../apis/review';
+import ModalBackdrop from '@ui/Modal/ModalBackdrop';
 
 interface ListBarComponentProps {
   handleEdit: (edit: boolean) => void;
@@ -15,10 +15,10 @@ interface ListBarComponentProps {
 const ListBarComponent = (props: ListBarComponentProps) => {
   const { handleEdit } = props;
 
-  const { comment, setCommentsState, setReviewInfo } = useCommentContext();
+  const { comment, setComments, setReviewInfo } = useCommentContext();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [reason, setReason] = useState<string>("");
+  const [reason, setReason] = useState<string>('');
   const portalRef = useRef(null);
   const listRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -79,7 +79,7 @@ const ListBarComponent = (props: ListBarComponentProps) => {
         return;
       }
       alert(message);
-      setCommentsState((prev) => {
+      setComments?.((prev) => {
         return prev.filter(
           (review) => JSON.stringify(review._id) !== JSON.stringify(comment._id)
         );
@@ -129,11 +129,11 @@ const ListBarComponent = (props: ListBarComponentProps) => {
     }
 
     if (isOpen) {
-      window.addEventListener("click", handleOutSideClick);
+      window.addEventListener('click', handleOutSideClick);
     }
 
     return () => {
-      window.removeEventListener("click", handleOutSideClick);
+      window.removeEventListener('click', handleOutSideClick);
     };
   }, [isOpen, listRef, contentRef]);
   return (
