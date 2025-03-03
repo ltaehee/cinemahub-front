@@ -7,7 +7,6 @@ import useLoginStore from '../../store/useStore';
 import { UserProfile } from '../../store/useProfileStore';
 import { getFollowersAPI, getFollowingAPI } from '../../apis/profile';
 import useInfinite from '../../hooks/useInfinite';
-import SearchBar from '../adminpage/SearchBar';
 
 interface FollowUser {
   nickname: string;
@@ -50,19 +49,8 @@ const FollowSection = ({
   const [view, setView] = useState<'follower' | 'following' | null>(null);
   const navigate = useNavigate();
   const { IsLogin } = useLoginStore();
-  const [searchTerm, setSearchTerm] = useState('');
-  // const [filteredUsers, setFilteredUsers] = useState<FollowUser[]>([]);
   const [infiniteLoading, setInfiniteLoading] = useState(false);
   const observerRef = useRef<HTMLDivElement | null>(null);
-
-  /* 팔로우,팔로잉 유저 검색 */
-  const handleSearch = (query: string) => {
-    setSearchTerm(query);
-  };
-  /* 필터링된 유저 리스트 */
-  const filteredUsers = (view === 'follower' ? followers : followings).filter(
-    (user) => user.nickname.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   /* 팔로워 조회 */
   const loadMoreFollowers = async () => {
@@ -273,11 +261,6 @@ const FollowSection = ({
           </div>
 
           <div className="w-full">
-            <SearchBar
-              onSearch={handleSearch}
-              useDebounce={false}
-              className="w-[full]"
-            />
             {(view === 'follower' ? followers : followings).map(
               (user, index, array) => {
                 const isFollowing =
