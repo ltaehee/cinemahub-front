@@ -80,7 +80,7 @@ const CinemaReviewPage = () => {
   const [review, setReview] = useState<string>('');
   const [files, setFiles] = useState<File[]>([]);
   const [imageSrcs, setImageSrcs] = useState<string[]>([]);
-  const [_, setimgUrls] = useState<string[]>([]);
+  const [imageUrls, setimageUrls] = useState<string[]>([]);
   const uploadRef = useRef<HTMLInputElement>(null);
   const [registerLoading, setRegisterLoading] = useState<boolean>(false);
   const [reviewInfo, setReviewInfo] = useState<InfoType>(defaultInfo);
@@ -163,12 +163,12 @@ const CinemaReviewPage = () => {
 
       if (files.length !== 0) {
         const imgUrls = await handleFileUpload();
-        setimgUrls(imgUrls);
+        setimageUrls(imgUrls);
       }
 
       const { result, data, message } = await RegisterReviewFetch({
         movieId,
-        imgUrls: [],
+        imgUrls: imageUrls,
         content: review,
         starpoint: starRate,
       });
