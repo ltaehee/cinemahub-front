@@ -57,11 +57,11 @@ const SearchPage = () => {
   const [keywordState, setKeywordState] = useState<string>(keyword || "");
   const [categoryState, setCategoryState] = useState<string>(category || "");
 
-  // console.log("page: ", page);
+  console.log("page: ", page);
   // console.log("peopleWithMovie: ", peopleWithMovie);
-  // console.log("people: ", people);
-  // console.log("movies: ", movies);
-  // console.log("responseTotalCount: ", responseTotalCount);
+  console.log("people: ", people);
+  console.log("movies: ", movies);
+  console.log("responseTotalCount: ", responseTotalCount);
 
   const {
     isMovieOpen,
@@ -144,16 +144,16 @@ const SearchPage = () => {
   // 초기 검색어 검색 시 한글 자음만 입력 아닌 경우에 검색
   useEffect(() => {
     if (!keyword || isHangulConsonantPattern.test(keyword)) return;
-    if (movies.length === 0) {
-      setMovies([]);
-    }
+    // if (movies.length === 0) {
+    //   setMovies([]);
+    // }
     if (people.length === 0) {
       setPeople([]);
     }
     if (peopleWithMovie.length === 0) {
       setPeopleWithMovie([]);
     }
-    setPage(1);
+    // setPage(1);
     setHasMore(true);
     if (!isMovieOpen && !isPersonOpen) {
       getFetchData(keyword);
@@ -186,11 +186,11 @@ const SearchPage = () => {
   }, [movies, people, responseTotalCount, page]);
 
   // 홈 일땐 영화값 초기화
-  useEffect(() => {
-    if (location.pathname === "/") {
-      resetStore();
-    }
-  }, [location.pathname]);
+  // useEffect(() => {
+  //   if (location.pathname === "/") {
+  //     resetStore();
+  //   }
+  // }, [location.pathname]);
 
   useEffect(() => {
     if (observerRef) {
