@@ -5,6 +5,7 @@ import {
   checkFavoriteAPI,
   removeFavoriteAPI,
 } from '../../apis/favorite';
+import useLikeDebounce from '../../hooks/useLikeDebounce';
 
 interface FavoritesProps extends SVGAttributes<SVGSVGElement> {
   favoriteType: string;
@@ -24,9 +25,7 @@ const FavoritesBtn = ({
     try {
       const response = await checkFavoriteAPI(favoriteType, favoriteId);
       setIsFavorite(response.isFavorite);
-    } catch (error) {
-      alert('즐겨찾기 상태 확인 실패 새로고침을 해주세요 ');
-    }
+    } catch (error) {}
   };
 
   // 즐겨찾기 추가
@@ -49,7 +48,7 @@ const FavoritesBtn = ({
     }
   };
   // 좋아요 상태 토글 함수
-  const toggleFavorite = (e: React.MouseEvent) => {
+  /* const toggleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation(); // 버튼 눌러도 페이지 이동안하게
     if (!IsLogin) {
       alert('로그인이 필요합니다.');
@@ -57,8 +56,17 @@ const FavoritesBtn = ({
     }
     // 현재 상태에 따라 추가 또는 삭제
     isFavorite ? removeFavorite() : addFavorite();
-  };
+  }; */
 
+  // 좋아요 상태 토글 함수
+  const debounce = useLikeDebounce();
+  const toggleFavoriteDebounce = debounce(() => {
+    if (!IsLogin) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+    isFavorite ? removeFavorite() : addFavorite();
+  }, 200);
   useEffect(() => {
     if (IsLogin) {
       checkFavorite();
@@ -67,7 +75,10 @@ const FavoritesBtn = ({
 
   return (
     <svg
-      onClick={toggleFavorite}
+      onClick={(e) => {
+        e.stopPropagation();
+        toggleFavoriteDebounce();
+      }}
       width="39"
       height="39"
       viewBox="0 0 39 39"
