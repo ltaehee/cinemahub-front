@@ -170,7 +170,7 @@ const MainPage = () => {
         <section className="pt-8">
           <div className="px-8">
             <h3 ref={baseRef} className="pb-2 font-medium text-xl">
-              영화 카테고리
+              장르별 영화
             </h3>
           </div>
           <CarouselXscroll

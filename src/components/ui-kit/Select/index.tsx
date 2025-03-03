@@ -45,6 +45,8 @@ interface SelectProps {
   value: string;
   item?: SelectedItem;
   setItem?: Dispatch<SetStateAction<SelectedItem>>;
+  position?: "bottom-left" | "bottom-center" | "bottom-right";
+  fixed?: boolean;
 }
 
 const Select: FC<SelectProps> & SelectCompoundProps = (props) => {
@@ -55,6 +57,8 @@ const Select: FC<SelectProps> & SelectCompoundProps = (props) => {
     value,
     item: propItem,
     setItem: propSetItem,
+    position = "bottom-left",
+    fixed,
   } = props;
 
   const [internalItem, setInternalItem] = useState<SelectedItem>({
@@ -73,7 +77,7 @@ const Select: FC<SelectProps> & SelectCompoundProps = (props) => {
   );
   return (
     <SelectContext.Provider value={contextValue}>
-      <Popover position="bottom-left" className={selectCls}>
+      <Popover position={position} className={selectCls} fixed={fixed}>
         {children}
       </Popover>
     </SelectContext.Provider>

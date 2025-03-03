@@ -8,15 +8,13 @@ interface Movie {
   genreIds: number[];
 }
 
-type SortBy = "popularity" | "latest" | "title";
-
 interface GenreMovieStore {
   movies: Movie[];
   page: number;
-  sortBy: SortBy;
+  sortBy: string;
   setMovies: (movies: Movie[]) => void;
   setPage: (page: number) => void;
-  setSortBy: (sortBy: SortBy) => void;
+  setSortBy: (sortBy: string) => void;
 }
 
 const useGenreMovieStore = create<GenreMovieStore>((set) => ({
@@ -25,7 +23,7 @@ const useGenreMovieStore = create<GenreMovieStore>((set) => ({
   sortBy: "popularity",
   setMovies: (movies: Movie[]) => set({ movies }),
   setPage: (page: number) => set({ page }),
-  setSortBy: (sortBy: SortBy) => set({ sortBy }),
+  setSortBy: (sortBy: string) => set({ sortBy }),
 }));
 
 export default useGenreMovieStore;

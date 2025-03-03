@@ -16,7 +16,7 @@ interface PopoverContentProps {
 }
 
 const PopoverContent = (props: PopoverContentProps) => {
-  const { isOpen, setIsOpen, position, triggerRect } =
+  const { isOpen, setIsOpen, position, triggerRect, fixed } =
     useContext(PopoverContext);
   const { className, children } = props;
   const contentRef = useRef<HTMLDivElement>(null);
@@ -39,56 +39,56 @@ const PopoverContent = (props: PopoverContentProps) => {
 
   const getContentPosition = (): CSSProperties => {
     if (!triggerRect) return {};
-    const scrollY = window.scrollY;
-    const scrollX = window.scrollX;
 
     if (position === "bottom-left")
       return {
         position: "absolute",
-        top: `${triggerRect.bottom + scrollY}px`,
-        left: `${triggerRect.left + scrollX}px`,
+        top: `${triggerRect.bottom}px`,
+        left: `${triggerRect.left}px`,
       };
     if (position === "bottom-center")
       return {
         position: "absolute",
-        top: `${triggerRect.bottom + scrollY}px`,
-        left: `${triggerRect.left + scrollX + triggerRect.width / 2}px`,
+        top: `${triggerRect.bottom}px`,
+        left: `${triggerRect.left + triggerRect.width / 2}px`,
         transform: "translateX(-50%)",
       };
     if (position === "bottom-right")
       return {
         position: "absolute",
-        top: `${triggerRect.bottom + scrollY}px`,
-        left: `${triggerRect.right + scrollX}px`,
+        top: `${triggerRect.bottom}px`,
+        left: `${triggerRect.right}px`,
       };
     return {
       position: "absolute",
-      top: `${triggerRect.bottom + scrollY}px`,
-      left: `${triggerRect.left + scrollX}px`,
+      top: `${triggerRect.bottom}px`,
+      left: `${triggerRect.left}px`,
     };
   };
+  {
+    fixed &&
+      useEffect(() => {
+        const updatePosition = () => {
+          if (isOpen) {
+            contentRef.current?.style.setProperty(
+              "top",
+              `${triggerRect.bottom + window.scrollY}px`
+            );
+            contentRef.current?.style.setProperty(
+              "left",
+              `${triggerRect.left + window.scrollX}px`
+            );
+          }
+        };
 
-  useEffect(() => {
-    const updatePosition = () => {
-      if (isOpen) {
-        contentRef.current?.style.setProperty(
-          "top",
-          `${triggerRect.bottom + window.scrollY}px`
-        );
-        contentRef.current?.style.setProperty(
-          "left",
-          `${triggerRect.left + window.scrollX}px`
-        );
-      }
-    };
-
-    window.addEventListener("resize", updatePosition);
-    window.addEventListener("scroll", updatePosition);
-    return () => {
-      window.removeEventListener("resize", updatePosition);
-      window.removeEventListener("scroll", updatePosition);
-    };
-  }, [isOpen, triggerRect]);
+        window.addEventListener("resize", updatePosition);
+        window.addEventListener("scroll", updatePosition);
+        return () => {
+          window.removeEventListener("resize", updatePosition);
+          window.removeEventListener("scroll", updatePosition);
+        };
+      }, [isOpen, triggerRect]);
+  }
 
   const cls = useMemo(
     () => (className ? `${className} ${popoverContentCls}` : popoverContentCls),

@@ -24,6 +24,7 @@ interface PopoverContextProps {
   position: "bottom-left" | "bottom-center" | "bottom-right";
   openPopover: () => void;
   closePopover: () => void;
+  fixed?: boolean;
 }
 
 export const PopoverContext = createContext<PopoverContextProps>({
@@ -34,16 +35,18 @@ export const PopoverContext = createContext<PopoverContextProps>({
   position: "bottom-left",
   openPopover: () => {},
   closePopover: () => {},
+  fixed: false,
 });
 
 interface PopoverProps {
   children: ReactNode;
   className?: string;
   position?: "bottom-left" | "bottom-center" | "bottom-right";
+  fixed?: boolean;
 }
 
 const Popover: FC<PopoverProps> & PopoverCompoundProps = (props) => {
-  const { children, className, position = "bottom-left" } = props;
+  const { children, className, position = "bottom-left", fixed } = props;
   const [triggerRect, setTriggerRect] = useState(new DOMRect());
   const [isOpen, setIsOpen] = useState(false);
 
@@ -58,6 +61,7 @@ const Popover: FC<PopoverProps> & PopoverCompoundProps = (props) => {
     position,
     openPopover,
     closePopover,
+    fixed,
   };
 
   const cls = useMemo(
