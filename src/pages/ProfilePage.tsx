@@ -20,7 +20,13 @@ import {
 } from '../apis/profile';
 import { profileSchema } from '../schemas/ProfileSchema';
 import useProfileStore, { UserProfile } from '../store/useProfileStore';
-
+export interface FollowUser {
+  nickname: string;
+  email: string;
+  profile?: string;
+  isFollowing?: boolean;
+  deletedAt?: string | null;
+}
 const ProfilePage = () => {
   const { nickname } = useParams();
   const [isEditing, setIsEditing] = useState(false);
@@ -406,6 +412,7 @@ const ProfilePage = () => {
           handleFollow={handleFollow}
           handleUnfollow={handleUnfollow}
           debouncingMap={debouncingMap}
+          setLoggedInUserProfile={setLoggedInUserProfile}
         />
       </div>
 

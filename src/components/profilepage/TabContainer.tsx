@@ -48,7 +48,6 @@ const TabContainer: FC<TabContainerProps> = ({ profile }) => {
 
   /* 평점 내역 */
   const [comments, setComments] = useState<CommentType[]>([]);
-  const [reviews, setReviews] = useState<any[]>([]);
   const [totalReviews, setTotalReviews] = useState(0);
   const [pageReviews, setPageReviews] = useState(0);
 
@@ -90,19 +89,12 @@ const TabContainer: FC<TabContainerProps> = ({ profile }) => {
   const fetchReviews = async (nickname: string, page = 0) => {
     try {
       const response = await getUserReviewsAPI(nickname, page + 1, limit);
-      setReviews(response.data);
       setTotalReviews(response.total);
       setComments(response.data);
     } catch (error) {
       console.error('리뷰 데이터를 가져오는 데 실패했습니다.', error);
     }
   };
-
-  useEffect(() => {
-    if (profile.nickname) {
-      fetchReviews(profile.nickname);
-    }
-  }, [profile.nickname]);
 
   useEffect(() => {
     if (profile.nickname) {

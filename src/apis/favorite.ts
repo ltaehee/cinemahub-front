@@ -49,7 +49,6 @@ export const getFavoriteMoviesAPI = async (
         limit,
       },
     });
-    console.log('영화 api 응답', response.data);
 
     return response.data;
   } catch (err) {}
@@ -68,7 +67,6 @@ export const getFavoritePersonsAPI = async (
         limit,
       },
     });
-    console.log('영화인 api 응답', response.data);
 
     return response.data;
   } catch (err) {}
