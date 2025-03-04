@@ -1,7 +1,7 @@
-import Modal from "@ui/Modal";
-import { FC, ReactNode, useEffect, useState } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import XIcon from "../../../icons/XIcon";
+import Modal from '@ui/Modal';
+import { FC, ReactNode, useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import XIcon from '../../../icons/XIcon';
 
 interface ModalPageProps {
   pageParams: string;
@@ -30,24 +30,32 @@ const ModalPage: FC<ModalPageProps> = (props) => {
   const currentPage = location.pathname + location.search;
   const [scrollY, setScrollY] = useState(0);
 
+  const pageFromRef = useRef(pageFrom);
+
+  useEffect(() => {
+    pageFromRef.current = pageFrom; // 최신 pageFrom 값 저장
+  }, [pageFrom]);
+
   const closeModal = () => {
     setSelectedPage(null);
     setPageOpen(false);
-    navigate(`${pageFrom}`);
+
+    const latestPageFrom = pageFromRef.current; // 최신값 가져오기
+    navigate(latestPageFrom);
   };
 
   useEffect(() => {
-    const rootElement = document.getElementById("root");
+    const rootElement = document.getElementById('root');
 
     if (rootElement) {
       if (isPageOpen) {
         setScrollY(window.scrollY);
         rootElement.style.top = `-${scrollY}px`;
-        rootElement.style.position = "fixed";
+        rootElement.style.position = 'fixed';
         window.scrollTo(0, 0);
       } else {
-        rootElement.style.position = "";
-        rootElement.style.top = "";
+        rootElement.style.position = '';
+        rootElement.style.top = '';
         window.scrollTo(0, scrollY);
       }
     }
