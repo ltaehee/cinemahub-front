@@ -1,8 +1,14 @@
+import { useEffect } from 'react';
 import GoogleIcon from '../icons/GoogleIcon';
 import NaverIcon from '../icons/NaverIcon';
 import bgMovies from '../images/bg-image.jpg';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const Login = () => {
+  const [searchParams, _] = useSearchParams();
+  const navigator = useNavigate();
+  const user = searchParams.get('user') || null;
+
   const handleGoogleSignin = () => {
     window.location.href = '/api/login/google/google-oauth';
   };
@@ -10,6 +16,14 @@ const Login = () => {
   const handleNaverSignin = () => {
     window.location.href = '/api/login/naver/naver-oauth';
   };
+
+  useEffect(() => {
+    if (user === 'deleted') {
+      alert('이미 탈퇴 처리중인 이메일입니다. 다른 계정으로 로그인해주세요.');
+      navigator('/login', { replace: true });
+      return;
+    }
+  }, []);
 
   return (
     <>
