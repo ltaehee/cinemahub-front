@@ -23,7 +23,7 @@ const Comment = (props: CommentProps) => {
   const { index, movieTitle, moviePoster, isProfilePage } = props;
   const IsLogin = useLoginStore((set) => set.IsLogin);
 
-  const { comment, setCommentsState, setReviewInfo } = useCommentContext();
+  const { comment, setComments, setReviewInfo } = useCommentContext();
 
   const [editMode, setEditMode] = useState<boolean>(false);
   const [editReview, setEditReview] = useState<string>(comment.content);
@@ -131,7 +131,7 @@ const Comment = (props: CommentProps) => {
       }
       alert(message);
 
-      setCommentsState((prev) => {
+      setComments?.((prev) => {
         return prev.map((review) =>
           JSON.stringify(review._id) === JSON.stringify(comment._id)
             ? {

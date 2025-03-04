@@ -392,7 +392,11 @@ const CinemaReviewPage = () => {
           ) : null}
           <div className="mt-5">
             <p className="text-xl">리뷰 내역 보기</p>
-            <Comments comments={comments} setReviewInfo={setReviewInfo} />
+            <Comments
+              comments={comments}
+              setComments={setComments}
+              setReviewInfo={setReviewInfo}
+            />
           </div>
         </div>
       </div>

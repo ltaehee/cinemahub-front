@@ -41,7 +41,7 @@ interface Movie {
 const SearchPage = () => {
   // const [movies, setMovies] = useState<Movie[]>([]);
   // const [page, setPage] = useState(1);
-  const { movies, setMovies, page, setPage, resetStore } = useSearchStore();
+  const { movies, setMovies, page, setPage } = useSearchStore();
 
   const [searchParams] = useSearchParams();
   const [people, setPeople] = useState<People[]>([]);
@@ -176,9 +176,10 @@ const SearchPage = () => {
 
   // 검색한 전체 데이터 다 가져오면 api 호출 못하게
   useEffect(() => {
+    if (loading) return;
     if (
-      (movies.length > 0 && responseTotalCount === movies.length) ||
-      (people.length > 0 && responseTotalCount === page)
+      (movies.length !== 0 && responseTotalCount === movies.length) ||
+      (people.length !== 0 && responseTotalCount === page)
     ) {
       console.log("모든 데이터를 불러왔습니다. 더 이상 요청하지 않습니다.");
       setHasMore(false);
