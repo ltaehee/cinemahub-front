@@ -239,7 +239,6 @@ const CinemaReviewPage = () => {
         return;
       }
       setMovieData({ posterPath: response.posterPath, title: response.title });
-      handleGetComments();
     } catch (e) {
     } finally {
     }
@@ -426,7 +425,11 @@ const CinemaReviewPage = () => {
               </div>
             )}
 
-            {displayLoading ? '로딩 중' : <div ref={observeRef}></div>}
+            {comments.length !== 0 && displayLoading ? (
+              '로딩 중'
+            ) : (
+              <div ref={observeRef}></div>
+            )}
           </div>
         </div>
       </div>
