@@ -272,14 +272,14 @@ const ProfilePage = () => {
   if (!profile) {
     return;
   }
-  console.log('로그인 기준 프로필', loggedInUserProfile);
-  console.log('url기준 프로필', profile);
+  // console.log('로그인 기준 프로필', loggedInUserProfile);
+  // console.log('url기준 프로필', profile);
   return (
-    <div className="w-full flex flex-col items-center justify-center bg-gray-50">
-      <div className="w-full max-w-[1280px] flex gap-2 mt-10 mb-20 px-8 max-h-[440px]">
-        <div className="w-full  border border-[#DFDFDF] rounded-2xl">
+    <div className="w-full flex flex-col items-center justify-center bg-gray-50 min-h-[calc(100vh-185px)]">
+      <div className="w-full max-w-[1280px] flex gap-2 mt-10 mb-20 px-8 max-h-[440px] ">
+        <div className="w-full  border border-[#DFDFDF] rounded-2xl bg-white">
           <div className="w-full relative flex flex-col gap-2 items-center p-2">
-            <div className="w-full flex justify-end mb-4">
+            <div className="w-full flex justify-end mb-4 ">
               {isOwnProfile ? (
                 <img
                   src={isEditing ? profileEdit2 : profileEdit}

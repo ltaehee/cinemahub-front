@@ -175,7 +175,7 @@ const Comment = (props: CommentProps) => {
     <div className="flex gap-10 items-stretch">
       {/* 영화 포스터 & 제목 */}
       {movieTitle && moviePoster && (
-        <div className="flex flex-col items-center rounded-md overflow-hidden bg-white w-[235px]">
+        <div className="flex flex-col items-center rounded-md overflow-hidden bg-white w-[235px] border border-[#DFDFDF]">
           <img
             src={moviePoster}
             alt="영화제목"
@@ -193,7 +193,9 @@ const Comment = (props: CommentProps) => {
       {/* 리뷰 내용 영역 */}
       <div
         className={`flex-1 rounded-md ${
-          isProfilePage ? 'bg-white p-5' : 'bg-[#F8F9FA]'
+          isProfilePage
+            ? 'bg-white p-5 border border-[#DFDFDF]'
+            : 'bg-[#F8F9FA]'
         } flex flex-col justify-between min-h-[250px]`}
       >
         {/* 신고된 리뷰 알림 */}

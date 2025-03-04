@@ -219,7 +219,7 @@ const FollowSection = ({
     <div className="w-full">
       {view === null ? (
         <div className="w-full h-full flex flex-col gap-2">
-          <div className="h-full flex flex-col justify-center items-center border border-[#DFDFDF] rounded-2xl py-4 px-12">
+          <div className="h-full flex flex-col justify-center items-center border border-[#DFDFDF] rounded-2xl py-4 px-12 bg-white">
             <p className="font-semibold">팔로워</p>
             <p className="font-bold text-2xl py-4">{totalFollower}명</p>
             <Button
@@ -229,7 +229,7 @@ const FollowSection = ({
               팔로워 보기
             </Button>
           </div>
-          <div className="h-full flex flex-col justify-center items-center border border-[#DFDFDF] rounded-2xl py-4 px-12">
+          <div className="h-full flex flex-col justify-center items-center border border-[#DFDFDF] rounded-2xl py-4 px-12 bg-white">
             <p className="font-semibold">팔로잉</p>
             <p className="font-bold text-2xl py-4">{totalFollowing}명</p>
             <Button
@@ -243,7 +243,7 @@ const FollowSection = ({
           </div>
         </div>
       ) : (
-        <div className="border border-[#DFDFDF] rounded-2xl p-4 w-full h-full overflow-y-scroll ">
+        <div className="border border-[#DFDFDF] rounded-2xl p-4 w-full h-full overflow-y-scroll bg-white">
           <div
             className="flex justify-between items-center pb-2"
             ref={observerRef}
