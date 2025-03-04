@@ -62,7 +62,7 @@ const GenrePage = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-
+  console.log("page: ", page);
   const trigger = async () => {
     if (isMovieOpen || isPersonOpen) return;
     try {

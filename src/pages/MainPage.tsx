@@ -15,6 +15,7 @@ import { useModalOpenStore } from "../store/useModalOpenStore";
 import ModalPage from "@ui/ModalPage";
 import MovieCard from "../components/mainpage/MovieCard";
 import { useNavigate } from "react-router-dom";
+import useSearchStore from "../store/useSearchStore";
 
 interface PopularActors {
   personId: string;
@@ -46,6 +47,15 @@ const MainPage = () => {
     selectedPerson,
     setSelectedPerson,
   } = useModalOpenStore();
+
+  const {
+    setMovies,
+    setPeople,
+    setPeopleWithMovie,
+    setPage,
+    setKeywordState,
+    setCategoryState,
+  } = useSearchStore();
 
   const [popularPeople, setPopularPeople] = useState<PopularActors[] | null>(
     null
@@ -89,6 +99,15 @@ const MainPage = () => {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
+  }, []);
+
+  useEffect(() => {
+    setMovies([]);
+    setPeople([]);
+    setPeopleWithMovie([]);
+    setPage(1);
+    setKeywordState("");
+    setCategoryState("");
   }, []);
 
   return (

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { getFetchMovieInfo, getFetchPeopleInfo } from "../apis/search";
 import MovieCard from "../components/mainpage/MovieCard";
 import PersonCard from "../components/mainpage/PersonCard";
@@ -41,11 +41,24 @@ interface Movie {
 const SearchPage = () => {
   // const [movies, setMovies] = useState<Movie[]>([]);
   // const [page, setPage] = useState(1);
-  const { movies, setMovies, page, setPage } = useSearchStore();
+  const {
+    movies,
+    setMovies,
+    page,
+    setPage,
+    keywordState,
+    setKeywordState,
+    categoryState,
+    setCategoryState,
+    people,
+    peopleWithMovie,
+    setPeople,
+    setPeopleWithMovie,
+  } = useSearchStore();
 
   const [searchParams] = useSearchParams();
-  const [people, setPeople] = useState<People[]>([]);
-  const [peopleWithMovie, setPeopleWithMovie] = useState<PeopleWithMovie[]>([]);
+  // const [people, setPeople] = useState<People[]>([]);
+  // const [peopleWithMovie, setPeopleWithMovie] = useState<PeopleWithMovie[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [baseRect, _] = useState(new DOMRect());
   const [hasMore, setHasMore] = useState(true);
@@ -54,13 +67,15 @@ const SearchPage = () => {
   const observerRef = useRef<HTMLDivElement>(null);
   const category = searchParams.get("category");
   const keyword = searchParams.get("keyword");
-  const [keywordState, setKeywordState] = useState<string>(keyword || "");
-  const [categoryState, setCategoryState] = useState<string>(category || "");
-
+  // const [keywordState, setKeywordState] = useState<string>(keyword || "");
+  // const [categoryState, setCategoryState] = useState<string>(category || "");
+  const location = useLocation();
   console.log("page: ", page);
-  // console.log("peopleWithMovie: ", peopleWithMovie);
+  console.log("peopleWithMovie: ", peopleWithMovie);
   console.log("people: ", people);
   console.log("movies: ", movies);
+  // console.log("keywordState: ", keywordState);
+  // console.log("categoryState: ", categoryState);
   console.log("responseTotalCount: ", responseTotalCount);
 
   const {
@@ -74,16 +89,68 @@ const SearchPage = () => {
     setSelectedPerson,
   } = useModalOpenStore();
 
-  const getFetchData = async (keyword: string) => {
-    if (isMovieOpen || isPersonOpen) return;
-    setLoading(true);
+  // const getFetchData = async (keyword: string) => {
+  //   if (isMovieOpen || isPersonOpen) return;
+  //   setLoading(true);
+  //   try {
+  //     if (!keyword.trim()) {
+  //       setHasMore(false);
+  //       return;
+  //     }
+  //     if (category === "movie") {
+  //       const response = await getFetchMovieInfo(keywordState, page);
+  //       setResponseTotalCount(response.totalCount);
+  //       console.log("response movie: ", response);
+
+  //       setMovies((prevMovies) => {
+  //         const prevMovieIds = new Set(
+  //           prevMovies.map((movie) => movie.movieId)
+  //         );
+  //         const newMovies = response.movies.filter(
+  //           (movie: Movie) => !prevMovieIds.has(movie.movieId)
+  //         );
+  //         return page === 1 ? newMovies : [...prevMovies, ...newMovies];
+  //       });
+  //       // if (response.movies.length > 0) {
+  //       //   setMovies([...movies, ...response.movies]);
+  //       // }
+  //       // setPeople([]);
+  //     } else {
+  //       const response = await getFetchPeopleInfo(keywordState, page);
+  //       setResponseTotalCount(response.totalPages);
+  //       console.log("response people: ", response);
+  //       setPeople((prevPeople) => {
+  //         const prevPeopleIds = new Set(prevPeople.map((person) => person.id));
+  //         const newPeople = response.people.filter(
+  //           (person: People) => !prevPeopleIds.has(person.id)
+  //         );
+  //         return [...prevPeople, ...newPeople];
+  //       });
+
+  //       setPeopleWithMovie((prevMovies) => {
+  //         const prevMoviesIds = new Set(prevMovies.map((movie) => movie.id));
+  //         const newMovies = response.movies.filter(
+  //           (movie: PeopleWithMovie) => !prevMoviesIds.has(movie.id)
+  //         );
+  //         return [...prevMovies, ...newMovies];
+  //       });
+  //       // setMovies([]);
+  //     }
+  //   } catch (err) {
+  //     console.error("검색 오류: ", err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const trigger = async () => {
+    if (isMovieOpen || isPersonOpen || loading || !hasMore || !categoryState)
+      return;
     try {
-      if (!keyword.trim()) {
-        setHasMore(false);
-        return;
-      }
-      if (category === "movie") {
-        const response = await getFetchMovieInfo(keyword, page);
+      setLoading(true);
+      if (categoryState === "movie") {
+        const response = await getFetchMovieInfo(keywordState, page);
+
         setResponseTotalCount(response.totalCount);
         console.log("response movie: ", response);
 
@@ -96,12 +163,10 @@ const SearchPage = () => {
           );
           return page === 1 ? newMovies : [...prevMovies, ...newMovies];
         });
-        // if (response.movies.length > 0) {
-        //   setMovies([...movies, ...response.movies]);
-        // }
+
         setPeople([]);
-      } else {
-        const response = await getFetchPeopleInfo(keyword, page);
+      } else if (categoryState === "person") {
+        const response = await getFetchPeopleInfo(keywordState, page + 1);
         setResponseTotalCount(response.totalPages);
         console.log("response people: ", response);
         setPeople((prevPeople) => {
@@ -119,60 +184,22 @@ const SearchPage = () => {
           );
           return [...prevMovies, ...newMovies];
         });
-        // setMovies([]);
+        setMovies([]);
       }
+
+      // if (movies.length > 0 || people.length > 0) {
+      // 데이터가 있을 경우에만 페이지 증가
+      // setPage(page + 1);
+      setPage((prev) => prev + 1);
+      // }
     } catch (err) {
-      console.error("검색 오류: ", err);
+      console.log(err);
     } finally {
       setLoading(false);
     }
   };
 
-  const trigger = () => {
-    if (isMovieOpen || isPersonOpen || loading || !hasMore) return;
-
-    if (
-      movies.length > 0 ||
-      people.length > 0 // 데이터가 있을 경우에만 페이지 증가
-    ) {
-      setPage((prev) => prev + 1);
-    }
-  };
-
   const { setTargetRef } = useInfinite(trigger, [page]);
-
-  // 초기 검색어 검색 시 한글 자음만 입력 아닌 경우에 검색
-  useEffect(() => {
-    if (!keyword || isHangulConsonantPattern.test(keyword)) return;
-    // if (movies.length === 0) {
-    //   setMovies([]);
-    // }
-    if (people.length === 0) {
-      setPeople([]);
-    }
-    if (peopleWithMovie.length === 0) {
-      setPeopleWithMovie([]);
-    }
-    // setPage(1);
-    setHasMore(true);
-    if (!isMovieOpen && !isPersonOpen) {
-      getFetchData(keyword);
-    }
-  }, [keyword]);
-
-  // 2 페이지 이상일 때 실행
-  useEffect(() => {
-    if (
-      keyword &&
-      page > 1 &&
-      hasMore &&
-      !isHangulConsonantPattern.test(keyword) &&
-      !isMovieOpen &&
-      !isPersonOpen
-    ) {
-      getFetchData(keyword);
-    }
-  }, [page, hasMore, keyword]);
 
   // 검색한 전체 데이터 다 가져오면 api 호출 못하게
   useEffect(() => {
@@ -186,12 +213,25 @@ const SearchPage = () => {
     }
   }, [movies, people, responseTotalCount, page]);
 
-  // 홈 일땐 영화값 초기화
-  // useEffect(() => {
-  //   if (location.pathname === "/") {
-  //     resetStore();
-  //   }
-  // }, [location.pathname]);
+  useEffect(() => {
+    if (keywordState !== keyword || categoryState !== category) {
+      setKeywordState(keyword || "");
+      setCategoryState(category || "");
+    }
+  }, [keyword, category]);
+
+  useEffect(() => {
+    // keyword가 null일 경우 keywordState로 설정
+    if (!keyword && keywordState) {
+      setKeywordState(keywordState);
+    }
+  }, [keyword, keywordState]);
+
+  useEffect(() => {
+    if (!category && categoryState) {
+      setCategoryState(categoryState);
+    }
+  }, [category, categoryState]);
 
   useEffect(() => {
     if (observerRef) {
@@ -199,10 +239,38 @@ const SearchPage = () => {
     }
   }, [observerRef]);
 
-  useEffect(() => {
-    setKeywordState(keyword || "");
-    setCategoryState(category || "");
-  }, [keyword]);
+  // 초기 검색어 검색 시 한글 자음만 입력 아닌 경우에 검색
+  // useEffect(() => {
+  //   if (!keyword || isHangulConsonantPattern.test(keyword)) return;
+  //   if (movies.length === 0) {
+  //     setMovies([]);
+  //   }
+  //   if (people.length === 0) {
+  //     setPeople([]);
+  //   }
+  //   if (peopleWithMovie.length === 0) {
+  //     setPeopleWithMovie([]);
+  //   }
+  //   // setPage(1);
+  //   setHasMore(true);
+  //   // if (!isMovieOpen && !isPersonOpen) {
+  //   getFetchData(keyword);
+  //   // }
+  // }, [keywordState]);
+
+  // 2 페이지 이상일 때 실행
+  // useEffect(() => {
+  //   if (
+  //     keyword &&
+  //     page > 1 &&
+  //     hasMore &&
+  //     !isHangulConsonantPattern.test(keyword) &&
+  //     !isMovieOpen &&
+  //     !isPersonOpen
+  //   ) {
+  //     getFetchData(keyword);
+  //   }
+  // }, [page, hasMore, keywordState]);
 
   return (
     <>

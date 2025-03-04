@@ -30,13 +30,6 @@ const Header = () => {
     setValue("keyword", "");
   };
 
-  // 검색 카테고리
-  const [category, setCategory] = useState<string>("movie");
-  const [selectedItem, setSelectedItem] = useState<SelectedItem>({
-    label: "영화",
-    value: "movie",
-  });
-
   // 검색
   const [searchParams, _] = useSearchParams();
   const { register, handleSubmit, watch, setValue } = useForm<SearchForm>();
@@ -45,6 +38,21 @@ const Header = () => {
   const urlCategory = searchParams.get("category") ?? "";
   const debounceKeyword = UseDebounce(keyword, 700);
   const [isAdmin, setIsAdmin] = useState(false); // 관리자인지 확인
+  const [category, setCategory] = useState<string>(
+    urlCategory === "person" ? "person" : "movie"
+  );
+
+  const [selectedItem, setSelectedItem] = useState<SelectedItem>(
+    urlCategory === "person"
+      ? {
+          label: "영화인",
+          value: "person",
+        }
+      : {
+          label: "영화",
+          value: "movie",
+        }
+  );
 
   const onValid = (data: SearchForm) => {
     navigate(`/search?category=${category}&keyword=${data.keyword}`);
@@ -91,12 +99,12 @@ const Header = () => {
     }
   }, [urlKeyword]);
 
-  useEffect(() => {
-    if (urlCategory === "person") {
-      setCategory("person");
-      setSelectedItem({ label: "영화인", value: "person" });
-    }
-  }, [urlCategory]);
+  // useEffect(() => {
+  //   if (urlCategory === "person") {
+  //     setCategory("person");
+  //     setSelectedItem({ label: "영화인", value: "person" });
+  //   }
+  // }, [urlCategory]);
 
   // 로그인 시 관리자계정인지 확인
   useEffect(() => {
