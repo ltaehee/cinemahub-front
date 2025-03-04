@@ -93,7 +93,6 @@ const FollowSection = ({
     setInfiniteLoading(true);
 
     const response = await getFollowingAPI(profile.nickname, page, limit);
-    console.log('Tete', response);
 
     if (response.data.length > 0) {
       // 데이터가 존재할 때만 업데이트

@@ -34,6 +34,8 @@ const TabContainer: FC<TabContainerProps> = ({ profile }) => {
     setSelectedMovie,
     selectedPerson,
     setSelectedPerson,
+    setPageFrom,
+    pageFrom,
   } = useModalOpenStore();
 
   /* 즐겨찾기 영화 */
@@ -113,6 +115,13 @@ const TabContainer: FC<TabContainerProps> = ({ profile }) => {
       fetchReviews(profile.nickname, pageReviews);
     }
   }, [profile.nickname, pageReviews]);
+
+  useEffect(() => {
+    if (isMovieOpen || isPersonOpen) {
+      setPageFrom(window.location.pathname);
+      console.log('Updated pageFrom (modal open):', window.location.pathname);
+    }
+  }, [isMovieOpen, isPersonOpen, setPageFrom]);
 
   return (
     <div className="w-full max-w-[1280px] flex px-8 box-border">
@@ -236,7 +245,7 @@ const TabContainer: FC<TabContainerProps> = ({ profile }) => {
         setSelectedPage={setSelectedMovie}
         selectedPage={selectedMovie}
         isPageOpen={isMovieOpen}
-        pageFrom={window.location.pathname}
+        pageFrom={pageFrom}
       >
         {selectedMovie !== null && <CinemaDetailPage movieId={selectedMovie} />}
       </ModalPage>
@@ -247,7 +256,7 @@ const TabContainer: FC<TabContainerProps> = ({ profile }) => {
         setSelectedPage={setSelectedPerson}
         selectedPage={selectedPerson}
         isPageOpen={isPersonOpen}
-        pageFrom={window.location.pathname}
+        pageFrom={pageFrom}
       >
         {selectedPerson !== null && (
           <PersonDetailPage personId={selectedPerson} />
