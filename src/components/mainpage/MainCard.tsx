@@ -5,6 +5,7 @@ import MuteIcon from "../../icons/MuteIcon";
 import { useNavigate } from "react-router-dom";
 import { reviewScore } from "../../apis/review";
 import StarYellowIcon from "../../icons/StarYellowIcon";
+import FavoritesBtn from "./FavoritesBtn";
 
 interface MovieProps {
   movieId: string;
@@ -81,6 +82,11 @@ const MainCard: FC<MovieProps> = ({
 
   return (
     <div className="relative bg-cover bg-center w-full h-[45vw] flex items-center rounded-3xl text-white">
+      <FavoritesBtn
+        favoriteType="Movie"
+        favoriteId={movieId}
+        className="absolute top-4 left-4 border border-gray-200 rounded-full z-1"
+      />
       <div className="absolute inset-0 rounded-3xl transition-opacity duration-1000 ease-in-out">
         {trailer && showTrailer && (
           <iframe
