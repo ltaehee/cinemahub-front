@@ -1,6 +1,6 @@
 import Tabs from '@ui/Tabs';
 import MovieCard from '../mainpage/MovieCard';
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import PersonCard from '../mainpage/PersonCard';
 import CinemaDetailPage from '../../pages/CinemaDetailPage';
 import PersonDetailPage from '../../pages/PersonDetailPage';
@@ -37,6 +37,8 @@ const TabContainer: FC<TabContainerProps> = ({ profile }) => {
     setPageFrom,
     pageFrom,
   } = useModalOpenStore();
+
+  const pageFromRef = useRef(window.location.pathname);
 
   /* 즐겨찾기 영화 */
   const [favoriteMovies, setFavoriteMovies] = useState<any[]>([]);
@@ -118,10 +120,12 @@ const TabContainer: FC<TabContainerProps> = ({ profile }) => {
 
   useEffect(() => {
     if (isMovieOpen || isPersonOpen) {
-      setPageFrom(window.location.pathname);
-      console.log('Updated pageFrom (modal open):', window.location.pathname);
+      const newPageFrom = window.location.pathname;
+      setPageFrom(newPageFrom);
+      pageFromRef.current = newPageFrom; // ref에도 최신 값 저장
+      // console.log('Updated pageFrom (modal open):', newPageFrom);
     }
-  }, [isMovieOpen, isPersonOpen, setPageFrom]);
+  }, [isMovieOpen, isPersonOpen, profile.nickname]);
 
   return (
     <div className="w-full max-w-[1280px] flex px-8 box-border ">
