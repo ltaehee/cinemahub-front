@@ -414,11 +414,17 @@ const CinemaReviewPage = () => {
           ) : null}
           <div className="mt-5">
             <p className="text-xl">리뷰 내역 보기</p>
-            <Comments
-              comments={comments}
-              setComments={setComments}
-              setReviewInfo={setReviewInfo}
-            />
+            {comments.length !== 0 ? (
+              <Comments
+                comments={comments}
+                setComments={setComments}
+                setReviewInfo={setReviewInfo}
+              />
+            ) : (
+              <div className="text-center border border-slate-300 p-5">
+                <p>리뷰 조회 내역이 없습니다.</p>
+              </div>
+            )}
 
             {displayLoading ? '로딩 중' : <div ref={observeRef}></div>}
           </div>
