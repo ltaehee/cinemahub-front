@@ -22,6 +22,8 @@ type CommentType = {
   reportstatus: boolean;
   createdAt: string;
   deletedAt: string;
+  movieTitle?: string;
+  moviePoster?: string;
 };
 
 type UserType = {
@@ -44,6 +46,7 @@ export interface CommentContextType {
 interface CommentProps {
   comments: CommentType[];
   setReviewInfo?: Dispatch<SetStateAction<InfoType>>;
+  isProfilePage?: boolean;
 }
 
 const defaultComment = {
@@ -81,7 +84,7 @@ export const useCommentContext = () => {
 };
 
 const Comments = (props: CommentProps) => {
-  const { comments, setReviewInfo } = props;
+  const { comments, setReviewInfo, isProfilePage } = props;
   const [commentsState, setCommentsState] = useState<CommentType[]>([]);
 
   useEffect(() => {
@@ -96,7 +99,12 @@ const Comments = (props: CommentProps) => {
             key={index}
             value={{ comment, setCommentsState, setReviewInfo }}
           >
-            <Comment index={index} />
+            <Comment
+              index={index}
+              movieTitle={comment.movieTitle}
+              moviePoster={comment.moviePoster}
+              isProfilePage={isProfilePage}
+            />
             <div className="h-[1px] bg-slate-200 my-5"></div>
           </CommentContext.Provider>
         ))

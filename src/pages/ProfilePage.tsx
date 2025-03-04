@@ -276,7 +276,7 @@ const ProfilePage = () => {
   console.log('로그인 기준 프로필', loggedInUserProfile);
   console.log('url기준 프로필', profile);
   return (
-    <div className="w-full flex flex-col items-center justify-center">
+    <div className="w-full flex flex-col items-center justify-center bg-gray-100">
       <div className="w-full max-w-[1280px] flex gap-2 mt-10 mb-20 px-8 max-h-[440px]">
         <div className="w-full  border border-[#DFDFDF] rounded-2xl">
           <div className="w-full relative flex flex-col gap-2 items-center p-2">

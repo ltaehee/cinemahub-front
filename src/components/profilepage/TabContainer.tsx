@@ -48,7 +48,6 @@ const TabContainer: FC<TabContainerProps> = ({ profile }) => {
 
   /* 평점 내역 */
   const [comments, setComments] = useState<CommentType[]>([]);
-  console.log('comments', comments);
   const [totalReviews, setTotalReviews] = useState(0);
   const [pageReviews, setPageReviews] = useState(0);
 
@@ -213,7 +212,7 @@ const TabContainer: FC<TabContainerProps> = ({ profile }) => {
           className="w-full flex flex-col items-center gap-6"
         >
           <div className="w-full">
-            <Comments comments={comments} />
+            <Comments comments={comments} isProfilePage={true} />
           </div>
           <Pagination
             total={totalReviews}
