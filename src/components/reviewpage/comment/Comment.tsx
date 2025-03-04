@@ -11,6 +11,7 @@ import CloseIcon from '../../../icons/CloseIcon';
 import CameraIcon from '../../../icons/CameraIcon';
 import { getPresignedUrl, uploadImageToS3 } from '../../../apis/profile';
 import { updateReviewFetch } from '../../../apis/review';
+import { useNavigate } from 'react-router-dom';
 
 interface CommentProps {
   index: number;
@@ -22,6 +23,8 @@ interface CommentProps {
 const Comment = (props: CommentProps) => {
   const { index, movieTitle, moviePoster, isProfilePage } = props;
   const IsLogin = useLoginStore((set) => set.IsLogin);
+
+  const navigate = useNavigate();
 
   const { comment, setComments, setReviewInfo } = useCommentContext();
 
@@ -217,6 +220,9 @@ const Comment = (props: CommentProps) => {
                     className="rounded-[18px] w-full h-full"
                     src={comment.userId.profile}
                     alt="프로필 이미지"
+                    onClick={() =>
+                      navigate(`/profile/${comment.userId.nickname}`)
+                    }
                   />
                 </AspectRatio>
               </div>
