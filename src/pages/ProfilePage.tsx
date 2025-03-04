@@ -64,7 +64,6 @@ const ProfilePage = () => {
   const fetchLoggedInUserInfo = async () => {
     if (IsLogin) {
       const userInfo = await getLoggedInUserInfo();
-      console.log('userInfo: ', userInfo);
       setLoggedInUserProfile(userInfo);
       setOriginalNickname(userInfo.nickname);
     }
