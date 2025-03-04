@@ -82,26 +82,20 @@ const Comments = (props: CommentProps) => {
 
   return (
     <>
-      {comments.length ? (
-        comments.map((comment, index) => (
-          <CommentContext.Provider
-            key={index}
-            value={{ comment, setComments, setReviewInfo }}
-          >
-            <Comment
-              index={index}
-              movieTitle={comment.movieTitle}
-              moviePoster={comment.moviePoster}
-              isProfilePage={isProfilePage}
-            />
-            <div className="h-[1px] bg-slate-200 my-5"></div>
-          </CommentContext.Provider>
-        ))
-      ) : (
-        <div className="text-center border border-slate-300 p-5">
-          <p>리뷰 조회 내역이 없습니다.</p>
-        </div>
-      )}
+      {comments.map((comment, index) => (
+        <CommentContext.Provider
+          key={index}
+          value={{ comment, setComments, setReviewInfo }}
+        >
+          <Comment
+            index={index}
+            movieTitle={comment.movieTitle}
+            moviePoster={comment.moviePoster}
+            isProfilePage={isProfilePage}
+          />
+          <div className="h-[1px] bg-slate-200 my-5"></div>
+        </CommentContext.Provider>
+      ))}
     </>
   );
 };

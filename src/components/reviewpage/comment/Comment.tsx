@@ -147,7 +147,7 @@ const Comment = (props: CommentProps) => {
       setReviewInfo?.((prev) => {
         const length = prev.reviewLength;
         const score = Number(prev.reviewScore);
-        const sum = Math.floor(length * score);
+        const sum = Math.round(length * score);
 
         const newScore = (sum - comment.starpoint + editStarpoint) / length;
         return {

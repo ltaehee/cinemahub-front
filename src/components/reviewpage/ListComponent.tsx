@@ -88,7 +88,7 @@ const ListBarComponent = (props: ListBarComponentProps) => {
       setReviewInfo?.((prev) => {
         const length = prev.reviewLength;
         const score = Number(prev.reviewScore);
-        const sum = Math.floor(length * score);
+        const sum = Math.round(length * score);
 
         if (length > 1) {
           const newScore = (sum - comment.starpoint) / (length - 1);
@@ -159,7 +159,7 @@ const ListBarComponent = (props: ListBarComponentProps) => {
               <div className="px-3 py-5 rounded-md bg-[#F1F1F1] border border-[#BFBFBF]">
                 <Textarea
                   id="reason"
-                  placeholder="이 콘텐츠의 어떤 점이 좋거나 싫었는지 다른 사용자들에게 알려주세요. 고객님의 리뷰는 다른 사용자들에게 큰 도움이 됩니다."
+                  placeholder="관계없는 글(비방, 욕설, 광고, 잘못된 정보 등)을 신고해주시면, 관리자 확인 후 해당 리뷰의 노출이 제한될 수 있습니다. 타당한 사유 없이 허위 신고 시 신고자에 대한 활동 제한이 가해질 수 있으니, 신고 전에 신중하게 제고해 주시 기 바랍니다."
                   className="w-full h-40 text-md resize-none focus:outline-none"
                   value={reason}
                   onChange={handleReport}
