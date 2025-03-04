@@ -327,18 +327,51 @@ const Comment = (props: CommentProps) => {
         {/* 리뷰 텍스트 */}
         <div className="mt-2 flex-grow">
           {editMode ? (
-            <div className="px-3 py-5 rounded-md bg-[#F1F1F1] border border-[#BFBFBF]">
-              <Textarea
-                id="editreview"
-                placeholder="이 콘텐츠의 어떤 점이 좋거나 싫었는지 다른 사용자들에게 알려주세요."
-                className="w-full h-40 text-md resize-none focus:outline-none"
-                value={editReview}
-                onChange={handleEditReviewInput}
-              />
+            <div>
+              <div className="px-3 py-5 rounded-md bg-[#F1F1F1] border border-[#BFBFBF]">
+                <Textarea
+                  id="editreview"
+                  placeholder="이 콘텐츠의 어떤 점이 좋거나 싫었는지 다른 사용자들에게 알려주세요."
+                  className="w-full h-40 text-md resize-none focus:outline-none"
+                  value={editReview}
+                  onChange={handleEditReviewInput}
+                />
 
-              <p className="text-slate-400 text-sm float-right">
-                {editReview.length}/2000
-              </p>
+                <p className="text-slate-400 text-sm float-right">
+                  {editReview.length}/2000
+                </p>
+              </div>
+
+              <div className="flex justify-end gap-10">
+                <div className="mt-2 w-30">
+                  <Button
+                    className="bg-blue-300 hover:bg-blue-500"
+                    disabled={updateLoading}
+                    onClick={handleEditReview}
+                  >
+                    {updateLoading ? (
+                      <div className="flex justify-center items-center">
+                        <div className="w-6 h-6 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin"></div>
+                      </div>
+                    ) : (
+                      '수정하기'
+                    )}
+                  </Button>
+                </div>
+
+                <div className="mt-2 w-30">
+                  <Button
+                    onClick={() => {
+                      handleEdit(false);
+                      setEditReview(comment.content);
+                      setEditImgUrls(comment.imgUrls);
+                      setEditStarpoint(comment.starpoint);
+                    }}
+                  >
+                    취소
+                  </Button>
+                </div>
+              </div>
             </div>
           ) : (
             <div className="mt-2 break-words whitespace-pre-wrap text-black">
