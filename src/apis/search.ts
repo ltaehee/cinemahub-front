@@ -3,10 +3,10 @@ import { baseInstance } from "./axios.config";
 
 // 배우Id로 검색
 export const getFetchPeopleInfo = async (peopleName: string, page: number) => {
-  if (emptyChecker({ peopleName })) {
-    alert("배우,감독명을 입력해 주세요");
-    return;
-  }
+  // if (emptyChecker({ peopleName })) {
+  //   alert("배우,감독명을 입력해 주세요");
+  //   return;
+  // }
 
   try {
     const response = await baseInstance.get(
@@ -26,10 +26,10 @@ export const getFetchPeopleInfo = async (peopleName: string, page: number) => {
 
 // 검색어로 영화정보 검색
 export const getFetchMovieInfo = async (MovieName: string, page: number) => {
-  if (emptyChecker({ MovieName })) {
-    alert("영화명을 입력해 주세요");
-    return;
-  }
+  // if (emptyChecker({ MovieName })) {
+  //   alert("영화명을 입력해 주세요");
+  //   return;
+  // }
 
   try {
     const response = await baseInstance.get(

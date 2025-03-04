@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { getFetchMovieInfo, getFetchPeopleInfo } from "../apis/search";
 import MovieCard from "../components/mainpage/MovieCard";
 import PersonCard from "../components/mainpage/PersonCard";
@@ -88,70 +88,17 @@ const SearchPage = () => {
     setSelectedPerson,
   } = useModalOpenStore();
 
-  // const getFetchData = async (keyword: string) => {
-  //   if (isMovieOpen || isPersonOpen) return;
-  //   setLoading(true);
-  //   try {
-  //     if (!keyword.trim()) {
-  //       setHasMore(false);
-  //       return;
-  //     }
-  //     if (category === "movie") {
-  //       const response = await getFetchMovieInfo(keywordState, page);
-  //       setResponseTotalCount(response.totalCount);
-  //       console.log("response movie: ", response);
-
-  //       setMovies((prevMovies) => {
-  //         const prevMovieIds = new Set(
-  //           prevMovies.map((movie) => movie.movieId)
-  //         );
-  //         const newMovies = response.movies.filter(
-  //           (movie: Movie) => !prevMovieIds.has(movie.movieId)
-  //         );
-  //         return page === 1 ? newMovies : [...prevMovies, ...newMovies];
-  //       });
-  //       // if (response.movies.length > 0) {
-  //       //   setMovies([...movies, ...response.movies]);
-  //       // }
-  //       // setPeople([]);
-  //     } else {
-  //       const response = await getFetchPeopleInfo(keywordState, page);
-  //       setResponseTotalCount(response.totalPages);
-  //       console.log("response people: ", response);
-  //       setPeople((prevPeople) => {
-  //         const prevPeopleIds = new Set(prevPeople.map((person) => person.id));
-  //         const newPeople = response.people.filter(
-  //           (person: People) => !prevPeopleIds.has(person.id)
-  //         );
-  //         return [...prevPeople, ...newPeople];
-  //       });
-
-  //       setPeopleWithMovie((prevMovies) => {
-  //         const prevMoviesIds = new Set(prevMovies.map((movie) => movie.id));
-  //         const newMovies = response.movies.filter(
-  //           (movie: PeopleWithMovie) => !prevMoviesIds.has(movie.id)
-  //         );
-  //         return [...prevMovies, ...newMovies];
-  //       });
-  //       // setMovies([]);
-  //     }
-  //   } catch (err) {
-  //     console.error("검색 오류: ", err);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const trigger = async () => {
-    if (isMovieOpen || isPersonOpen || loading || !hasMore || !categoryState)
+    if (isMovieOpen || isPersonOpen || loading || !categoryState || !hasMore)
       return;
     try {
       setLoading(true);
       if (categoryState === "movie") {
         const response = await getFetchMovieInfo(keywordState, page);
+        console.log("response movie: ", response);
 
         setResponseTotalCount(response.totalCount);
-        console.log("response movie: ", response);
+        setHasMore(response.hasMore);
 
         setMovies((prevMovies) => {
           const prevMovieIds = new Set(
@@ -165,9 +112,11 @@ const SearchPage = () => {
 
         setPeople([]);
       } else if (categoryState === "person") {
-        const response = await getFetchPeopleInfo(keywordState, page + 1);
-        setResponseTotalCount(response.totalPages);
+        const response = await getFetchPeopleInfo(keywordState, page);
         console.log("response people: ", response);
+
+        setHasMore(response.hasMore);
+        setResponseTotalCount(response.totalPages);
         setPeople((prevPeople) => {
           const prevPeopleIds = new Set(prevPeople.map((person) => person.id));
           const newPeople = response.people.filter(
@@ -201,23 +150,28 @@ const SearchPage = () => {
   const { setTargetRef } = useInfinite(trigger, [page]);
 
   // 검색한 전체 데이터 다 가져오면 api 호출 못하게
-  useEffect(() => {
-    if (loading) return;
-    if (
-      (movies.length !== 0 && responseTotalCount === movies.length) ||
-      (people.length !== 0 && responseTotalCount === page)
-    ) {
-      console.log("모든 데이터를 불러왔습니다. 더 이상 요청하지 않습니다.");
-      setHasMore(false);
-    }
-  }, [movies, people, responseTotalCount, page]);
+  // useEffect(() => {
+  //   if (loading) return;
+  //   if (
+  //     (movies.length !== 0 && responseTotalCount === movies.length) ||
+  //     people.length !== 0 &&
+  //     responseTotalCount === page
+  //   ) {
+  //     console.log("모든 데이터를 불러왔습니다. 더 이상 요청하지 않습니다.");
+  //     setHasMore(false);
+  //   }
+  // }, [movies, people, responseTotalCount, page]);
 
   useEffect(() => {
+    if (isMovieOpen || isPersonOpen) return;
+
     if (keywordState !== keyword || categoryState !== category) {
       setKeywordState(keyword || "");
-      setCategoryState(category || "");
+      if (category !== null) {
+        setCategoryState(category);
+      }
     }
-  }, [keyword, category]);
+  }, [keyword, category, isMovieOpen, isPersonOpen]);
 
   useEffect(() => {
     // keyword가 null일 경우 keywordState로 설정
@@ -226,11 +180,11 @@ const SearchPage = () => {
     }
   }, [keyword, keywordState]);
 
-  useEffect(() => {
-    if (!category && categoryState) {
-      setCategoryState(categoryState);
-    }
-  }, [category, categoryState]);
+  // useEffect(() => {
+  //   if (!category && categoryState) {
+  //     setCategoryState(categoryState);
+  //   }
+  // }, [category, categoryState]);
 
   useEffect(() => {
     if (observerRef) {
