@@ -124,7 +124,7 @@ const TabContainer: FC<TabContainerProps> = ({ profile }) => {
   }, [isMovieOpen, isPersonOpen, setPageFrom]);
 
   return (
-    <div className="w-full max-w-[1280px] flex px-8 box-border">
+    <div className="w-full max-w-[1280px] flex px-8 box-border ">
       <Tabs onChangeTab={handleChangeTab} className="w-full">
         <Tabs.MenuList className="flex w-full mb-12">
           <Tabs.Menu
@@ -155,7 +155,7 @@ const TabContainer: FC<TabContainerProps> = ({ profile }) => {
                 : 'border-gray-300'
             }`}
           >
-            평점 내역
+            리뷰 내역
           </Tabs.Menu>
         </Tabs.MenuList>
         <Tabs.Pannel index={1} className="flex flex-col items-center gap-6">
@@ -221,7 +221,11 @@ const TabContainer: FC<TabContainerProps> = ({ profile }) => {
           className="w-full flex flex-col items-center gap-6"
         >
           <div className="w-full">
-            <Comments comments={comments} isProfilePage={true} />
+            <Comments
+              comments={comments}
+              setComments={setComments}
+              isProfilePage={true}
+            />
           </div>
           <Pagination
             total={totalReviews}
