@@ -115,14 +115,14 @@ const LikeComponent = () => {
     <>
       <div className="flex gap-3">
         <div
-          className={`flex items-center gap-2 bg-[#D1D1D1] hover:bg-[#BDBDBD] p-[8px] rounded-[5px] transition`}
+          className={`flex items-center gap-2 bg-[#D1D1D1] hover:bg-[#BDBDBD] p-[8px] rounded-[5px] transition cursor-pointer`}
           onClick={likeDebounce}
         >
           <LikeIcon recomm={likes.like} />
           <span>{updateComment.totalLike}</span>
         </div>
         <div
-          className={`flex items-center gap-2 bg-[#D1D1D1] hover:bg-[#BDBDBD] p-[8px] rounded-[5px] transition`}
+          className={`flex items-center gap-2 bg-[#D1D1D1] hover:bg-[#BDBDBD] p-[8px] rounded-[5px] transition cursor-pointer`}
           onClick={dislikeDebounce}
         >
           <UnlikeIcon recomm={likes.dislike} />
