@@ -12,7 +12,7 @@ import ModalPage from "@ui/ModalPage";
 import { useModalOpenStore } from "../store/useModalOpenStore";
 import useSearchStore from "../store/useSearchStore";
 
-const isHangulConsonantPattern = /^[\u3131-\u314e]+$/; // 한글 자음 확인
+// const isHangulConsonantPattern = /^[\u3131-\u314e]+$/; // 한글 자음 확인
 
 interface People {
   id: string;
@@ -69,7 +69,6 @@ const SearchPage = () => {
   const keyword = searchParams.get("keyword");
   // const [keywordState, setKeywordState] = useState<string>(keyword || "");
   // const [categoryState, setCategoryState] = useState<string>(category || "");
-  const location = useLocation();
   console.log("page: ", page);
   console.log("peopleWithMovie: ", peopleWithMovie);
   console.log("people: ", people);
