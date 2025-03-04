@@ -239,6 +239,7 @@ const CinemaReviewPage = () => {
         return;
       }
       setMovieData({ posterPath: response.posterPath, title: response.title });
+      handleGetComments();
     } catch (e) {
     } finally {
     }
