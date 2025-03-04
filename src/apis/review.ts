@@ -47,8 +47,12 @@ export const RegisterReviewFetch = async ({
 
 export const getMovieidCommentArrayFetch = async ({
   movieId,
+  page,
+  limit,
 }: {
   movieId: string;
+  page: number;
+  limit: number;
 }) => {
   if (emptyChecker({ movieId })) {
     alert('리뷰를 작성할 영화 정보를 조회할 수 없어요.');
@@ -58,6 +62,8 @@ export const getMovieidCommentArrayFetch = async ({
   try {
     const response = await baseInstance.post(`/review/totalcomments`, {
       movieId,
+      page,
+      limit,
     });
 
     if (response.status === 404) {

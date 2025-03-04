@@ -23,6 +23,7 @@ import Comments from '../components/reviewpage/comment';
 import { getPresignedUrl, uploadImageToS3 } from '../apis/profile';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { movieDetail } from '../apis/movie';
+import useInfinite from '../hooks/useInfinite';
 
 export type CommentType = {
   _id: string;
@@ -66,6 +67,8 @@ const defaultInfo = {
   reviewLength: 0,
 };
 
+const limit = 5;
+
 const CinemaReviewPage = () => {
   const IsLogin = useLoginStore((set) => set.IsLogin);
 
@@ -83,6 +86,10 @@ const CinemaReviewPage = () => {
   const uploadRef = useRef<HTMLInputElement>(null);
   const [registerLoading, setRegisterLoading] = useState<boolean>(false);
   const [reviewInfo, setReviewInfo] = useState<InfoType>(defaultInfo);
+
+  const [displayLoading, setDisplayLoading] = useState<boolean>(false);
+  const observeRef = useRef<HTMLDivElement>(null);
+  const [page, setPage] = useState<number>(1);
 
   const SingleFileReader = async (file: File) => {
     return new Promise((resolve, reject) => {
@@ -204,14 +211,19 @@ const CinemaReviewPage = () => {
 
   const handleGetComments = async () => {
     try {
+      setDisplayLoading(true);
       const { data } = await getMovieidCommentArrayFetch({
         movieId,
+        page,
+        limit,
       });
 
       const { reviews } = data;
-      setComments(reviews);
+
+      setComments((prev) => [...prev, ...reviews]);
     } catch (e) {
     } finally {
+      setDisplayLoading(false);
     }
   };
 
@@ -227,7 +239,6 @@ const CinemaReviewPage = () => {
         return;
       }
       setMovieData({ posterPath: response.posterPath, title: response.title });
-      handleGetComments();
     } catch (e) {
     } finally {
     }
@@ -251,6 +262,15 @@ const CinemaReviewPage = () => {
     }
   };
 
+  const trigger = () => {
+    if (!displayLoading && comments.length < reviewInfo.reviewLength) {
+      handleGetComments();
+      setPage((prev) => prev + 1);
+    }
+  };
+
+  const { setTargetRef } = useInfinite(trigger, [page]);
+
   useEffect(() => {
     if (emptyChecker({ movieId })) {
       alert(
@@ -261,6 +281,7 @@ const CinemaReviewPage = () => {
     } else {
       getMovieData(movieId);
       getReviewInfo(movieId);
+      setTargetRef(observeRef);
     }
   }, []);
 
@@ -397,6 +418,8 @@ const CinemaReviewPage = () => {
               setComments={setComments}
               setReviewInfo={setReviewInfo}
             />
+
+            {displayLoading ? '로딩 중' : <div ref={observeRef}></div>}
           </div>
         </div>
       </div>
