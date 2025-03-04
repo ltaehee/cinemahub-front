@@ -131,7 +131,6 @@ export const getUserReviewsAPI = async (
         },
       }
     );
-    console.log('리뷰데이터', response.data);
     return response.data;
   } catch (error) {
     console.error('리뷰 조회 오류:', error);
