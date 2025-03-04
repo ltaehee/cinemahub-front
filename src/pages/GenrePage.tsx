@@ -80,6 +80,7 @@ const GenrePage = () => {
       const response = await genreMovies(genreId, page + 1, 10, sortBy);
       setMovies([...movies, ...response.movies]);
       setPage(page + 1);
+      setTotalMovies(response.totalMovies);
     } catch (err) {
       console.log(err);
     }
@@ -116,7 +117,7 @@ const GenrePage = () => {
     genreIdNumber();
     fetchMovies(genreId);
     setTargetRef(infiniteDivRef);
-  }, []);
+  }, [genreId]);
 
   const currentGenre = genres.find((g) => g.id === genreId)?.name;
 
