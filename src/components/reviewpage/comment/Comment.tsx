@@ -233,7 +233,9 @@ const Comment = (props: CommentProps) => {
           </div>
 
           {comment.reportstatus && !comment.IsOwner ? null : (
-            <ListBarComponent handleEdit={handleEdit} />
+            <div className="cursor-pointer">
+              <ListBarComponent handleEdit={handleEdit} />
+            </div>
           )}
         </div>
 
