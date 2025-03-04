@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useState } from "react";
+import { RefObject, useEffect, useState } from 'react';
 
 const useInfinite = (trigger: Function, deps: number[]) => {
   const [targetRef, setTargetRef] = useState<RefObject<HTMLElement | null>>();
