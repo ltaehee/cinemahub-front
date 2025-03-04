@@ -26,13 +26,24 @@ const GenrePage = () => {
   const genreRef = useRef<HTMLDivElement>(null);
   const [baseRect, setBaseRect] = useState(new DOMRect());
   const navigate = useNavigate();
+
   const infiniteDivRef = useRef<HTMLDivElement>(null);
   const [selectedItem, setSelectedItem] = useState<SelectedItem>({
     label: "인기순",
     value: "popularity",
   });
-  const { movies, setMovies, page, setPage, sortBy, setSortBy } =
-    useGenreMovieStore();
+  const {
+    movies,
+    setMovies,
+    page,
+    totalPages,
+    setPage,
+    sortBy,
+    setSortBy,
+    setTotalPages,
+    totalMovies,
+    setTotalMovies,
+  } = useGenreMovieStore();
   const {
     isMovieOpen,
     isPersonOpen,
@@ -62,12 +73,12 @@ const GenrePage = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-  console.log("page: ", page);
+
   const trigger = async () => {
-    if (isMovieOpen || isPersonOpen) return;
+    if (isMovieOpen || isPersonOpen || page >= totalPages) return;
     try {
       const response = await genreMovies(genreId, page + 1, 10, sortBy);
-      setMovies([...movies, ...response]);
+      setMovies([...movies, ...response.movies]);
       setPage(page + 1);
     } catch (err) {
       console.log(err);
@@ -87,7 +98,9 @@ const GenrePage = () => {
   const fetchMovies = async (genreId: number) => {
     try {
       const response = await genreMovies(genreId, 0, 10, sortBy);
-      setMovies(response);
+      setMovies(response.movies);
+      setTotalPages(response.totalPages);
+      setTotalMovies(response.totalMovies);
     } catch (err) {
       console.log(err);
     }
@@ -168,7 +181,7 @@ const GenrePage = () => {
         </section>
         <section>
           <div className="flex justify-between px-8">
-            <h3 className="pb-2 font-medium text-xl">{currentGenre}</h3>
+            <h3 className="pb-2 font-medium text-xl">{`${currentGenre} (${totalMovies})`}</h3>
             <Select
               onChange={handleChangeValue}
               value={sortBy}
