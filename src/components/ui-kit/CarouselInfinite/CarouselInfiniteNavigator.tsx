@@ -28,29 +28,26 @@ const CarouselInfiniteNavigator = (props: CarouselInfiniteNavigatorProps) => {
   } = useContext(CarouselInfiniteContext);
 
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
+    if (carouselIndex === 0 || carouselIndex === itemLength + 1) {
+      const targetIndex = carouselIndex === 0 ? itemLength : 1;
 
-    if (carouselIndex === 0) {
-      timeoutId = setTimeout(() => {
+      setTimeout(() => {
         setTransition(false);
-        setCarouselIndex(itemLength);
+        setCarouselIndex(targetIndex);
+        setIsTransitioning(false);
       }, 500);
-    } else if (carouselIndex === itemLength + 1) {
-      timeoutId = setTimeout(() => {
-        setTransition(false);
-        setCarouselIndex(1);
+    } else {
+      setTimeout(() => {
+        setIsTransitioning(false);
       }, 500);
     }
-
-    const transitionTimeout = setTimeout(() => {
-      setIsTransitioning(false);
-    }, 500);
-
-    return () => {
-      clearTimeout(timeoutId);
-      clearTimeout(transitionTimeout);
-    };
-  }, [carouselIndex, itemLength]);
+  }, [
+    carouselIndex,
+    itemLength,
+    setCarouselIndex,
+    setTransition,
+    setIsTransitioning,
+  ]);
 
   const cls = useMemo(
     () =>

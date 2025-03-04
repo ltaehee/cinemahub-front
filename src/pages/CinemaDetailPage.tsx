@@ -361,11 +361,15 @@ const CinemaDetailPage: FC<CinemaDetailPageProps> = ({ movieId }) => {
         <div className="flex flex-col gap-8 w-[1280px] items-center px-8">
           <div className="w-[1280px] flex flex-col gap-8 px-8">
             <hr className="w-full border border-gray-300"></hr>
-            <section className="flex flex-col gap-4 w-full">
-              <h2 className="text-2xl text-slate-900">줄거리</h2>
-              <p className="text-lg text-slate-500">{movie?.overview}</p>
-            </section>
-            <hr className="w-full border border-gray-300"></hr>
+            {movie?.overview && (
+              <>
+                <section className="flex flex-col gap-4 w-full">
+                  <h2 className="text-2xl text-slate-900">줄거리</h2>
+                  <p className="text-lg text-slate-500">{movie?.overview}</p>
+                </section>
+                <hr className="w-full border border-gray-300"></hr>
+              </>
+            )}
 
             <section className="flex flex-col gap-4">
               <h2 className="text-2xl text-slate-900">포스터</h2>
