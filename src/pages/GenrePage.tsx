@@ -81,6 +81,7 @@ const GenrePage = () => {
       setMovies([...movies, ...response.movies]);
       setPage(page + 1);
       setTotalMovies(response.totalMovies);
+      console.log("trigger: ", response);
     } catch (err) {
       console.log(err);
     }
@@ -102,6 +103,7 @@ const GenrePage = () => {
       setMovies(response.movies);
       setTotalPages(response.totalPages);
       setTotalMovies(response.totalMovies);
+      console.log("fetchMovies: ", response);
     } catch (err) {
       console.log(err);
     }
@@ -117,7 +119,7 @@ const GenrePage = () => {
     genreIdNumber();
     fetchMovies(genreId);
     setTargetRef(infiniteDivRef);
-  }, [genreId]);
+  }, []);
 
   const currentGenre = genres.find((g) => g.id === genreId)?.name;
 
