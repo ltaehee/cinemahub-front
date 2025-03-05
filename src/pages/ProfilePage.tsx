@@ -233,6 +233,7 @@ const ProfilePage = () => {
     try {
       await followUser(targetNickname);
       await fetchProfileData(); // 프로필 데이터 갱신
+      await fetchLoggedInUserInfo();
     } catch (error) {
       console.error('팔로우 요청 오류:', error);
       alert('팔로우 요청 실패');
@@ -251,6 +252,7 @@ const ProfilePage = () => {
     try {
       await unfollowUser(targetNickname);
       await fetchProfileData(); // 프로필 데이터 갱신
+      await fetchLoggedInUserInfo();
     } catch (error) {
       console.error('언팔로우 요청 오류:', error);
       alert('언팔로우 요청 실패');
