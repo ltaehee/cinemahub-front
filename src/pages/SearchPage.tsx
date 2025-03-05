@@ -12,7 +12,7 @@ import ModalPage from "@ui/ModalPage";
 import { useModalOpenStore } from "../store/useModalOpenStore";
 import useSearchStore from "../store/useSearchStore";
 
-// const isHangulConsonantPattern = /^[\u3131-\u314e]+$/; // 한글 자음 확인
+const isHangulConsonantPattern = /^[\u3131-\u314e]+$/; // 한글 자음 확인
 
 interface People {
   id: string;
@@ -39,8 +39,6 @@ interface Movie {
 }
 
 const SearchPage = () => {
-  // const [movies, setMovies] = useState<Movie[]>([]);
-  // const [page, setPage] = useState(1);
   const {
     movies,
     setMovies,
@@ -57,25 +55,15 @@ const SearchPage = () => {
   } = useSearchStore();
 
   const [searchParams] = useSearchParams();
-  // const [people, setPeople] = useState<People[]>([]);
-  // const [peopleWithMovie, setPeopleWithMovie] = useState<PeopleWithMovie[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [baseRect, _] = useState(new DOMRect());
   const [hasMore, setHasMore] = useState(true);
   const [responseTotalCount, setResponseTotalCount] = useState(0);
+  console.log(responseTotalCount);
   const personRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<HTMLDivElement>(null);
   const category = searchParams.get("category");
   const keyword = searchParams.get("keyword");
-  // const [keywordState, setKeywordState] = useState<string>(keyword || "");
-  // const [categoryState, setCategoryState] = useState<string>(category || "");
-  console.log("page: ", page);
-  console.log("peopleWithMovie: ", peopleWithMovie);
-  console.log("people: ", people);
-  console.log("movies: ", movies);
-  // console.log("keywordState: ", keywordState);
-  // console.log("categoryState: ", categoryState);
-  console.log("responseTotalCount: ", responseTotalCount);
 
   const {
     isMovieOpen,
@@ -91,6 +79,9 @@ const SearchPage = () => {
   const trigger = async () => {
     if (isMovieOpen || isPersonOpen || loading || !categoryState || !hasMore)
       return;
+    if (isHangulConsonantPattern.test(keywordState)) return;
+    if (!keywordState.trim()) return;
+
     try {
       setLoading(true);
       if (categoryState === "movie") {
@@ -135,11 +126,7 @@ const SearchPage = () => {
         setMovies([]);
       }
 
-      // if (movies.length > 0 || people.length > 0) {
-      // 데이터가 있을 경우에만 페이지 증가
-      // setPage(page + 1);
       setPage((prev) => prev + 1);
-      // }
     } catch (err) {
       console.log(err);
     } finally {
@@ -148,19 +135,6 @@ const SearchPage = () => {
   };
 
   const { setTargetRef } = useInfinite(trigger, [page]);
-
-  // 검색한 전체 데이터 다 가져오면 api 호출 못하게
-  // useEffect(() => {
-  //   if (loading) return;
-  //   if (
-  //     (movies.length !== 0 && responseTotalCount === movies.length) ||
-  //     people.length !== 0 &&
-  //     responseTotalCount === page
-  //   ) {
-  //     console.log("모든 데이터를 불러왔습니다. 더 이상 요청하지 않습니다.");
-  //     setHasMore(false);
-  //   }
-  // }, [movies, people, responseTotalCount, page]);
 
   useEffect(() => {
     if (isMovieOpen || isPersonOpen) return;
@@ -180,50 +154,11 @@ const SearchPage = () => {
     }
   }, [keyword, keywordState]);
 
-  // useEffect(() => {
-  //   if (!category && categoryState) {
-  //     setCategoryState(categoryState);
-  //   }
-  // }, [category, categoryState]);
-
   useEffect(() => {
     if (observerRef) {
       setTargetRef(observerRef);
     }
   }, [observerRef]);
-
-  // 초기 검색어 검색 시 한글 자음만 입력 아닌 경우에 검색
-  // useEffect(() => {
-  //   if (!keyword || isHangulConsonantPattern.test(keyword)) return;
-  //   if (movies.length === 0) {
-  //     setMovies([]);
-  //   }
-  //   if (people.length === 0) {
-  //     setPeople([]);
-  //   }
-  //   if (peopleWithMovie.length === 0) {
-  //     setPeopleWithMovie([]);
-  //   }
-  //   // setPage(1);
-  //   setHasMore(true);
-  //   // if (!isMovieOpen && !isPersonOpen) {
-  //   getFetchData(keyword);
-  //   // }
-  // }, [keywordState]);
-
-  // 2 페이지 이상일 때 실행
-  // useEffect(() => {
-  //   if (
-  //     keyword &&
-  //     page > 1 &&
-  //     hasMore &&
-  //     !isHangulConsonantPattern.test(keyword) &&
-  //     !isMovieOpen &&
-  //     !isPersonOpen
-  //   ) {
-  //     getFetchData(keyword);
-  //   }
-  // }, [page, hasMore, keywordState]);
 
   return (
     <>

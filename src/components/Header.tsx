@@ -99,13 +99,6 @@ const Header = () => {
     }
   }, [urlKeyword]);
 
-  // useEffect(() => {
-  //   if (urlCategory === "person") {
-  //     setCategory("person");
-  //     setSelectedItem({ label: "영화인", value: "person" });
-  //   }
-  // }, [urlCategory]);
-
   // 로그인 시 관리자계정인지 확인
   useEffect(() => {
     if (IsLogin) {
@@ -125,7 +118,7 @@ const Header = () => {
           </div>
           <form
             onSubmit={handleSubmit(onValid)}
-            className="relative flex items-center w-full border border-gray-300 rounded-lg overflow-hidden"
+            className="relative flex items-center w-full border border-gray-300 rounded-lg overflow-hidden h-[45px]"
           >
             <Select
               value={category}
@@ -180,7 +173,7 @@ const Header = () => {
                   src={profile?.profile || defaultProfile}
                   alt="Profile"
                   onClick={handleClickProfile}
-                  className="w-17 h-9 rounded-full hover:cursor-pointer"
+                  className="w-9 h-9 rounded-full hover:cursor-pointer object-cover"
                 />
               </>
             ) : (
