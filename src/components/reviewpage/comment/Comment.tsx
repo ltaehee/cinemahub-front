@@ -86,7 +86,6 @@ const Comment = (props: CommentProps) => {
 
   const handleResetFileValue = () => {
     if (uploadRef.current) {
-      console.log(uploadRef.current.value);
       uploadRef.current.value = '';
       return;
     }
