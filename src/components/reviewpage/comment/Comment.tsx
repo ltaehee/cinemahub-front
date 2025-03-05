@@ -311,20 +311,22 @@ const Comment = (props: CommentProps) => {
           ) : (
             <>
               {comment.imgUrls.length > 0
-                ? comment.imgUrls.map((src, index) => (
-                    <div
-                      key={`image-src-${index}`}
-                      className="relative w-[180px] h-[180px] rounded-[5px] border border-[#DDDDDD]"
-                    >
-                      <AspectRatio ratio={1 / 1}>
-                        <AspectRatio.Image
-                          className="w-full h-full object-cover rounded-md"
-                          src={src}
-                          alt="리뷰 사진"
-                        />
-                      </AspectRatio>
-                    </div>
-                  ))
+                ? comment.reportstatus && !comment.IsOwner
+                  ? null
+                  : comment.imgUrls.map((src, index) => (
+                      <div
+                        key={`image-src-${index}`}
+                        className="relative w-[180px] h-[180px] rounded-[5px] border border-[#DDDDDD]"
+                      >
+                        <AspectRatio ratio={1 / 1}>
+                          <AspectRatio.Image
+                            className="w-full h-full object-cover rounded-md"
+                            src={src}
+                            alt="리뷰 사진"
+                          />
+                        </AspectRatio>
+                      </div>
+                    ))
                 : isProfilePage && (
                     <div className="min-h-[180px] flex items-center justify-center text-gray-400">
                       이미지가 없습니다
