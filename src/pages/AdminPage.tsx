@@ -95,7 +95,6 @@ const AdminPage = () => {
 
     try {
       const response = await updateUser(selectedUsers);
-      console.log("delete result", response);
       if (response.status === 200) {
         alert("삭제 완료 되었습니다.");
         setUsers((prevUsers) =>
@@ -119,7 +118,6 @@ const AdminPage = () => {
 
     try {
       const response = await updateReview(selectedReviews);
-      console.log("delete result", response);
       if (response.status === 200) {
         alert("삭제 완료 되었습니다.");
         setReportedUser((prevReviews) =>
@@ -160,7 +158,6 @@ const AdminPage = () => {
       } else {
         response = await getFetchUser(userPage, userLimit);
       }
-      console.log("response: ", response);
       setTotalUsers(response.data.totalCount);
       setUsers(response.data.users);
     } catch (err) {
@@ -182,7 +179,6 @@ const AdminPage = () => {
       } else {
         response = await getReportedReview(reviewPage, reviewLimit);
       }
-      console.log("신고리뷰 조회: ", response);
       setReportedUser(response.data.reportResult);
       setTotalReported(response.data.totalCount);
     } catch (err) {

@@ -16,7 +16,6 @@ export const getFetchPeopleInfo = async (peopleName: string, page: number) => {
     if (!response.data || response.data.length === 0) {
       throw new Error("검색된 배우,감독이 없습니다.");
     }
-    console.log("배우,감독정보: ", response.data);
     return response.data;
   } catch (err) {
     console.error("배우정보를 가져오는데 실패했습니다.", err);
@@ -40,7 +39,6 @@ export const getFetchMovieInfo = async (MovieName: string, page: number) => {
       throw new Error("검색된 영화가 없습니다.");
     }
 
-    console.log("영화정보: ", response.data);
     return response.data;
   } catch (err) {
     console.error("영화정보를 가져오는데 실패했습니다.", err);
@@ -67,8 +65,6 @@ export const getFetchUserInfo = async (
       throw new Error("검색된 유저가 없습니다.");
     }
 
-    console.log("유저정보: ", response);
-
     return response;
   } catch (err) {
     console.error("유저정보를 가져오는데 실패했습니다.", err);
@@ -94,8 +90,6 @@ export const getFetchReviewInfo = async (
     if (!response.data || response.data.length === 0) {
       throw new Error("검색된 신고리뷰 관련 정보가 없습니다.");
     }
-
-    console.log("신고리뷰 관련 정보: ", response);
 
     return response;
   } catch (err) {

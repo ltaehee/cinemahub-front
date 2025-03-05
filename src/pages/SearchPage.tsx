@@ -86,7 +86,6 @@ const SearchPage = () => {
       setLoading(true);
       if (categoryState === "movie") {
         const response = await getFetchMovieInfo(keywordState, page);
-        console.log("response movie: ", response);
 
         setResponseTotalCount(response.totalCount);
         setHasMore(response.hasMore);
@@ -104,7 +103,6 @@ const SearchPage = () => {
         setPeople([]);
       } else if (categoryState === "person") {
         const response = await getFetchPeopleInfo(keywordState, page);
-        console.log("response people: ", response);
 
         setHasMore(response.hasMore);
         setResponseTotalCount(response.totalPages);
