@@ -169,12 +169,14 @@ const Header = () => {
                   로그아웃
                 </button>
 
-                <img
-                  src={profile?.profile || defaultProfile}
-                  alt="Profile"
-                  onClick={handleClickProfile}
-                  className="w-9 h-9 rounded-full hover:cursor-pointer object-cover"
-                />
+                <div className="w-9 h-9 overflow-hidden rounded-full hover:cursor-pointer ">
+                  <img
+                    src={profile?.profile || defaultProfile}
+                    alt="Profile"
+                    onClick={handleClickProfile}
+                    className="w-full h-full object-cover "
+                  />
+                </div>
               </>
             ) : (
               <div
