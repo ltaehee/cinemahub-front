@@ -70,7 +70,9 @@ const Header = () => {
 
   // 프로필이미지 선택 시 프로필페이지로 이동
   const handleClickProfile = () => {
-    navigate(`/profile/${profile?.nickname}`);
+    if (profile?.nickname) {
+      navigate(`/profile/${profile?.nickname}`);
+    }
   };
 
   const fetchUserInfo = async () => {
