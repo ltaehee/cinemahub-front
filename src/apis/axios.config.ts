@@ -1,7 +1,10 @@
-import axios, { HttpStatusCode, isAxiosError } from "axios";
+import axios, { HttpStatusCode, isAxiosError } from 'axios';
 
-axios.defaults.baseURL = "/api";
-axios.defaults.headers.common["Content-Type"] = "application/json";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+// axios.defaults.baseURL = "/api";
+axios.defaults.baseURL = API_BASE_URL;
+axios.defaults.headers.common['Content-Type'] = 'application/json';
 
 export const baseInstance = axios.create();
 
