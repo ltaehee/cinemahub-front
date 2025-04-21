@@ -27,7 +27,7 @@
 
 ### 🏠 메인 페이지
 
-![메인 페이지](images/main.png)
+![메인 페이지](./public/images/main.png)
 
 - 영화 상세 페이지
 - 유저 프로필 페이지
