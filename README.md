@@ -25,12 +25,12 @@
 
 ## 📷 주요 ui
 
--메인 페이지
-<img src="./public/images/main.png" alt="메인 페이지" width="400" />
-
+- 메인 페이지
+  <img src="./public/images/main.png" alt="메인 페이지" width="400" />
 - 영화 상세 페이지
+  <img src="./public/images/sub1.png" alt="메인 페이지" width="400" />
 - 유저 프로필 페이지
-- 즐겨찾기 리스트
-- 팔로잉 유저 목록
+  <img src="./public/images/Profile.png" alt="메인 페이지" width="400" />
+  <img src="./public/images/profile2.png" alt="메인 페이지" width="400" />
 
 ---
