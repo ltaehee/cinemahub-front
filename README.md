@@ -1,5 +1,7 @@
 # 🎬 Cinemahub - 영화 커뮤니티 플랫폼
 
+🔗 [배포 링크 바로가기](web-cinemahub-front-m88gjvsd5fb295a9.sel4.cloudtype.app)
+
 > 영화 정보 조회, 즐겨찾기, 리뷰, 팔로잉 기능이 있는 영화 애호가를 위한 커뮤니티
 
 ## 📌 프로젝트 소개
