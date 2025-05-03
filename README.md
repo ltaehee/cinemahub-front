@@ -11,7 +11,7 @@
 ## 🛠️ Skills
 
 - **Frontend**: React, TypeScript, Tailwind CSS, Zustand, React Router
-- **Backend**: Node.js, Express, MongoDB, Mongoose
+- **Backend**: Node.js, Express, MongoDB
 - **DevOps / Infra**: AWS S3 (이미지 업로드), Cloudtype
 - **Design**: Figma
 
@@ -61,3 +61,19 @@
   <img src="./public/images/profile2.png" alt="메인 페이지" width="400" />
 
 ---
+
+## 📂 프로젝트 실행 방법
+
+```bash
+# [프론트엔드]
+
+cd cinemahub-front
+npm install
+npm run dev
+
+# [백엔드]
+
+cd ../cinemahub-back
+npm install
+node index.js
+```
