@@ -53,6 +53,10 @@
 
 ## 📷 주요 ui
 
+- 로그인 페이지
+
+  <img src="./public/images/loginPage.png" alt="로그인 페이지"  />
+
 - 메인 페이지
 
   <img src="./public/images/main.png" alt="메인 페이지"  />
@@ -60,6 +64,10 @@
 - 영화 상세 페이지
 
   <img src="./public/images/sub1.png" alt="메인 페이지"  />
+
+- 영화(인) 검색 페이지
+
+  <img src="./public/images/searchPage.png" alt="검색 페이지"  />
 
 - 유저 프로필 페이지
 
