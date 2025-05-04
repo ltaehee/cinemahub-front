@@ -8,7 +8,7 @@
 
 - 기간: 2025.02.11 ~ 2025.03.05 (3주)
 - 인원: 4명(프론트,백 같이)
-- 담당 역할: AWS S3 연동,즐겨찾기, 프로필 조회,수정, 팔로워,팔로잉,
+- 담당 역할: - AWS S3 이미지 업로드, 즐겨찾기 기능 (추가, 삭제, 조회), 프로필 관리 기능 (조회, 수정, 다른 유저 프로필 포함), 팔로잉 기능 (추가, 삭제, 조회)
 
 ## 📌 프로젝트 소개
 
@@ -63,8 +63,14 @@
 
 - 유저 프로필 페이지
 
-  <img src="./public/images/Profile.png" alt="메인 페이지" width="400" />
-  <img src="./public/images/profile2.png" alt="메인 페이지" width="400" />
+  <div style="display: flex; gap: 16px;">
+    <img src="./public/images/Profile.png" alt="유저 프로필1" width="400" />
+    <img src="./public/images/profile2.png" alt="유저 프로필2" width="400" />
+  </div>
+
+- 리뷰 페이지
+
+  <img src="./public/images/reviewPage.png" alt="리뷰 페이지" width="400" />
 
 ---
 
